@@ -150,8 +150,9 @@ class LLMClient:
                             "around 0.55 for uncertain or hearsay claims, and around 0.25 for suspicious, joke, "
                             "impossible, or low-trust claims. "
                             "Return no claims for pure questions. "
-                            "Write assistant_reply as a concise, natural chat response that explains whether the "
-                            "memory is being staged, committed, branched, or treated cautiously. "
+                            "Write assistant_reply as a concise, natural chat response. Start with an acknowledgement "
+                            "such as 'Okay, I'll remember that' for normal memory updates. Explain briefly if the "
+                            "memory is branch-only, low-trust, or needs review. "
                             "Do not claim that memory was written directly; Python will validate and apply it."
                         ),
                     },
@@ -354,10 +355,10 @@ def _fallback_assistant_reply(text: str, claim_count: int) -> str:
     if claim_count == 0:
         return "I did not find an explicit memory claim to stage."
     if any(token in lower for token in ("conference", "trip", "what if", "hypothetical", "will stay")):
-        return "I will stage that as a branch-specific hypothetical memory so it does not overwrite main truth."
+        return "Okay, I'll keep that as a branch-specific hypothetical memory so it does not overwrite main truth."
     if any(token in lower for token in ("atlantis", "fake", "joke", "impossible", "rumor", "heard")):
-        return "I will stage that cautiously for review because the source sounds low-trust or uncertain."
-    return "I will stage that as a reviewable TruthGit memory update and preserve any previous version."
+        return "Okay, I'll treat that cautiously and stage it for review because the source sounds low-trust or uncertain."
+    return "Okay, I'll remember that in TruthGit memory and preserve any previous version."
 
 
 def _fallback_answer_from_memory(message: str, memory_context: dict[str, Any]) -> str:

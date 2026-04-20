@@ -245,11 +245,11 @@ def _safe_branch_name(value: str) -> str:
 
 def _assistant_reply_with_outcome(reply: str, committed: bool, staged_id: str) -> str:
     suffix = (
-        "The staged memory has been approved into a commit."
+        "I saved it as a TruthGit commit."
         if committed
         else f"I staged it for review as {staged_id}."
     )
-    clean_reply = reply.strip() or "I prepared this as a reviewable TruthGit memory update."
+    clean_reply = reply.strip() or "Okay, I'll remember that in TruthGit memory."
     return f"{clean_reply} {suffix}"
 
 
@@ -876,9 +876,9 @@ _HTML = """
     function summarizeManual(data) {
       const claims = data.claims.map(claim => `${claim.subject} ${claim.predicate} ${claim.object_value || claim.object || ""}`.trim());
       if (!claims.length) return "No atomic claim was extracted from that prompt.";
-      const prefix = data.extraction?.mode === "llm" ? "LLM planned" : "Local extractor staged";
-      if (data.commit) return `${prefix} and committed ${claims.length} claim(s) on ${data.branch.name}.`;
-      return `${prefix} ${claims.length} claim(s) for review on ${data.branch.name}.`;
+      const objectList = data.claims.map(claim => claim.object_value || claim.object || "").filter(Boolean).join(", ");
+      if (data.commit) return `Okay, I'll remember that. I saved ${objectList || "the update"} as a TruthGit commit on ${data.branch.name}.`;
+      return `Okay, I'll remember that after review. I staged ${claims.length} claim(s) on ${data.branch.name}.`;
     }
 
     function detailLine(data) {
