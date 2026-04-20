@@ -1,0 +1,913 @@
+answer_text,backbone,branch_name,conflict_resolved,had_low_trust_warning,historical_objects,object_value,question_id,source_ref,system_name
+Dublin,gpt-4o-mini,main,True,False,"['Seoul', 'Rome', 'Dublin']",Dublin,temporal-supersession-00-current,residence-ledger-0-c,naive_chat_history
+Dublin,gpt-4o-mini,main,False,False,"['Seoul', 'Rome', 'Dublin']",Dublin,temporal-supersession-00-history,residence-ledger-0-c,naive_chat_history
+Dublin,gpt-4o-mini,main,True,False,"['Seoul', 'Rome', 'Dublin']",Dublin,temporal-supersession-00-provenance,residence-ledger-0-c,naive_chat_history
+Dublin,gpt-4o-mini,main,False,False,"['Seoul', 'Rome', 'Dublin']",Dublin,temporal-supersession-00-slice-middle,residence-ledger-0-c,naive_chat_history
+Oslo,gpt-4o-mini,main,True,False,"['Busan', 'Berlin', 'Oslo']",Oslo,temporal-supersession-01-current,residence-ledger-1-c,naive_chat_history
+Oslo,gpt-4o-mini,main,False,False,"['Busan', 'Berlin', 'Oslo']",Oslo,temporal-supersession-01-history,residence-ledger-1-c,naive_chat_history
+Oslo,gpt-4o-mini,main,True,False,"['Busan', 'Berlin', 'Oslo']",Oslo,temporal-supersession-01-provenance,residence-ledger-1-c,naive_chat_history
+Oslo,gpt-4o-mini,main,False,False,"['Busan', 'Berlin', 'Oslo']",Oslo,temporal-supersession-01-slice-middle,residence-ledger-1-c,naive_chat_history
+Prague,gpt-4o-mini,main,True,False,"['Tokyo', 'Paris', 'Prague']",Prague,temporal-supersession-02-current,residence-ledger-2-c,naive_chat_history
+Prague,gpt-4o-mini,main,False,False,"['Tokyo', 'Paris', 'Prague']",Prague,temporal-supersession-02-history,residence-ledger-2-c,naive_chat_history
+Prague,gpt-4o-mini,main,True,False,"['Tokyo', 'Paris', 'Prague']",Prague,temporal-supersession-02-provenance,residence-ledger-2-c,naive_chat_history
+Prague,gpt-4o-mini,main,False,False,"['Tokyo', 'Paris', 'Prague']",Prague,temporal-supersession-02-slice-middle,residence-ledger-2-c,naive_chat_history
+Vienna,gpt-4o-mini,main,True,False,"['Madrid', 'Lisbon', 'Vienna']",Vienna,temporal-supersession-03-current,residence-ledger-3-c,naive_chat_history
+Vienna,gpt-4o-mini,main,False,False,"['Madrid', 'Lisbon', 'Vienna']",Vienna,temporal-supersession-03-history,residence-ledger-3-c,naive_chat_history
+Vienna,gpt-4o-mini,main,True,False,"['Madrid', 'Lisbon', 'Vienna']",Vienna,temporal-supersession-03-provenance,residence-ledger-3-c,naive_chat_history
+Vienna,gpt-4o-mini,main,False,False,"['Madrid', 'Lisbon', 'Vienna']",Vienna,temporal-supersession-03-slice-middle,residence-ledger-3-c,naive_chat_history
+Lima,gpt-4o-mini,main,True,False,"['Rome', 'Dublin', 'Lima']",Lima,temporal-supersession-04-current,residence-ledger-4-c,naive_chat_history
+Lima,gpt-4o-mini,main,False,False,"['Rome', 'Dublin', 'Lima']",Lima,temporal-supersession-04-history,residence-ledger-4-c,naive_chat_history
+Lima,gpt-4o-mini,main,True,False,"['Rome', 'Dublin', 'Lima']",Lima,temporal-supersession-04-provenance,residence-ledger-4-c,naive_chat_history
+Lima,gpt-4o-mini,main,False,False,"['Rome', 'Dublin', 'Lima']",Lima,temporal-supersession-04-slice-middle,residence-ledger-4-c,naive_chat_history
+Quito,gpt-4o-mini,main,True,False,"['Berlin', 'Oslo', 'Quito']",Quito,temporal-supersession-05-current,residence-ledger-5-c,naive_chat_history
+Quito,gpt-4o-mini,main,False,False,"['Berlin', 'Oslo', 'Quito']",Quito,temporal-supersession-05-history,residence-ledger-5-c,naive_chat_history
+Quito,gpt-4o-mini,main,True,False,"['Berlin', 'Oslo', 'Quito']",Quito,temporal-supersession-05-provenance,residence-ledger-5-c,naive_chat_history
+Quito,gpt-4o-mini,main,False,False,"['Berlin', 'Oslo', 'Quito']",Quito,temporal-supersession-05-slice-middle,residence-ledger-5-c,naive_chat_history
+Hanoi,gpt-4o-mini,main,True,False,"['Paris', 'Prague', 'Hanoi']",Hanoi,temporal-supersession-06-current,residence-ledger-6-c,naive_chat_history
+Hanoi,gpt-4o-mini,main,False,False,"['Paris', 'Prague', 'Hanoi']",Hanoi,temporal-supersession-06-history,residence-ledger-6-c,naive_chat_history
+Hanoi,gpt-4o-mini,main,True,False,"['Paris', 'Prague', 'Hanoi']",Hanoi,temporal-supersession-06-provenance,residence-ledger-6-c,naive_chat_history
+Seoul,gpt-4o-mini,main,True,False,"['Lisbon', 'Vienna', 'Seoul']",Seoul,temporal-supersession-07-current,residence-ledger-7-c,naive_chat_history
+Seoul,gpt-4o-mini,main,False,False,"['Lisbon', 'Vienna', 'Seoul']",Seoul,temporal-supersession-07-history,residence-ledger-7-c,naive_chat_history
+Seoul,gpt-4o-mini,main,True,False,"['Lisbon', 'Vienna', 'Seoul']",Seoul,temporal-supersession-07-provenance,residence-ledger-7-c,naive_chat_history
+Busan,gpt-4o-mini,main,True,False,"['Dublin', 'Lima', 'Busan']",Busan,temporal-supersession-08-current,residence-ledger-8-c,naive_chat_history
+Busan,gpt-4o-mini,main,False,False,"['Dublin', 'Lima', 'Busan']",Busan,temporal-supersession-08-history,residence-ledger-8-c,naive_chat_history
+Busan,gpt-4o-mini,main,True,False,"['Dublin', 'Lima', 'Busan']",Busan,temporal-supersession-08-provenance,residence-ledger-8-c,naive_chat_history
+Tokyo,gpt-4o-mini,main,True,False,"['Oslo', 'Quito', 'Tokyo']",Tokyo,temporal-supersession-09-current,residence-ledger-9-c,naive_chat_history
+Tokyo,gpt-4o-mini,main,False,False,"['Oslo', 'Quito', 'Tokyo']",Tokyo,temporal-supersession-09-history,residence-ledger-9-c,naive_chat_history
+Tokyo,gpt-4o-mini,main,True,False,"['Oslo', 'Quito', 'Tokyo']",Tokyo,temporal-supersession-09-provenance,residence-ledger-9-c,naive_chat_history
+Madrid,gpt-4o-mini,main,True,False,"['Prague', 'Hanoi', 'Madrid']",Madrid,temporal-supersession-10-current,residence-ledger-10-c,naive_chat_history
+Madrid,gpt-4o-mini,main,False,False,"['Prague', 'Hanoi', 'Madrid']",Madrid,temporal-supersession-10-history,residence-ledger-10-c,naive_chat_history
+Madrid,gpt-4o-mini,main,True,False,"['Prague', 'Hanoi', 'Madrid']",Madrid,temporal-supersession-10-provenance,residence-ledger-10-c,naive_chat_history
+Rome,gpt-4o-mini,main,True,False,"['Vienna', 'Seoul', 'Rome']",Rome,temporal-supersession-11-current,residence-ledger-11-c,naive_chat_history
+Rome,gpt-4o-mini,main,False,False,"['Vienna', 'Seoul', 'Rome']",Rome,temporal-supersession-11-history,residence-ledger-11-c,naive_chat_history
+Rome,gpt-4o-mini,main,True,False,"['Vienna', 'Seoul', 'Rome']",Rome,temporal-supersession-11-provenance,residence-ledger-11-c,naive_chat_history
+Atlantis,gpt-4o-mini,main,False,False,"['Tokyo', 'Atlantis']",Atlantis,poisoning-low-trust-00-current,untrusted-scrape-0,naive_chat_history
+Atlantis,gpt-4o-mini,main,False,False,"['Tokyo', 'Atlantis']",Atlantis,poisoning-low-trust-00-warning,untrusted-scrape-0,naive_chat_history
+El Dorado,gpt-4o-mini,main,False,False,"['Madrid', 'El Dorado']",El Dorado,poisoning-low-trust-01-current,untrusted-scrape-1,naive_chat_history
+El Dorado,gpt-4o-mini,main,False,False,"['Madrid', 'El Dorado']",El Dorado,poisoning-low-trust-01-warning,untrusted-scrape-1,naive_chat_history
+Gotham,gpt-4o-mini,main,False,False,"['Rome', 'Gotham']",Gotham,poisoning-low-trust-02-current,untrusted-scrape-2,naive_chat_history
+Gotham,gpt-4o-mini,main,False,False,"['Rome', 'Gotham']",Gotham,poisoning-low-trust-02-warning,untrusted-scrape-2,naive_chat_history
+Metropolis,gpt-4o-mini,main,False,False,"['Berlin', 'Metropolis']",Metropolis,poisoning-low-trust-03-current,untrusted-scrape-3,naive_chat_history
+Metropolis,gpt-4o-mini,main,False,False,"['Berlin', 'Metropolis']",Metropolis,poisoning-low-trust-03-warning,untrusted-scrape-3,naive_chat_history
+Narnia,gpt-4o-mini,main,False,False,"['Paris', 'Narnia']",Narnia,poisoning-low-trust-04-current,untrusted-scrape-4,naive_chat_history
+Narnia,gpt-4o-mini,main,False,False,"['Paris', 'Narnia']",Narnia,poisoning-low-trust-04-warning,untrusted-scrape-4,naive_chat_history
+Atlantis,gpt-4o-mini,main,False,False,"['Lisbon', 'Atlantis']",Atlantis,poisoning-low-trust-05-current,untrusted-scrape-5,naive_chat_history
+Atlantis,gpt-4o-mini,main,False,False,"['Lisbon', 'Atlantis']",Atlantis,poisoning-low-trust-05-warning,untrusted-scrape-5,naive_chat_history
+El Dorado,gpt-4o-mini,main,False,False,"['Dublin', 'El Dorado']",El Dorado,poisoning-low-trust-06-current,untrusted-scrape-6,naive_chat_history
+El Dorado,gpt-4o-mini,main,False,False,"['Dublin', 'El Dorado']",El Dorado,poisoning-low-trust-06-warning,untrusted-scrape-6,naive_chat_history
+Gotham,gpt-4o-mini,main,False,False,"['Oslo', 'Gotham']",Gotham,poisoning-low-trust-07-current,untrusted-scrape-7,naive_chat_history
+Gotham,gpt-4o-mini,main,False,False,"['Oslo', 'Gotham']",Gotham,poisoning-low-trust-07-warning,untrusted-scrape-7,naive_chat_history
+Metropolis,gpt-4o-mini,main,False,False,"['Prague', 'Metropolis']",Metropolis,poisoning-low-trust-08-current,untrusted-scrape-8,naive_chat_history
+Metropolis,gpt-4o-mini,main,False,False,"['Prague', 'Metropolis']",Metropolis,poisoning-low-trust-08-warning,untrusted-scrape-8,naive_chat_history
+Narnia,gpt-4o-mini,main,False,False,"['Vienna', 'Narnia']",Narnia,poisoning-low-trust-09-current,untrusted-scrape-9,naive_chat_history
+Narnia,gpt-4o-mini,main,False,False,"['Vienna', 'Narnia']",Narnia,poisoning-low-trust-09-warning,untrusted-scrape-9,naive_chat_history
+Lisbon,gpt-4o-mini,main,False,False,['Lisbon'],Lisbon,branch-leakage-00-main-isolation,conference-itinerary-0,naive_chat_history
+Lisbon,gpt-4o-mini,trip-plan-0,True,False,['Lisbon'],Lisbon,branch-leakage-00-branch-visible,conference-itinerary-0,naive_chat_history
+Lisbon,gpt-4o-mini,trip-plan-0,True,False,['Lisbon'],Lisbon,branch-leakage-00-branch-source,conference-itinerary-0,naive_chat_history
+Dublin,gpt-4o-mini,main,False,False,['Dublin'],Dublin,branch-leakage-01-main-isolation,conference-itinerary-1,naive_chat_history
+Dublin,gpt-4o-mini,trip-plan-1,True,False,['Dublin'],Dublin,branch-leakage-01-branch-visible,conference-itinerary-1,naive_chat_history
+Dublin,gpt-4o-mini,trip-plan-1,True,False,['Dublin'],Dublin,branch-leakage-01-branch-source,conference-itinerary-1,naive_chat_history
+Oslo,gpt-4o-mini,main,False,False,['Oslo'],Oslo,branch-leakage-02-main-isolation,conference-itinerary-2,naive_chat_history
+Oslo,gpt-4o-mini,trip-plan-2,True,False,['Oslo'],Oslo,branch-leakage-02-branch-visible,conference-itinerary-2,naive_chat_history
+Oslo,gpt-4o-mini,trip-plan-2,True,False,['Oslo'],Oslo,branch-leakage-02-branch-source,conference-itinerary-2,naive_chat_history
+Prague,gpt-4o-mini,main,False,False,['Prague'],Prague,branch-leakage-03-main-isolation,conference-itinerary-3,naive_chat_history
+Prague,gpt-4o-mini,trip-plan-3,True,False,['Prague'],Prague,branch-leakage-03-branch-visible,conference-itinerary-3,naive_chat_history
+Prague,gpt-4o-mini,trip-plan-3,True,False,['Prague'],Prague,branch-leakage-03-branch-source,conference-itinerary-3,naive_chat_history
+Vienna,gpt-4o-mini,main,False,False,['Vienna'],Vienna,branch-leakage-04-main-isolation,conference-itinerary-4,naive_chat_history
+Vienna,gpt-4o-mini,trip-plan-4,True,False,['Vienna'],Vienna,branch-leakage-04-branch-visible,conference-itinerary-4,naive_chat_history
+Vienna,gpt-4o-mini,trip-plan-4,True,False,['Vienna'],Vienna,branch-leakage-04-branch-source,conference-itinerary-4,naive_chat_history
+Lima,gpt-4o-mini,main,False,False,['Lima'],Lima,branch-leakage-05-main-isolation,conference-itinerary-5,naive_chat_history
+Lima,gpt-4o-mini,trip-plan-5,True,False,['Lima'],Lima,branch-leakage-05-branch-visible,conference-itinerary-5,naive_chat_history
+Lima,gpt-4o-mini,trip-plan-5,True,False,['Lima'],Lima,branch-leakage-05-branch-source,conference-itinerary-5,naive_chat_history
+Quito,gpt-4o-mini,main,False,False,['Quito'],Quito,branch-leakage-06-main-isolation,conference-itinerary-6,naive_chat_history
+Quito,gpt-4o-mini,trip-plan-6,True,False,['Quito'],Quito,branch-leakage-06-branch-visible,conference-itinerary-6,naive_chat_history
+Quito,gpt-4o-mini,trip-plan-6,True,False,['Quito'],Quito,branch-leakage-06-branch-source,conference-itinerary-6,naive_chat_history
+Hanoi,gpt-4o-mini,main,False,False,['Hanoi'],Hanoi,branch-leakage-07-main-isolation,conference-itinerary-7,naive_chat_history
+Hanoi,gpt-4o-mini,trip-plan-7,True,False,['Hanoi'],Hanoi,branch-leakage-07-branch-visible,conference-itinerary-7,naive_chat_history
+Hanoi,gpt-4o-mini,trip-plan-7,True,False,['Hanoi'],Hanoi,branch-leakage-07-branch-source,conference-itinerary-7,naive_chat_history
+Seoul,gpt-4o-mini,main,False,False,['Seoul'],Seoul,branch-leakage-08-main-isolation,conference-itinerary-8,naive_chat_history
+Seoul,gpt-4o-mini,trip-plan-8,True,False,['Seoul'],Seoul,branch-leakage-08-branch-visible,conference-itinerary-8,naive_chat_history
+Seoul,gpt-4o-mini,trip-plan-8,True,False,['Seoul'],Seoul,branch-leakage-08-branch-source,conference-itinerary-8,naive_chat_history
+Busan,gpt-4o-mini,main,False,False,['Busan'],Busan,branch-leakage-09-main-isolation,conference-itinerary-9,naive_chat_history
+Busan,gpt-4o-mini,trip-plan-9,True,False,['Busan'],Busan,branch-leakage-09-branch-visible,conference-itinerary-9,naive_chat_history
+Busan,gpt-4o-mini,trip-plan-9,True,False,['Busan'],Busan,branch-leakage-09-branch-source,conference-itinerary-9,naive_chat_history
+Prague,gpt-4o-mini,main,False,False,"['Madrid', 'Prague']",Prague,rollback-bad-commit-00-recovery,corrupted-admin-import-0,naive_chat_history
+Prague,gpt-4o-mini,main,False,False,"['Madrid', 'Prague']",Prague,rollback-bad-commit-00-history-after-rollback,corrupted-admin-import-0,naive_chat_history
+Vienna,gpt-4o-mini,main,False,False,"['Rome', 'Vienna']",Vienna,rollback-bad-commit-01-recovery,corrupted-admin-import-1,naive_chat_history
+Vienna,gpt-4o-mini,main,False,False,"['Rome', 'Vienna']",Vienna,rollback-bad-commit-01-history-after-rollback,corrupted-admin-import-1,naive_chat_history
+Lima,gpt-4o-mini,main,False,False,"['Berlin', 'Lima']",Lima,rollback-bad-commit-02-recovery,corrupted-admin-import-2,naive_chat_history
+Lima,gpt-4o-mini,main,False,False,"['Berlin', 'Lima']",Lima,rollback-bad-commit-02-history-after-rollback,corrupted-admin-import-2,naive_chat_history
+Quito,gpt-4o-mini,main,False,False,"['Paris', 'Quito']",Quito,rollback-bad-commit-03-recovery,corrupted-admin-import-3,naive_chat_history
+Quito,gpt-4o-mini,main,False,False,"['Paris', 'Quito']",Quito,rollback-bad-commit-03-history-after-rollback,corrupted-admin-import-3,naive_chat_history
+Hanoi,gpt-4o-mini,main,False,False,"['Lisbon', 'Hanoi']",Hanoi,rollback-bad-commit-04-recovery,corrupted-admin-import-4,naive_chat_history
+Seoul,gpt-4o-mini,main,False,False,"['Dublin', 'Seoul']",Seoul,rollback-bad-commit-05-recovery,corrupted-admin-import-5,naive_chat_history
+Busan,gpt-4o-mini,main,False,False,"['Oslo', 'Busan']",Busan,rollback-bad-commit-06-recovery,corrupted-admin-import-6,naive_chat_history
+Tokyo,gpt-4o-mini,main,False,False,"['Prague', 'Tokyo']",Tokyo,rollback-bad-commit-07-recovery,corrupted-admin-import-7,naive_chat_history
+Lab C,gpt-4o-mini,main,True,False,"['Lab A', 'Lab C']",Lab C,merge-conflict-00-merged-current,signed-reorg-plan-0,naive_chat_history
+Lab D,gpt-4o-mini,main,True,False,"['Lab B', 'Lab D']",Lab D,merge-conflict-01-merged-current,signed-reorg-plan-1,naive_chat_history
+Lab E,gpt-4o-mini,main,True,False,"['Lab C', 'Lab E']",Lab E,merge-conflict-02-merged-current,signed-reorg-plan-2,naive_chat_history
+Lab F,gpt-4o-mini,main,True,False,"['Lab D', 'Lab F']",Lab F,merge-conflict-03-merged-current,signed-reorg-plan-3,naive_chat_history
+Lab A,gpt-4o-mini,main,True,False,"['Lab E', 'Lab A']",Lab A,merge-conflict-04-merged-current,signed-reorg-plan-4,naive_chat_history
+Berlin,gpt-4o-mini,main,True,False,"['Busan', 'Berlin']",Berlin,exact-provenance-00-source,signed-registry-0,naive_chat_history
+Paris,gpt-4o-mini,main,True,False,"['Tokyo', 'Paris']",Paris,exact-provenance-01-source,signed-registry-1,naive_chat_history
+Lisbon,gpt-4o-mini,main,True,False,"['Madrid', 'Lisbon']",Lisbon,exact-provenance-02-source,signed-registry-2,naive_chat_history
+Dublin,gpt-4o-mini,main,True,False,"['Rome', 'Dublin']",Dublin,exact-provenance-03-source,signed-registry-3,naive_chat_history
+Oslo,gpt-4o-mini,main,True,False,"['Berlin', 'Oslo']",Oslo,exact-provenance-04-source,signed-registry-4,naive_chat_history
+Dublin,gpt-4o-mini,main,True,False,"['Seoul', 'Rome', 'Dublin']",Dublin,temporal-supersession-00-current,residence-ledger-0-c,simple_rag
+Dublin,gpt-4o-mini,main,False,False,"['Seoul', 'Rome', 'Dublin']",Dublin,temporal-supersession-00-history,residence-ledger-0-c,simple_rag
+Dublin,gpt-4o-mini,main,True,False,"['Seoul', 'Rome', 'Dublin']",Dublin,temporal-supersession-00-provenance,residence-ledger-0-c,simple_rag
+Dublin,gpt-4o-mini,main,False,False,"['Seoul', 'Rome', 'Dublin']",Dublin,temporal-supersession-00-slice-middle,residence-ledger-0-c,simple_rag
+Oslo,gpt-4o-mini,main,True,False,"['Busan', 'Berlin', 'Oslo']",Oslo,temporal-supersession-01-current,residence-ledger-1-c,simple_rag
+Oslo,gpt-4o-mini,main,False,False,"['Busan', 'Berlin', 'Oslo']",Oslo,temporal-supersession-01-history,residence-ledger-1-c,simple_rag
+Oslo,gpt-4o-mini,main,True,False,"['Busan', 'Berlin', 'Oslo']",Oslo,temporal-supersession-01-provenance,residence-ledger-1-c,simple_rag
+Oslo,gpt-4o-mini,main,False,False,"['Busan', 'Berlin', 'Oslo']",Oslo,temporal-supersession-01-slice-middle,residence-ledger-1-c,simple_rag
+Prague,gpt-4o-mini,main,True,False,"['Tokyo', 'Paris', 'Prague']",Prague,temporal-supersession-02-current,residence-ledger-2-c,simple_rag
+Prague,gpt-4o-mini,main,False,False,"['Tokyo', 'Paris', 'Prague']",Prague,temporal-supersession-02-history,residence-ledger-2-c,simple_rag
+Prague,gpt-4o-mini,main,True,False,"['Tokyo', 'Paris', 'Prague']",Prague,temporal-supersession-02-provenance,residence-ledger-2-c,simple_rag
+Prague,gpt-4o-mini,main,False,False,"['Tokyo', 'Paris', 'Prague']",Prague,temporal-supersession-02-slice-middle,residence-ledger-2-c,simple_rag
+Vienna,gpt-4o-mini,main,True,False,"['Madrid', 'Lisbon', 'Vienna']",Vienna,temporal-supersession-03-current,residence-ledger-3-c,simple_rag
+Vienna,gpt-4o-mini,main,False,False,"['Madrid', 'Lisbon', 'Vienna']",Vienna,temporal-supersession-03-history,residence-ledger-3-c,simple_rag
+Vienna,gpt-4o-mini,main,True,False,"['Madrid', 'Lisbon', 'Vienna']",Vienna,temporal-supersession-03-provenance,residence-ledger-3-c,simple_rag
+Vienna,gpt-4o-mini,main,False,False,"['Madrid', 'Lisbon', 'Vienna']",Vienna,temporal-supersession-03-slice-middle,residence-ledger-3-c,simple_rag
+Lima,gpt-4o-mini,main,True,False,"['Rome', 'Dublin', 'Lima']",Lima,temporal-supersession-04-current,residence-ledger-4-c,simple_rag
+Lima,gpt-4o-mini,main,False,False,"['Rome', 'Dublin', 'Lima']",Lima,temporal-supersession-04-history,residence-ledger-4-c,simple_rag
+Lima,gpt-4o-mini,main,True,False,"['Rome', 'Dublin', 'Lima']",Lima,temporal-supersession-04-provenance,residence-ledger-4-c,simple_rag
+Lima,gpt-4o-mini,main,False,False,"['Rome', 'Dublin', 'Lima']",Lima,temporal-supersession-04-slice-middle,residence-ledger-4-c,simple_rag
+Quito,gpt-4o-mini,main,True,False,"['Berlin', 'Oslo', 'Quito']",Quito,temporal-supersession-05-current,residence-ledger-5-c,simple_rag
+Quito,gpt-4o-mini,main,False,False,"['Berlin', 'Oslo', 'Quito']",Quito,temporal-supersession-05-history,residence-ledger-5-c,simple_rag
+Quito,gpt-4o-mini,main,True,False,"['Berlin', 'Oslo', 'Quito']",Quito,temporal-supersession-05-provenance,residence-ledger-5-c,simple_rag
+Quito,gpt-4o-mini,main,False,False,"['Berlin', 'Oslo', 'Quito']",Quito,temporal-supersession-05-slice-middle,residence-ledger-5-c,simple_rag
+Hanoi,gpt-4o-mini,main,True,False,"['Paris', 'Prague', 'Hanoi']",Hanoi,temporal-supersession-06-current,residence-ledger-6-c,simple_rag
+Hanoi,gpt-4o-mini,main,False,False,"['Paris', 'Prague', 'Hanoi']",Hanoi,temporal-supersession-06-history,residence-ledger-6-c,simple_rag
+Hanoi,gpt-4o-mini,main,True,False,"['Paris', 'Prague', 'Hanoi']",Hanoi,temporal-supersession-06-provenance,residence-ledger-6-c,simple_rag
+Seoul,gpt-4o-mini,main,True,False,"['Lisbon', 'Vienna', 'Seoul']",Seoul,temporal-supersession-07-current,residence-ledger-7-c,simple_rag
+Seoul,gpt-4o-mini,main,False,False,"['Lisbon', 'Vienna', 'Seoul']",Seoul,temporal-supersession-07-history,residence-ledger-7-c,simple_rag
+Seoul,gpt-4o-mini,main,True,False,"['Lisbon', 'Vienna', 'Seoul']",Seoul,temporal-supersession-07-provenance,residence-ledger-7-c,simple_rag
+Busan,gpt-4o-mini,main,True,False,"['Dublin', 'Lima', 'Busan']",Busan,temporal-supersession-08-current,residence-ledger-8-c,simple_rag
+Busan,gpt-4o-mini,main,False,False,"['Dublin', 'Lima', 'Busan']",Busan,temporal-supersession-08-history,residence-ledger-8-c,simple_rag
+Busan,gpt-4o-mini,main,True,False,"['Dublin', 'Lima', 'Busan']",Busan,temporal-supersession-08-provenance,residence-ledger-8-c,simple_rag
+Tokyo,gpt-4o-mini,main,True,False,"['Oslo', 'Quito', 'Tokyo']",Tokyo,temporal-supersession-09-current,residence-ledger-9-c,simple_rag
+Tokyo,gpt-4o-mini,main,False,False,"['Oslo', 'Quito', 'Tokyo']",Tokyo,temporal-supersession-09-history,residence-ledger-9-c,simple_rag
+Tokyo,gpt-4o-mini,main,True,False,"['Oslo', 'Quito', 'Tokyo']",Tokyo,temporal-supersession-09-provenance,residence-ledger-9-c,simple_rag
+Madrid,gpt-4o-mini,main,True,False,"['Prague', 'Hanoi', 'Madrid']",Madrid,temporal-supersession-10-current,residence-ledger-10-c,simple_rag
+Madrid,gpt-4o-mini,main,False,False,"['Prague', 'Hanoi', 'Madrid']",Madrid,temporal-supersession-10-history,residence-ledger-10-c,simple_rag
+Madrid,gpt-4o-mini,main,True,False,"['Prague', 'Hanoi', 'Madrid']",Madrid,temporal-supersession-10-provenance,residence-ledger-10-c,simple_rag
+Rome,gpt-4o-mini,main,True,False,"['Vienna', 'Seoul', 'Rome']",Rome,temporal-supersession-11-current,residence-ledger-11-c,simple_rag
+Rome,gpt-4o-mini,main,False,False,"['Vienna', 'Seoul', 'Rome']",Rome,temporal-supersession-11-history,residence-ledger-11-c,simple_rag
+Rome,gpt-4o-mini,main,True,False,"['Vienna', 'Seoul', 'Rome']",Rome,temporal-supersession-11-provenance,residence-ledger-11-c,simple_rag
+Tokyo,gpt-4o-mini,main,True,False,"['Tokyo', 'Atlantis']",Tokyo,poisoning-low-trust-00-current,verified-registry-0,simple_rag
+Tokyo,gpt-4o-mini,main,False,False,"['Tokyo', 'Atlantis']",Tokyo,poisoning-low-trust-00-warning,verified-registry-0,simple_rag
+Madrid,gpt-4o-mini,main,True,False,"['Madrid', 'El Dorado']",Madrid,poisoning-low-trust-01-current,verified-registry-1,simple_rag
+Madrid,gpt-4o-mini,main,False,False,"['Madrid', 'El Dorado']",Madrid,poisoning-low-trust-01-warning,verified-registry-1,simple_rag
+Rome,gpt-4o-mini,main,True,False,"['Rome', 'Gotham']",Rome,poisoning-low-trust-02-current,verified-registry-2,simple_rag
+Rome,gpt-4o-mini,main,False,False,"['Rome', 'Gotham']",Rome,poisoning-low-trust-02-warning,verified-registry-2,simple_rag
+Berlin,gpt-4o-mini,main,True,False,"['Berlin', 'Metropolis']",Berlin,poisoning-low-trust-03-current,verified-registry-3,simple_rag
+Berlin,gpt-4o-mini,main,False,False,"['Berlin', 'Metropolis']",Berlin,poisoning-low-trust-03-warning,verified-registry-3,simple_rag
+Paris,gpt-4o-mini,main,True,False,"['Paris', 'Narnia']",Paris,poisoning-low-trust-04-current,verified-registry-4,simple_rag
+Paris,gpt-4o-mini,main,False,False,"['Paris', 'Narnia']",Paris,poisoning-low-trust-04-warning,verified-registry-4,simple_rag
+Lisbon,gpt-4o-mini,main,True,False,"['Lisbon', 'Atlantis']",Lisbon,poisoning-low-trust-05-current,verified-registry-5,simple_rag
+Lisbon,gpt-4o-mini,main,False,False,"['Lisbon', 'Atlantis']",Lisbon,poisoning-low-trust-05-warning,verified-registry-5,simple_rag
+Dublin,gpt-4o-mini,main,True,False,"['Dublin', 'El Dorado']",Dublin,poisoning-low-trust-06-current,verified-registry-6,simple_rag
+Dublin,gpt-4o-mini,main,False,False,"['Dublin', 'El Dorado']",Dublin,poisoning-low-trust-06-warning,verified-registry-6,simple_rag
+Oslo,gpt-4o-mini,main,True,False,"['Oslo', 'Gotham']",Oslo,poisoning-low-trust-07-current,verified-registry-7,simple_rag
+Oslo,gpt-4o-mini,main,False,False,"['Oslo', 'Gotham']",Oslo,poisoning-low-trust-07-warning,verified-registry-7,simple_rag
+Prague,gpt-4o-mini,main,True,False,"['Prague', 'Metropolis']",Prague,poisoning-low-trust-08-current,verified-registry-8,simple_rag
+Prague,gpt-4o-mini,main,False,False,"['Prague', 'Metropolis']",Prague,poisoning-low-trust-08-warning,verified-registry-8,simple_rag
+Vienna,gpt-4o-mini,main,True,False,"['Vienna', 'Narnia']",Vienna,poisoning-low-trust-09-current,verified-registry-9,simple_rag
+Vienna,gpt-4o-mini,main,False,False,"['Vienna', 'Narnia']",Vienna,poisoning-low-trust-09-warning,verified-registry-9,simple_rag
+Lisbon,gpt-4o-mini,main,False,False,['Lisbon'],Lisbon,branch-leakage-00-main-isolation,conference-itinerary-0,simple_rag
+Lisbon,gpt-4o-mini,trip-plan-0,True,False,['Lisbon'],Lisbon,branch-leakage-00-branch-visible,conference-itinerary-0,simple_rag
+Lisbon,gpt-4o-mini,trip-plan-0,True,False,['Lisbon'],Lisbon,branch-leakage-00-branch-source,conference-itinerary-0,simple_rag
+Dublin,gpt-4o-mini,main,False,False,['Dublin'],Dublin,branch-leakage-01-main-isolation,conference-itinerary-1,simple_rag
+Dublin,gpt-4o-mini,trip-plan-1,True,False,['Dublin'],Dublin,branch-leakage-01-branch-visible,conference-itinerary-1,simple_rag
+Dublin,gpt-4o-mini,trip-plan-1,True,False,['Dublin'],Dublin,branch-leakage-01-branch-source,conference-itinerary-1,simple_rag
+Oslo,gpt-4o-mini,main,False,False,['Oslo'],Oslo,branch-leakage-02-main-isolation,conference-itinerary-2,simple_rag
+Oslo,gpt-4o-mini,trip-plan-2,True,False,['Oslo'],Oslo,branch-leakage-02-branch-visible,conference-itinerary-2,simple_rag
+Oslo,gpt-4o-mini,trip-plan-2,True,False,['Oslo'],Oslo,branch-leakage-02-branch-source,conference-itinerary-2,simple_rag
+Prague,gpt-4o-mini,main,False,False,['Prague'],Prague,branch-leakage-03-main-isolation,conference-itinerary-3,simple_rag
+Prague,gpt-4o-mini,trip-plan-3,True,False,['Prague'],Prague,branch-leakage-03-branch-visible,conference-itinerary-3,simple_rag
+Prague,gpt-4o-mini,trip-plan-3,True,False,['Prague'],Prague,branch-leakage-03-branch-source,conference-itinerary-3,simple_rag
+Vienna,gpt-4o-mini,main,False,False,['Vienna'],Vienna,branch-leakage-04-main-isolation,conference-itinerary-4,simple_rag
+Vienna,gpt-4o-mini,trip-plan-4,True,False,['Vienna'],Vienna,branch-leakage-04-branch-visible,conference-itinerary-4,simple_rag
+Vienna,gpt-4o-mini,trip-plan-4,True,False,['Vienna'],Vienna,branch-leakage-04-branch-source,conference-itinerary-4,simple_rag
+Lima,gpt-4o-mini,main,False,False,['Lima'],Lima,branch-leakage-05-main-isolation,conference-itinerary-5,simple_rag
+Lima,gpt-4o-mini,trip-plan-5,True,False,['Lima'],Lima,branch-leakage-05-branch-visible,conference-itinerary-5,simple_rag
+Lima,gpt-4o-mini,trip-plan-5,True,False,['Lima'],Lima,branch-leakage-05-branch-source,conference-itinerary-5,simple_rag
+Quito,gpt-4o-mini,main,False,False,['Quito'],Quito,branch-leakage-06-main-isolation,conference-itinerary-6,simple_rag
+Quito,gpt-4o-mini,trip-plan-6,True,False,['Quito'],Quito,branch-leakage-06-branch-visible,conference-itinerary-6,simple_rag
+Quito,gpt-4o-mini,trip-plan-6,True,False,['Quito'],Quito,branch-leakage-06-branch-source,conference-itinerary-6,simple_rag
+Hanoi,gpt-4o-mini,main,False,False,['Hanoi'],Hanoi,branch-leakage-07-main-isolation,conference-itinerary-7,simple_rag
+Hanoi,gpt-4o-mini,trip-plan-7,True,False,['Hanoi'],Hanoi,branch-leakage-07-branch-visible,conference-itinerary-7,simple_rag
+Hanoi,gpt-4o-mini,trip-plan-7,True,False,['Hanoi'],Hanoi,branch-leakage-07-branch-source,conference-itinerary-7,simple_rag
+Seoul,gpt-4o-mini,main,False,False,['Seoul'],Seoul,branch-leakage-08-main-isolation,conference-itinerary-8,simple_rag
+Seoul,gpt-4o-mini,trip-plan-8,True,False,['Seoul'],Seoul,branch-leakage-08-branch-visible,conference-itinerary-8,simple_rag
+Seoul,gpt-4o-mini,trip-plan-8,True,False,['Seoul'],Seoul,branch-leakage-08-branch-source,conference-itinerary-8,simple_rag
+Busan,gpt-4o-mini,main,False,False,['Busan'],Busan,branch-leakage-09-main-isolation,conference-itinerary-9,simple_rag
+Busan,gpt-4o-mini,trip-plan-9,True,False,['Busan'],Busan,branch-leakage-09-branch-visible,conference-itinerary-9,simple_rag
+Busan,gpt-4o-mini,trip-plan-9,True,False,['Busan'],Busan,branch-leakage-09-branch-source,conference-itinerary-9,simple_rag
+Prague,gpt-4o-mini,main,False,False,"['Madrid', 'Prague']",Prague,rollback-bad-commit-00-recovery,corrupted-admin-import-0,simple_rag
+Prague,gpt-4o-mini,main,False,False,"['Madrid', 'Prague']",Prague,rollback-bad-commit-00-history-after-rollback,corrupted-admin-import-0,simple_rag
+Vienna,gpt-4o-mini,main,False,False,"['Rome', 'Vienna']",Vienna,rollback-bad-commit-01-recovery,corrupted-admin-import-1,simple_rag
+Vienna,gpt-4o-mini,main,False,False,"['Rome', 'Vienna']",Vienna,rollback-bad-commit-01-history-after-rollback,corrupted-admin-import-1,simple_rag
+Lima,gpt-4o-mini,main,False,False,"['Berlin', 'Lima']",Lima,rollback-bad-commit-02-recovery,corrupted-admin-import-2,simple_rag
+Lima,gpt-4o-mini,main,False,False,"['Berlin', 'Lima']",Lima,rollback-bad-commit-02-history-after-rollback,corrupted-admin-import-2,simple_rag
+Quito,gpt-4o-mini,main,False,False,"['Paris', 'Quito']",Quito,rollback-bad-commit-03-recovery,corrupted-admin-import-3,simple_rag
+Quito,gpt-4o-mini,main,False,False,"['Paris', 'Quito']",Quito,rollback-bad-commit-03-history-after-rollback,corrupted-admin-import-3,simple_rag
+Hanoi,gpt-4o-mini,main,False,False,"['Lisbon', 'Hanoi']",Hanoi,rollback-bad-commit-04-recovery,corrupted-admin-import-4,simple_rag
+Seoul,gpt-4o-mini,main,False,False,"['Dublin', 'Seoul']",Seoul,rollback-bad-commit-05-recovery,corrupted-admin-import-5,simple_rag
+Busan,gpt-4o-mini,main,False,False,"['Oslo', 'Busan']",Busan,rollback-bad-commit-06-recovery,corrupted-admin-import-6,simple_rag
+Tokyo,gpt-4o-mini,main,False,False,"['Prague', 'Tokyo']",Tokyo,rollback-bad-commit-07-recovery,corrupted-admin-import-7,simple_rag
+Lab C,gpt-4o-mini,main,True,False,"['Lab A', 'Lab C']",Lab C,merge-conflict-00-merged-current,signed-reorg-plan-0,simple_rag
+Lab D,gpt-4o-mini,main,True,False,"['Lab B', 'Lab D']",Lab D,merge-conflict-01-merged-current,signed-reorg-plan-1,simple_rag
+Lab E,gpt-4o-mini,main,True,False,"['Lab C', 'Lab E']",Lab E,merge-conflict-02-merged-current,signed-reorg-plan-2,simple_rag
+Lab F,gpt-4o-mini,main,True,False,"['Lab D', 'Lab F']",Lab F,merge-conflict-03-merged-current,signed-reorg-plan-3,simple_rag
+Lab A,gpt-4o-mini,main,True,False,"['Lab E', 'Lab A']",Lab A,merge-conflict-04-merged-current,signed-reorg-plan-4,simple_rag
+Berlin,gpt-4o-mini,main,True,False,"['Busan', 'Berlin']",Berlin,exact-provenance-00-source,signed-registry-0,simple_rag
+Paris,gpt-4o-mini,main,True,False,"['Tokyo', 'Paris']",Paris,exact-provenance-01-source,signed-registry-1,simple_rag
+Lisbon,gpt-4o-mini,main,True,False,"['Madrid', 'Lisbon']",Lisbon,exact-provenance-02-source,signed-registry-2,simple_rag
+Dublin,gpt-4o-mini,main,True,False,"['Rome', 'Dublin']",Dublin,exact-provenance-03-source,signed-registry-3,simple_rag
+Oslo,gpt-4o-mini,main,True,False,"['Berlin', 'Oslo']",Oslo,exact-provenance-04-source,signed-registry-4,simple_rag
+Dublin,gpt-4o-mini,main,True,False,"['Seoul', 'Rome', 'Dublin']",Dublin,temporal-supersession-00-current,residence-ledger-0-c,embedding_rag
+Dublin,gpt-4o-mini,main,False,False,"['Seoul', 'Rome', 'Dublin']",Dublin,temporal-supersession-00-history,residence-ledger-0-c,embedding_rag
+Dublin,gpt-4o-mini,main,True,False,"['Seoul', 'Rome', 'Dublin']",Dublin,temporal-supersession-00-provenance,residence-ledger-0-c,embedding_rag
+Dublin,gpt-4o-mini,main,False,False,"['Rome', 'Seoul', 'Dublin']",Dublin,temporal-supersession-00-slice-middle,residence-ledger-0-c,embedding_rag
+Oslo,gpt-4o-mini,main,True,False,"['Busan', 'Berlin', 'Oslo']",Oslo,temporal-supersession-01-current,residence-ledger-1-c,embedding_rag
+Oslo,gpt-4o-mini,main,False,False,"['Busan', 'Berlin', 'Oslo']",Oslo,temporal-supersession-01-history,residence-ledger-1-c,embedding_rag
+Oslo,gpt-4o-mini,main,True,False,"['Busan', 'Berlin', 'Oslo']",Oslo,temporal-supersession-01-provenance,residence-ledger-1-c,embedding_rag
+Oslo,gpt-4o-mini,main,False,False,"['Berlin', 'Busan', 'Oslo']",Oslo,temporal-supersession-01-slice-middle,residence-ledger-1-c,embedding_rag
+Prague,gpt-4o-mini,main,True,False,"['Paris', 'Prague', 'Tokyo']",Prague,temporal-supersession-02-current,residence-ledger-2-c,embedding_rag
+Prague,gpt-4o-mini,main,False,False,"['Paris', 'Prague', 'Tokyo']",Prague,temporal-supersession-02-history,residence-ledger-2-c,embedding_rag
+Prague,gpt-4o-mini,main,True,False,"['Paris', 'Prague', 'Tokyo']",Prague,temporal-supersession-02-provenance,residence-ledger-2-c,embedding_rag
+Prague,gpt-4o-mini,main,False,False,"['Paris', 'Prague', 'Tokyo']",Prague,temporal-supersession-02-slice-middle,residence-ledger-2-c,embedding_rag
+Vienna,gpt-4o-mini,main,True,False,"['Madrid', 'Lisbon', 'Vienna']",Vienna,temporal-supersession-03-current,residence-ledger-3-c,embedding_rag
+Vienna,gpt-4o-mini,main,False,False,"['Madrid', 'Lisbon', 'Vienna']",Vienna,temporal-supersession-03-history,residence-ledger-3-c,embedding_rag
+Vienna,gpt-4o-mini,main,True,False,"['Lisbon', 'Madrid', 'Vienna']",Vienna,temporal-supersession-03-provenance,residence-ledger-3-c,embedding_rag
+Vienna,gpt-4o-mini,main,False,False,"['Lisbon', 'Madrid', 'Vienna']",Vienna,temporal-supersession-03-slice-middle,residence-ledger-3-c,embedding_rag
+Lima,gpt-4o-mini,main,True,False,"['Dublin', 'Rome', 'Lima']",Lima,temporal-supersession-04-current,residence-ledger-4-c,embedding_rag
+Lima,gpt-4o-mini,main,False,False,"['Dublin', 'Rome', 'Lima']",Lima,temporal-supersession-04-history,residence-ledger-4-c,embedding_rag
+Lima,gpt-4o-mini,main,True,False,"['Dublin', 'Rome', 'Lima']",Lima,temporal-supersession-04-provenance,residence-ledger-4-c,embedding_rag
+Lima,gpt-4o-mini,main,False,False,"['Dublin', 'Rome', 'Lima']",Lima,temporal-supersession-04-slice-middle,residence-ledger-4-c,embedding_rag
+Quito,gpt-4o-mini,main,True,False,"['Oslo', 'Berlin', 'Quito']",Quito,temporal-supersession-05-current,residence-ledger-5-c,embedding_rag
+Quito,gpt-4o-mini,main,False,False,"['Oslo', 'Berlin', 'Quito']",Quito,temporal-supersession-05-history,residence-ledger-5-c,embedding_rag
+Quito,gpt-4o-mini,main,True,False,"['Oslo', 'Berlin', 'Quito']",Quito,temporal-supersession-05-provenance,residence-ledger-5-c,embedding_rag
+Quito,gpt-4o-mini,main,False,False,"['Oslo', 'Berlin', 'Quito']",Quito,temporal-supersession-05-slice-middle,residence-ledger-5-c,embedding_rag
+Hanoi,gpt-4o-mini,main,True,False,"['Prague', 'Paris', 'Hanoi']",Hanoi,temporal-supersession-06-current,residence-ledger-6-c,embedding_rag
+Hanoi,gpt-4o-mini,main,False,False,"['Prague', 'Paris', 'Hanoi']",Hanoi,temporal-supersession-06-history,residence-ledger-6-c,embedding_rag
+Hanoi,gpt-4o-mini,main,True,False,"['Prague', 'Paris', 'Hanoi']",Hanoi,temporal-supersession-06-provenance,residence-ledger-6-c,embedding_rag
+Seoul,gpt-4o-mini,main,True,False,"['Vienna', 'Lisbon', 'Seoul']",Seoul,temporal-supersession-07-current,residence-ledger-7-c,embedding_rag
+Seoul,gpt-4o-mini,main,False,False,"['Vienna', 'Lisbon', 'Seoul']",Seoul,temporal-supersession-07-history,residence-ledger-7-c,embedding_rag
+Seoul,gpt-4o-mini,main,True,False,"['Vienna', 'Lisbon', 'Seoul']",Seoul,temporal-supersession-07-provenance,residence-ledger-7-c,embedding_rag
+Busan,gpt-4o-mini,main,True,False,"['Dublin', 'Lima', 'Busan']",Busan,temporal-supersession-08-current,residence-ledger-8-c,embedding_rag
+Busan,gpt-4o-mini,main,False,False,"['Dublin', 'Lima', 'Busan']",Busan,temporal-supersession-08-history,residence-ledger-8-c,embedding_rag
+Busan,gpt-4o-mini,main,True,False,"['Dublin', 'Lima', 'Busan']",Busan,temporal-supersession-08-provenance,residence-ledger-8-c,embedding_rag
+Tokyo,gpt-4o-mini,main,True,False,"['Oslo', 'Quito', 'Tokyo']",Tokyo,temporal-supersession-09-current,residence-ledger-9-c,embedding_rag
+Tokyo,gpt-4o-mini,main,False,False,"['Oslo', 'Quito', 'Tokyo']",Tokyo,temporal-supersession-09-history,residence-ledger-9-c,embedding_rag
+Tokyo,gpt-4o-mini,main,True,False,"['Oslo', 'Quito', 'Tokyo']",Tokyo,temporal-supersession-09-provenance,residence-ledger-9-c,embedding_rag
+Madrid,gpt-4o-mini,main,True,False,"['Prague', 'Hanoi', 'Madrid']",Madrid,temporal-supersession-10-current,residence-ledger-10-c,embedding_rag
+Madrid,gpt-4o-mini,main,False,False,"['Prague', 'Hanoi', 'Madrid']",Madrid,temporal-supersession-10-history,residence-ledger-10-c,embedding_rag
+Madrid,gpt-4o-mini,main,True,False,"['Prague', 'Hanoi', 'Madrid']",Madrid,temporal-supersession-10-provenance,residence-ledger-10-c,embedding_rag
+Rome,gpt-4o-mini,main,True,False,"['Seoul', 'Vienna', 'Rome']",Rome,temporal-supersession-11-current,residence-ledger-11-c,embedding_rag
+Rome,gpt-4o-mini,main,False,False,"['Seoul', 'Vienna', 'Rome']",Rome,temporal-supersession-11-history,residence-ledger-11-c,embedding_rag
+Rome,gpt-4o-mini,main,True,False,"['Seoul', 'Vienna', 'Rome']",Rome,temporal-supersession-11-provenance,residence-ledger-11-c,embedding_rag
+Tokyo,gpt-4o-mini,main,True,False,"['Atlantis', 'Tokyo']",Tokyo,poisoning-low-trust-00-current,verified-registry-0,embedding_rag
+Tokyo,gpt-4o-mini,main,False,False,"['Tokyo', 'Atlantis']",Tokyo,poisoning-low-trust-00-warning,verified-registry-0,embedding_rag
+Madrid,gpt-4o-mini,main,True,False,"['El Dorado', 'Madrid']",Madrid,poisoning-low-trust-01-current,verified-registry-1,embedding_rag
+Madrid,gpt-4o-mini,main,False,False,"['Madrid', 'El Dorado']",Madrid,poisoning-low-trust-01-warning,verified-registry-1,embedding_rag
+Rome,gpt-4o-mini,main,True,False,"['Gotham', 'Rome']",Rome,poisoning-low-trust-02-current,verified-registry-2,embedding_rag
+Rome,gpt-4o-mini,main,False,False,"['Rome', 'Gotham']",Rome,poisoning-low-trust-02-warning,verified-registry-2,embedding_rag
+Berlin,gpt-4o-mini,main,True,False,"['Metropolis', 'Berlin']",Berlin,poisoning-low-trust-03-current,verified-registry-3,embedding_rag
+Berlin,gpt-4o-mini,main,False,False,"['Berlin', 'Metropolis']",Berlin,poisoning-low-trust-03-warning,verified-registry-3,embedding_rag
+Paris,gpt-4o-mini,main,True,False,"['Narnia', 'Paris']",Paris,poisoning-low-trust-04-current,verified-registry-4,embedding_rag
+Paris,gpt-4o-mini,main,False,False,"['Paris', 'Narnia']",Paris,poisoning-low-trust-04-warning,verified-registry-4,embedding_rag
+Lisbon,gpt-4o-mini,main,True,False,"['Atlantis', 'Lisbon']",Lisbon,poisoning-low-trust-05-current,verified-registry-5,embedding_rag
+Lisbon,gpt-4o-mini,main,False,False,"['Atlantis', 'Lisbon']",Lisbon,poisoning-low-trust-05-warning,verified-registry-5,embedding_rag
+Dublin,gpt-4o-mini,main,True,False,"['El Dorado', 'Dublin']",Dublin,poisoning-low-trust-06-current,verified-registry-6,embedding_rag
+Dublin,gpt-4o-mini,main,False,False,"['Dublin', 'El Dorado']",Dublin,poisoning-low-trust-06-warning,verified-registry-6,embedding_rag
+Oslo,gpt-4o-mini,main,True,False,"['Gotham', 'Oslo']",Oslo,poisoning-low-trust-07-current,verified-registry-7,embedding_rag
+Oslo,gpt-4o-mini,main,False,False,"['Oslo', 'Gotham']",Oslo,poisoning-low-trust-07-warning,verified-registry-7,embedding_rag
+Prague,gpt-4o-mini,main,True,False,"['Metropolis', 'Prague']",Prague,poisoning-low-trust-08-current,verified-registry-8,embedding_rag
+Prague,gpt-4o-mini,main,False,False,"['Prague', 'Metropolis']",Prague,poisoning-low-trust-08-warning,verified-registry-8,embedding_rag
+Vienna,gpt-4o-mini,main,True,False,"['Narnia', 'Vienna']",Vienna,poisoning-low-trust-09-current,verified-registry-9,embedding_rag
+Vienna,gpt-4o-mini,main,False,False,"['Vienna', 'Narnia']",Vienna,poisoning-low-trust-09-warning,verified-registry-9,embedding_rag
+Lisbon,gpt-4o-mini,main,False,False,['Lisbon'],Lisbon,branch-leakage-00-main-isolation,conference-itinerary-0,embedding_rag
+Lisbon,gpt-4o-mini,trip-plan-0,True,False,['Lisbon'],Lisbon,branch-leakage-00-branch-visible,conference-itinerary-0,embedding_rag
+Lisbon,gpt-4o-mini,trip-plan-0,True,False,['Lisbon'],Lisbon,branch-leakage-00-branch-source,conference-itinerary-0,embedding_rag
+Dublin,gpt-4o-mini,main,False,False,['Dublin'],Dublin,branch-leakage-01-main-isolation,conference-itinerary-1,embedding_rag
+Dublin,gpt-4o-mini,trip-plan-1,True,False,['Dublin'],Dublin,branch-leakage-01-branch-visible,conference-itinerary-1,embedding_rag
+Dublin,gpt-4o-mini,trip-plan-1,True,False,['Dublin'],Dublin,branch-leakage-01-branch-source,conference-itinerary-1,embedding_rag
+Oslo,gpt-4o-mini,main,False,False,['Oslo'],Oslo,branch-leakage-02-main-isolation,conference-itinerary-2,embedding_rag
+Oslo,gpt-4o-mini,trip-plan-2,True,False,['Oslo'],Oslo,branch-leakage-02-branch-visible,conference-itinerary-2,embedding_rag
+Oslo,gpt-4o-mini,trip-plan-2,True,False,['Oslo'],Oslo,branch-leakage-02-branch-source,conference-itinerary-2,embedding_rag
+Prague,gpt-4o-mini,main,False,False,['Prague'],Prague,branch-leakage-03-main-isolation,conference-itinerary-3,embedding_rag
+Prague,gpt-4o-mini,trip-plan-3,True,False,['Prague'],Prague,branch-leakage-03-branch-visible,conference-itinerary-3,embedding_rag
+Prague,gpt-4o-mini,trip-plan-3,True,False,['Prague'],Prague,branch-leakage-03-branch-source,conference-itinerary-3,embedding_rag
+Vienna,gpt-4o-mini,main,False,False,['Vienna'],Vienna,branch-leakage-04-main-isolation,conference-itinerary-4,embedding_rag
+Vienna,gpt-4o-mini,trip-plan-4,True,False,['Vienna'],Vienna,branch-leakage-04-branch-visible,conference-itinerary-4,embedding_rag
+Vienna,gpt-4o-mini,trip-plan-4,True,False,['Vienna'],Vienna,branch-leakage-04-branch-source,conference-itinerary-4,embedding_rag
+Lima,gpt-4o-mini,main,False,False,['Lima'],Lima,branch-leakage-05-main-isolation,conference-itinerary-5,embedding_rag
+Lima,gpt-4o-mini,trip-plan-5,True,False,['Lima'],Lima,branch-leakage-05-branch-visible,conference-itinerary-5,embedding_rag
+Lima,gpt-4o-mini,trip-plan-5,True,False,['Lima'],Lima,branch-leakage-05-branch-source,conference-itinerary-5,embedding_rag
+Quito,gpt-4o-mini,main,False,False,['Quito'],Quito,branch-leakage-06-main-isolation,conference-itinerary-6,embedding_rag
+Quito,gpt-4o-mini,trip-plan-6,True,False,['Quito'],Quito,branch-leakage-06-branch-visible,conference-itinerary-6,embedding_rag
+Quito,gpt-4o-mini,trip-plan-6,True,False,['Quito'],Quito,branch-leakage-06-branch-source,conference-itinerary-6,embedding_rag
+Hanoi,gpt-4o-mini,main,False,False,['Hanoi'],Hanoi,branch-leakage-07-main-isolation,conference-itinerary-7,embedding_rag
+Hanoi,gpt-4o-mini,trip-plan-7,True,False,['Hanoi'],Hanoi,branch-leakage-07-branch-visible,conference-itinerary-7,embedding_rag
+Hanoi,gpt-4o-mini,trip-plan-7,True,False,['Hanoi'],Hanoi,branch-leakage-07-branch-source,conference-itinerary-7,embedding_rag
+Seoul,gpt-4o-mini,main,False,False,['Seoul'],Seoul,branch-leakage-08-main-isolation,conference-itinerary-8,embedding_rag
+Seoul,gpt-4o-mini,trip-plan-8,True,False,['Seoul'],Seoul,branch-leakage-08-branch-visible,conference-itinerary-8,embedding_rag
+Seoul,gpt-4o-mini,trip-plan-8,True,False,['Seoul'],Seoul,branch-leakage-08-branch-source,conference-itinerary-8,embedding_rag
+Busan,gpt-4o-mini,main,False,False,['Busan'],Busan,branch-leakage-09-main-isolation,conference-itinerary-9,embedding_rag
+Busan,gpt-4o-mini,trip-plan-9,True,False,['Busan'],Busan,branch-leakage-09-branch-visible,conference-itinerary-9,embedding_rag
+Busan,gpt-4o-mini,trip-plan-9,True,False,['Busan'],Busan,branch-leakage-09-branch-source,conference-itinerary-9,embedding_rag
+Prague,gpt-4o-mini,main,False,False,"['Madrid', 'Prague']",Prague,rollback-bad-commit-00-recovery,corrupted-admin-import-0,embedding_rag
+Prague,gpt-4o-mini,main,False,False,"['Madrid', 'Prague']",Prague,rollback-bad-commit-00-history-after-rollback,corrupted-admin-import-0,embedding_rag
+Vienna,gpt-4o-mini,main,False,False,"['Rome', 'Vienna']",Vienna,rollback-bad-commit-01-recovery,corrupted-admin-import-1,embedding_rag
+Vienna,gpt-4o-mini,main,False,False,"['Rome', 'Vienna']",Vienna,rollback-bad-commit-01-history-after-rollback,corrupted-admin-import-1,embedding_rag
+Lima,gpt-4o-mini,main,False,False,"['Berlin', 'Lima']",Lima,rollback-bad-commit-02-recovery,corrupted-admin-import-2,embedding_rag
+Lima,gpt-4o-mini,main,False,False,"['Berlin', 'Lima']",Lima,rollback-bad-commit-02-history-after-rollback,corrupted-admin-import-2,embedding_rag
+Quito,gpt-4o-mini,main,False,False,"['Paris', 'Quito']",Quito,rollback-bad-commit-03-recovery,corrupted-admin-import-3,embedding_rag
+Quito,gpt-4o-mini,main,False,False,"['Paris', 'Quito']",Quito,rollback-bad-commit-03-history-after-rollback,corrupted-admin-import-3,embedding_rag
+Hanoi,gpt-4o-mini,main,False,False,"['Lisbon', 'Hanoi']",Hanoi,rollback-bad-commit-04-recovery,corrupted-admin-import-4,embedding_rag
+Seoul,gpt-4o-mini,main,False,False,"['Dublin', 'Seoul']",Seoul,rollback-bad-commit-05-recovery,corrupted-admin-import-5,embedding_rag
+Busan,gpt-4o-mini,main,False,False,"['Oslo', 'Busan']",Busan,rollback-bad-commit-06-recovery,corrupted-admin-import-6,embedding_rag
+Tokyo,gpt-4o-mini,main,False,False,"['Prague', 'Tokyo']",Tokyo,rollback-bad-commit-07-recovery,corrupted-admin-import-7,embedding_rag
+Lab C,gpt-4o-mini,main,True,False,"['Lab C', 'Lab A']",Lab C,merge-conflict-00-merged-current,signed-reorg-plan-0,embedding_rag
+Lab D,gpt-4o-mini,main,True,False,"['Lab D', 'Lab B']",Lab D,merge-conflict-01-merged-current,signed-reorg-plan-1,embedding_rag
+Lab E,gpt-4o-mini,main,True,False,"['Lab E', 'Lab C']",Lab E,merge-conflict-02-merged-current,signed-reorg-plan-2,embedding_rag
+Lab F,gpt-4o-mini,main,True,False,"['Lab F', 'Lab D']",Lab F,merge-conflict-03-merged-current,signed-reorg-plan-3,embedding_rag
+Lab A,gpt-4o-mini,main,True,False,"['Lab A', 'Lab E']",Lab A,merge-conflict-04-merged-current,signed-reorg-plan-4,embedding_rag
+Berlin,gpt-4o-mini,main,True,False,"['Busan', 'Berlin']",Berlin,exact-provenance-00-source,signed-registry-0,embedding_rag
+Paris,gpt-4o-mini,main,True,False,"['Tokyo', 'Paris']",Paris,exact-provenance-01-source,signed-registry-1,embedding_rag
+Lisbon,gpt-4o-mini,main,True,False,"['Madrid', 'Lisbon']",Lisbon,exact-provenance-02-source,signed-registry-2,embedding_rag
+Dublin,gpt-4o-mini,main,True,False,"['Rome', 'Dublin']",Dublin,exact-provenance-03-source,signed-registry-3,embedding_rag
+Oslo,gpt-4o-mini,main,True,False,"['Berlin', 'Oslo']",Oslo,exact-provenance-04-source,signed-registry-4,embedding_rag
+Dublin,gpt-4o-mini,main,True,False,"['Seoul', 'Rome', 'Dublin']",Dublin,temporal-supersession-00-current,residence-ledger-0-c,truthgit
+Dublin,gpt-4o-mini,main,False,False,"['Seoul', 'Rome', 'Dublin']",Dublin,temporal-supersession-00-history,residence-ledger-0-c,truthgit
+Dublin,gpt-4o-mini,main,True,False,"['Seoul', 'Rome', 'Dublin']",Dublin,temporal-supersession-00-provenance,residence-ledger-0-c,truthgit
+Rome,gpt-4o-mini,main,True,False,"['Seoul', 'Rome', 'Dublin']",Rome,temporal-supersession-00-slice-middle,residence-ledger-0-b,truthgit
+Oslo,gpt-4o-mini,main,True,False,"['Busan', 'Berlin', 'Oslo']",Oslo,temporal-supersession-01-current,residence-ledger-1-c,truthgit
+Oslo,gpt-4o-mini,main,False,False,"['Busan', 'Berlin', 'Oslo']",Oslo,temporal-supersession-01-history,residence-ledger-1-c,truthgit
+Oslo,gpt-4o-mini,main,True,False,"['Busan', 'Berlin', 'Oslo']",Oslo,temporal-supersession-01-provenance,residence-ledger-1-c,truthgit
+Berlin,gpt-4o-mini,main,True,False,"['Busan', 'Berlin', 'Oslo']",Berlin,temporal-supersession-01-slice-middle,residence-ledger-1-b,truthgit
+Prague,gpt-4o-mini,main,True,False,"['Tokyo', 'Paris', 'Prague']",Prague,temporal-supersession-02-current,residence-ledger-2-c,truthgit
+Prague,gpt-4o-mini,main,False,False,"['Tokyo', 'Paris', 'Prague']",Prague,temporal-supersession-02-history,residence-ledger-2-c,truthgit
+Prague,gpt-4o-mini,main,True,False,"['Tokyo', 'Paris', 'Prague']",Prague,temporal-supersession-02-provenance,residence-ledger-2-c,truthgit
+Paris,gpt-4o-mini,main,True,False,"['Tokyo', 'Paris', 'Prague']",Paris,temporal-supersession-02-slice-middle,residence-ledger-2-b,truthgit
+Vienna,gpt-4o-mini,main,True,False,"['Madrid', 'Lisbon', 'Vienna']",Vienna,temporal-supersession-03-current,residence-ledger-3-c,truthgit
+Vienna,gpt-4o-mini,main,False,False,"['Madrid', 'Lisbon', 'Vienna']",Vienna,temporal-supersession-03-history,residence-ledger-3-c,truthgit
+Vienna,gpt-4o-mini,main,True,False,"['Madrid', 'Lisbon', 'Vienna']",Vienna,temporal-supersession-03-provenance,residence-ledger-3-c,truthgit
+Lisbon,gpt-4o-mini,main,True,False,"['Madrid', 'Lisbon', 'Vienna']",Lisbon,temporal-supersession-03-slice-middle,residence-ledger-3-b,truthgit
+Lima,gpt-4o-mini,main,True,False,"['Rome', 'Dublin', 'Lima']",Lima,temporal-supersession-04-current,residence-ledger-4-c,truthgit
+Lima,gpt-4o-mini,main,False,False,"['Rome', 'Dublin', 'Lima']",Lima,temporal-supersession-04-history,residence-ledger-4-c,truthgit
+Lima,gpt-4o-mini,main,True,False,"['Rome', 'Dublin', 'Lima']",Lima,temporal-supersession-04-provenance,residence-ledger-4-c,truthgit
+Dublin,gpt-4o-mini,main,True,False,"['Rome', 'Dublin', 'Lima']",Dublin,temporal-supersession-04-slice-middle,residence-ledger-4-b,truthgit
+Quito,gpt-4o-mini,main,True,False,"['Berlin', 'Oslo', 'Quito']",Quito,temporal-supersession-05-current,residence-ledger-5-c,truthgit
+Quito,gpt-4o-mini,main,False,False,"['Berlin', 'Oslo', 'Quito']",Quito,temporal-supersession-05-history,residence-ledger-5-c,truthgit
+Quito,gpt-4o-mini,main,True,False,"['Berlin', 'Oslo', 'Quito']",Quito,temporal-supersession-05-provenance,residence-ledger-5-c,truthgit
+Oslo,gpt-4o-mini,main,True,False,"['Berlin', 'Oslo', 'Quito']",Oslo,temporal-supersession-05-slice-middle,residence-ledger-5-b,truthgit
+Hanoi,gpt-4o-mini,main,True,False,"['Paris', 'Prague', 'Hanoi']",Hanoi,temporal-supersession-06-current,residence-ledger-6-c,truthgit
+Hanoi,gpt-4o-mini,main,False,False,"['Paris', 'Prague', 'Hanoi']",Hanoi,temporal-supersession-06-history,residence-ledger-6-c,truthgit
+Hanoi,gpt-4o-mini,main,True,False,"['Paris', 'Prague', 'Hanoi']",Hanoi,temporal-supersession-06-provenance,residence-ledger-6-c,truthgit
+Seoul,gpt-4o-mini,main,True,False,"['Lisbon', 'Vienna', 'Seoul']",Seoul,temporal-supersession-07-current,residence-ledger-7-c,truthgit
+Seoul,gpt-4o-mini,main,False,False,"['Lisbon', 'Vienna', 'Seoul']",Seoul,temporal-supersession-07-history,residence-ledger-7-c,truthgit
+Seoul,gpt-4o-mini,main,True,False,"['Lisbon', 'Vienna', 'Seoul']",Seoul,temporal-supersession-07-provenance,residence-ledger-7-c,truthgit
+Busan,gpt-4o-mini,main,True,False,"['Dublin', 'Lima', 'Busan']",Busan,temporal-supersession-08-current,residence-ledger-8-c,truthgit
+Busan,gpt-4o-mini,main,False,False,"['Dublin', 'Lima', 'Busan']",Busan,temporal-supersession-08-history,residence-ledger-8-c,truthgit
+Busan,gpt-4o-mini,main,True,False,"['Dublin', 'Lima', 'Busan']",Busan,temporal-supersession-08-provenance,residence-ledger-8-c,truthgit
+Tokyo,gpt-4o-mini,main,True,False,"['Oslo', 'Quito', 'Tokyo']",Tokyo,temporal-supersession-09-current,residence-ledger-9-c,truthgit
+Tokyo,gpt-4o-mini,main,False,False,"['Oslo', 'Quito', 'Tokyo']",Tokyo,temporal-supersession-09-history,residence-ledger-9-c,truthgit
+Tokyo,gpt-4o-mini,main,True,False,"['Oslo', 'Quito', 'Tokyo']",Tokyo,temporal-supersession-09-provenance,residence-ledger-9-c,truthgit
+Madrid,gpt-4o-mini,main,True,False,"['Prague', 'Hanoi', 'Madrid']",Madrid,temporal-supersession-10-current,residence-ledger-10-c,truthgit
+Madrid,gpt-4o-mini,main,False,False,"['Prague', 'Hanoi', 'Madrid']",Madrid,temporal-supersession-10-history,residence-ledger-10-c,truthgit
+Madrid,gpt-4o-mini,main,True,False,"['Prague', 'Hanoi', 'Madrid']",Madrid,temporal-supersession-10-provenance,residence-ledger-10-c,truthgit
+Rome,gpt-4o-mini,main,True,False,"['Vienna', 'Seoul', 'Rome']",Rome,temporal-supersession-11-current,residence-ledger-11-c,truthgit
+Rome,gpt-4o-mini,main,False,False,"['Vienna', 'Seoul', 'Rome']",Rome,temporal-supersession-11-history,residence-ledger-11-c,truthgit
+Rome,gpt-4o-mini,main,True,False,"['Vienna', 'Seoul', 'Rome']",Rome,temporal-supersession-11-provenance,residence-ledger-11-c,truthgit
+Tokyo,gpt-4o-mini,main,True,False,"['Tokyo', 'Atlantis']",Tokyo,poisoning-low-trust-00-current,verified-registry-0,truthgit
+Tokyo,gpt-4o-mini,main,False,True,"['Tokyo', 'Atlantis']",Tokyo,poisoning-low-trust-00-warning,verified-registry-0,truthgit
+Madrid,gpt-4o-mini,main,True,False,"['Madrid', 'El Dorado']",Madrid,poisoning-low-trust-01-current,verified-registry-1,truthgit
+Madrid,gpt-4o-mini,main,False,True,"['Madrid', 'El Dorado']",Madrid,poisoning-low-trust-01-warning,verified-registry-1,truthgit
+Rome,gpt-4o-mini,main,True,False,"['Rome', 'Gotham']",Rome,poisoning-low-trust-02-current,verified-registry-2,truthgit
+Rome,gpt-4o-mini,main,False,True,"['Rome', 'Gotham']",Rome,poisoning-low-trust-02-warning,verified-registry-2,truthgit
+Berlin,gpt-4o-mini,main,True,False,"['Berlin', 'Metropolis']",Berlin,poisoning-low-trust-03-current,verified-registry-3,truthgit
+Berlin,gpt-4o-mini,main,False,True,"['Berlin', 'Metropolis']",Berlin,poisoning-low-trust-03-warning,verified-registry-3,truthgit
+Paris,gpt-4o-mini,main,True,False,"['Paris', 'Narnia']",Paris,poisoning-low-trust-04-current,verified-registry-4,truthgit
+Paris,gpt-4o-mini,main,False,True,"['Paris', 'Narnia']",Paris,poisoning-low-trust-04-warning,verified-registry-4,truthgit
+Lisbon,gpt-4o-mini,main,True,False,"['Lisbon', 'Atlantis']",Lisbon,poisoning-low-trust-05-current,verified-registry-5,truthgit
+Lisbon,gpt-4o-mini,main,False,True,"['Lisbon', 'Atlantis']",Lisbon,poisoning-low-trust-05-warning,verified-registry-5,truthgit
+Dublin,gpt-4o-mini,main,True,False,"['Dublin', 'El Dorado']",Dublin,poisoning-low-trust-06-current,verified-registry-6,truthgit
+Dublin,gpt-4o-mini,main,False,True,"['Dublin', 'El Dorado']",Dublin,poisoning-low-trust-06-warning,verified-registry-6,truthgit
+Oslo,gpt-4o-mini,main,True,False,"['Oslo', 'Gotham']",Oslo,poisoning-low-trust-07-current,verified-registry-7,truthgit
+Oslo,gpt-4o-mini,main,False,True,"['Oslo', 'Gotham']",Oslo,poisoning-low-trust-07-warning,verified-registry-7,truthgit
+Prague,gpt-4o-mini,main,True,False,"['Prague', 'Metropolis']",Prague,poisoning-low-trust-08-current,verified-registry-8,truthgit
+Prague,gpt-4o-mini,main,False,True,"['Prague', 'Metropolis']",Prague,poisoning-low-trust-08-warning,verified-registry-8,truthgit
+Vienna,gpt-4o-mini,main,True,False,"['Vienna', 'Narnia']",Vienna,poisoning-low-trust-09-current,verified-registry-9,truthgit
+Vienna,gpt-4o-mini,main,False,True,"['Vienna', 'Narnia']",Vienna,poisoning-low-trust-09-warning,verified-registry-9,truthgit
+unknown,gpt-4o-mini,main,False,False,['Lisbon'],,branch-leakage-00-main-isolation,,truthgit
+Lisbon,gpt-4o-mini,trip-plan-0,True,False,['Lisbon'],Lisbon,branch-leakage-00-branch-visible,conference-itinerary-0,truthgit
+Lisbon,gpt-4o-mini,trip-plan-0,True,False,['Lisbon'],Lisbon,branch-leakage-00-branch-source,conference-itinerary-0,truthgit
+unknown,gpt-4o-mini,main,False,False,['Dublin'],,branch-leakage-01-main-isolation,,truthgit
+Dublin,gpt-4o-mini,trip-plan-1,True,False,['Dublin'],Dublin,branch-leakage-01-branch-visible,conference-itinerary-1,truthgit
+Dublin,gpt-4o-mini,trip-plan-1,True,False,['Dublin'],Dublin,branch-leakage-01-branch-source,conference-itinerary-1,truthgit
+unknown,gpt-4o-mini,main,False,False,['Oslo'],,branch-leakage-02-main-isolation,,truthgit
+Oslo,gpt-4o-mini,trip-plan-2,True,False,['Oslo'],Oslo,branch-leakage-02-branch-visible,conference-itinerary-2,truthgit
+Oslo,gpt-4o-mini,trip-plan-2,True,False,['Oslo'],Oslo,branch-leakage-02-branch-source,conference-itinerary-2,truthgit
+unknown,gpt-4o-mini,main,False,False,['Prague'],,branch-leakage-03-main-isolation,,truthgit
+Prague,gpt-4o-mini,trip-plan-3,True,False,['Prague'],Prague,branch-leakage-03-branch-visible,conference-itinerary-3,truthgit
+Prague,gpt-4o-mini,trip-plan-3,True,False,['Prague'],Prague,branch-leakage-03-branch-source,conference-itinerary-3,truthgit
+unknown,gpt-4o-mini,main,False,False,['Vienna'],,branch-leakage-04-main-isolation,,truthgit
+Vienna,gpt-4o-mini,trip-plan-4,True,False,['Vienna'],Vienna,branch-leakage-04-branch-visible,conference-itinerary-4,truthgit
+Vienna,gpt-4o-mini,trip-plan-4,True,False,['Vienna'],Vienna,branch-leakage-04-branch-source,conference-itinerary-4,truthgit
+unknown,gpt-4o-mini,main,False,False,['Lima'],,branch-leakage-05-main-isolation,,truthgit
+Lima,gpt-4o-mini,trip-plan-5,True,False,['Lima'],Lima,branch-leakage-05-branch-visible,conference-itinerary-5,truthgit
+Lima,gpt-4o-mini,trip-plan-5,True,False,['Lima'],Lima,branch-leakage-05-branch-source,conference-itinerary-5,truthgit
+unknown,gpt-4o-mini,main,False,False,['Quito'],,branch-leakage-06-main-isolation,,truthgit
+Quito,gpt-4o-mini,trip-plan-6,True,False,['Quito'],Quito,branch-leakage-06-branch-visible,conference-itinerary-6,truthgit
+Quito,gpt-4o-mini,trip-plan-6,True,False,['Quito'],Quito,branch-leakage-06-branch-source,conference-itinerary-6,truthgit
+unknown,gpt-4o-mini,main,False,False,['Hanoi'],,branch-leakage-07-main-isolation,,truthgit
+Hanoi,gpt-4o-mini,trip-plan-7,True,False,['Hanoi'],Hanoi,branch-leakage-07-branch-visible,conference-itinerary-7,truthgit
+Hanoi,gpt-4o-mini,trip-plan-7,True,False,['Hanoi'],Hanoi,branch-leakage-07-branch-source,conference-itinerary-7,truthgit
+unknown,gpt-4o-mini,main,False,False,['Seoul'],,branch-leakage-08-main-isolation,,truthgit
+Seoul,gpt-4o-mini,trip-plan-8,True,False,['Seoul'],Seoul,branch-leakage-08-branch-visible,conference-itinerary-8,truthgit
+Seoul,gpt-4o-mini,trip-plan-8,True,False,['Seoul'],Seoul,branch-leakage-08-branch-source,conference-itinerary-8,truthgit
+unknown,gpt-4o-mini,main,False,False,['Busan'],,branch-leakage-09-main-isolation,,truthgit
+Busan,gpt-4o-mini,trip-plan-9,True,False,['Busan'],Busan,branch-leakage-09-branch-visible,conference-itinerary-9,truthgit
+Busan,gpt-4o-mini,trip-plan-9,True,False,['Busan'],Busan,branch-leakage-09-branch-source,conference-itinerary-9,truthgit
+Madrid,gpt-4o-mini,main,True,False,['Madrid'],Madrid,rollback-bad-commit-00-recovery,verified-profile-0,truthgit
+Madrid,gpt-4o-mini,main,False,False,['Madrid'],Madrid,rollback-bad-commit-00-history-after-rollback,verified-profile-0,truthgit
+Rome,gpt-4o-mini,main,True,False,['Rome'],Rome,rollback-bad-commit-01-recovery,verified-profile-1,truthgit
+Rome,gpt-4o-mini,main,False,False,['Rome'],Rome,rollback-bad-commit-01-history-after-rollback,verified-profile-1,truthgit
+Berlin,gpt-4o-mini,main,True,False,['Berlin'],Berlin,rollback-bad-commit-02-recovery,verified-profile-2,truthgit
+Berlin,gpt-4o-mini,main,False,False,['Berlin'],Berlin,rollback-bad-commit-02-history-after-rollback,verified-profile-2,truthgit
+Paris,gpt-4o-mini,main,True,False,['Paris'],Paris,rollback-bad-commit-03-recovery,verified-profile-3,truthgit
+Paris,gpt-4o-mini,main,False,False,['Paris'],Paris,rollback-bad-commit-03-history-after-rollback,verified-profile-3,truthgit
+Lisbon,gpt-4o-mini,main,True,False,['Lisbon'],Lisbon,rollback-bad-commit-04-recovery,verified-profile-4,truthgit
+Dublin,gpt-4o-mini,main,True,False,['Dublin'],Dublin,rollback-bad-commit-05-recovery,verified-profile-5,truthgit
+Oslo,gpt-4o-mini,main,True,False,['Oslo'],Oslo,rollback-bad-commit-06-recovery,verified-profile-6,truthgit
+Prague,gpt-4o-mini,main,True,False,['Prague'],Prague,rollback-bad-commit-07-recovery,verified-profile-7,truthgit
+Lab C,gpt-4o-mini,main,True,False,"['Lab A', 'Lab C', 'Lab C']",Lab C,merge-conflict-00-merged-current,signed-reorg-plan-0,truthgit
+Lab D,gpt-4o-mini,main,True,False,"['Lab B', 'Lab D', 'Lab D']",Lab D,merge-conflict-01-merged-current,signed-reorg-plan-1,truthgit
+Lab E,gpt-4o-mini,main,True,False,"['Lab C', 'Lab E', 'Lab E']",Lab E,merge-conflict-02-merged-current,signed-reorg-plan-2,truthgit
+Lab F,gpt-4o-mini,main,True,False,"['Lab D', 'Lab F', 'Lab F']",Lab F,merge-conflict-03-merged-current,signed-reorg-plan-3,truthgit
+Lab A,gpt-4o-mini,main,True,False,"['Lab E', 'Lab A', 'Lab A']",Lab A,merge-conflict-04-merged-current,signed-reorg-plan-4,truthgit
+Berlin,gpt-4o-mini,main,True,False,"['Busan', 'Berlin']",Berlin,exact-provenance-00-source,signed-registry-0,truthgit
+Paris,gpt-4o-mini,main,True,False,"['Tokyo', 'Paris']",Paris,exact-provenance-01-source,signed-registry-1,truthgit
+Lisbon,gpt-4o-mini,main,True,False,"['Madrid', 'Lisbon']",Lisbon,exact-provenance-02-source,signed-registry-2,truthgit
+Dublin,gpt-4o-mini,main,True,False,"['Rome', 'Dublin']",Dublin,exact-provenance-03-source,signed-registry-3,truthgit
+Oslo,gpt-4o-mini,main,True,False,"['Berlin', 'Oslo']",Oslo,exact-provenance-04-source,signed-registry-4,truthgit
+Dublin,gpt-4o-mini,main,True,False,"['Seoul', 'Rome', 'Dublin']",Dublin,temporal-supersession-00-current,residence-ledger-0-c,truthgit_no_branches
+Dublin,gpt-4o-mini,main,False,False,"['Seoul', 'Rome', 'Dublin']",Dublin,temporal-supersession-00-history,residence-ledger-0-c,truthgit_no_branches
+Dublin,gpt-4o-mini,main,True,False,"['Seoul', 'Rome', 'Dublin']",Dublin,temporal-supersession-00-provenance,residence-ledger-0-c,truthgit_no_branches
+Rome,gpt-4o-mini,main,True,False,"['Seoul', 'Rome', 'Dublin']",Rome,temporal-supersession-00-slice-middle,residence-ledger-0-b,truthgit_no_branches
+Oslo,gpt-4o-mini,main,True,False,"['Busan', 'Berlin', 'Oslo']",Oslo,temporal-supersession-01-current,residence-ledger-1-c,truthgit_no_branches
+Oslo,gpt-4o-mini,main,False,False,"['Busan', 'Berlin', 'Oslo']",Oslo,temporal-supersession-01-history,residence-ledger-1-c,truthgit_no_branches
+Oslo,gpt-4o-mini,main,True,False,"['Busan', 'Berlin', 'Oslo']",Oslo,temporal-supersession-01-provenance,residence-ledger-1-c,truthgit_no_branches
+Berlin,gpt-4o-mini,main,True,False,"['Busan', 'Berlin', 'Oslo']",Berlin,temporal-supersession-01-slice-middle,residence-ledger-1-b,truthgit_no_branches
+Prague,gpt-4o-mini,main,True,False,"['Tokyo', 'Paris', 'Prague']",Prague,temporal-supersession-02-current,residence-ledger-2-c,truthgit_no_branches
+Prague,gpt-4o-mini,main,False,False,"['Tokyo', 'Paris', 'Prague']",Prague,temporal-supersession-02-history,residence-ledger-2-c,truthgit_no_branches
+Prague,gpt-4o-mini,main,True,False,"['Tokyo', 'Paris', 'Prague']",Prague,temporal-supersession-02-provenance,residence-ledger-2-c,truthgit_no_branches
+Paris,gpt-4o-mini,main,True,False,"['Tokyo', 'Paris', 'Prague']",Paris,temporal-supersession-02-slice-middle,residence-ledger-2-b,truthgit_no_branches
+Vienna,gpt-4o-mini,main,True,False,"['Madrid', 'Lisbon', 'Vienna']",Vienna,temporal-supersession-03-current,residence-ledger-3-c,truthgit_no_branches
+Vienna,gpt-4o-mini,main,False,False,"['Madrid', 'Lisbon', 'Vienna']",Vienna,temporal-supersession-03-history,residence-ledger-3-c,truthgit_no_branches
+Vienna,gpt-4o-mini,main,True,False,"['Madrid', 'Lisbon', 'Vienna']",Vienna,temporal-supersession-03-provenance,residence-ledger-3-c,truthgit_no_branches
+Lisbon,gpt-4o-mini,main,True,False,"['Madrid', 'Lisbon', 'Vienna']",Lisbon,temporal-supersession-03-slice-middle,residence-ledger-3-b,truthgit_no_branches
+Lima,gpt-4o-mini,main,True,False,"['Rome', 'Dublin', 'Lima']",Lima,temporal-supersession-04-current,residence-ledger-4-c,truthgit_no_branches
+Lima,gpt-4o-mini,main,False,False,"['Rome', 'Dublin', 'Lima']",Lima,temporal-supersession-04-history,residence-ledger-4-c,truthgit_no_branches
+Lima,gpt-4o-mini,main,True,False,"['Rome', 'Dublin', 'Lima']",Lima,temporal-supersession-04-provenance,residence-ledger-4-c,truthgit_no_branches
+Dublin,gpt-4o-mini,main,True,False,"['Rome', 'Dublin', 'Lima']",Dublin,temporal-supersession-04-slice-middle,residence-ledger-4-b,truthgit_no_branches
+Quito,gpt-4o-mini,main,True,False,"['Berlin', 'Oslo', 'Quito']",Quito,temporal-supersession-05-current,residence-ledger-5-c,truthgit_no_branches
+Quito,gpt-4o-mini,main,False,False,"['Berlin', 'Oslo', 'Quito']",Quito,temporal-supersession-05-history,residence-ledger-5-c,truthgit_no_branches
+Quito,gpt-4o-mini,main,True,False,"['Berlin', 'Oslo', 'Quito']",Quito,temporal-supersession-05-provenance,residence-ledger-5-c,truthgit_no_branches
+Oslo,gpt-4o-mini,main,True,False,"['Berlin', 'Oslo', 'Quito']",Oslo,temporal-supersession-05-slice-middle,residence-ledger-5-b,truthgit_no_branches
+Hanoi,gpt-4o-mini,main,True,False,"['Paris', 'Prague', 'Hanoi']",Hanoi,temporal-supersession-06-current,residence-ledger-6-c,truthgit_no_branches
+Hanoi,gpt-4o-mini,main,False,False,"['Paris', 'Prague', 'Hanoi']",Hanoi,temporal-supersession-06-history,residence-ledger-6-c,truthgit_no_branches
+Hanoi,gpt-4o-mini,main,True,False,"['Paris', 'Prague', 'Hanoi']",Hanoi,temporal-supersession-06-provenance,residence-ledger-6-c,truthgit_no_branches
+Seoul,gpt-4o-mini,main,True,False,"['Lisbon', 'Vienna', 'Seoul']",Seoul,temporal-supersession-07-current,residence-ledger-7-c,truthgit_no_branches
+Seoul,gpt-4o-mini,main,False,False,"['Lisbon', 'Vienna', 'Seoul']",Seoul,temporal-supersession-07-history,residence-ledger-7-c,truthgit_no_branches
+Seoul,gpt-4o-mini,main,True,False,"['Lisbon', 'Vienna', 'Seoul']",Seoul,temporal-supersession-07-provenance,residence-ledger-7-c,truthgit_no_branches
+Busan,gpt-4o-mini,main,True,False,"['Dublin', 'Lima', 'Busan']",Busan,temporal-supersession-08-current,residence-ledger-8-c,truthgit_no_branches
+Busan,gpt-4o-mini,main,False,False,"['Dublin', 'Lima', 'Busan']",Busan,temporal-supersession-08-history,residence-ledger-8-c,truthgit_no_branches
+Busan,gpt-4o-mini,main,True,False,"['Dublin', 'Lima', 'Busan']",Busan,temporal-supersession-08-provenance,residence-ledger-8-c,truthgit_no_branches
+Tokyo,gpt-4o-mini,main,True,False,"['Oslo', 'Quito', 'Tokyo']",Tokyo,temporal-supersession-09-current,residence-ledger-9-c,truthgit_no_branches
+Tokyo,gpt-4o-mini,main,False,False,"['Oslo', 'Quito', 'Tokyo']",Tokyo,temporal-supersession-09-history,residence-ledger-9-c,truthgit_no_branches
+Tokyo,gpt-4o-mini,main,True,False,"['Oslo', 'Quito', 'Tokyo']",Tokyo,temporal-supersession-09-provenance,residence-ledger-9-c,truthgit_no_branches
+Madrid,gpt-4o-mini,main,True,False,"['Prague', 'Hanoi', 'Madrid']",Madrid,temporal-supersession-10-current,residence-ledger-10-c,truthgit_no_branches
+Madrid,gpt-4o-mini,main,False,False,"['Prague', 'Hanoi', 'Madrid']",Madrid,temporal-supersession-10-history,residence-ledger-10-c,truthgit_no_branches
+Madrid,gpt-4o-mini,main,True,False,"['Prague', 'Hanoi', 'Madrid']",Madrid,temporal-supersession-10-provenance,residence-ledger-10-c,truthgit_no_branches
+Rome,gpt-4o-mini,main,True,False,"['Vienna', 'Seoul', 'Rome']",Rome,temporal-supersession-11-current,residence-ledger-11-c,truthgit_no_branches
+Rome,gpt-4o-mini,main,False,False,"['Vienna', 'Seoul', 'Rome']",Rome,temporal-supersession-11-history,residence-ledger-11-c,truthgit_no_branches
+Rome,gpt-4o-mini,main,True,False,"['Vienna', 'Seoul', 'Rome']",Rome,temporal-supersession-11-provenance,residence-ledger-11-c,truthgit_no_branches
+Tokyo,gpt-4o-mini,main,True,False,"['Tokyo', 'Atlantis']",Tokyo,poisoning-low-trust-00-current,verified-registry-0,truthgit_no_branches
+Tokyo,gpt-4o-mini,main,False,True,"['Tokyo', 'Atlantis']",Tokyo,poisoning-low-trust-00-warning,verified-registry-0,truthgit_no_branches
+Madrid,gpt-4o-mini,main,True,False,"['Madrid', 'El Dorado']",Madrid,poisoning-low-trust-01-current,verified-registry-1,truthgit_no_branches
+Madrid,gpt-4o-mini,main,False,True,"['Madrid', 'El Dorado']",Madrid,poisoning-low-trust-01-warning,verified-registry-1,truthgit_no_branches
+Rome,gpt-4o-mini,main,True,False,"['Rome', 'Gotham']",Rome,poisoning-low-trust-02-current,verified-registry-2,truthgit_no_branches
+Rome,gpt-4o-mini,main,False,True,"['Rome', 'Gotham']",Rome,poisoning-low-trust-02-warning,verified-registry-2,truthgit_no_branches
+Berlin,gpt-4o-mini,main,True,False,"['Berlin', 'Metropolis']",Berlin,poisoning-low-trust-03-current,verified-registry-3,truthgit_no_branches
+Berlin,gpt-4o-mini,main,False,True,"['Berlin', 'Metropolis']",Berlin,poisoning-low-trust-03-warning,verified-registry-3,truthgit_no_branches
+Paris,gpt-4o-mini,main,True,False,"['Paris', 'Narnia']",Paris,poisoning-low-trust-04-current,verified-registry-4,truthgit_no_branches
+Paris,gpt-4o-mini,main,False,True,"['Paris', 'Narnia']",Paris,poisoning-low-trust-04-warning,verified-registry-4,truthgit_no_branches
+Lisbon,gpt-4o-mini,main,True,False,"['Lisbon', 'Atlantis']",Lisbon,poisoning-low-trust-05-current,verified-registry-5,truthgit_no_branches
+Lisbon,gpt-4o-mini,main,False,True,"['Lisbon', 'Atlantis']",Lisbon,poisoning-low-trust-05-warning,verified-registry-5,truthgit_no_branches
+Dublin,gpt-4o-mini,main,True,False,"['Dublin', 'El Dorado']",Dublin,poisoning-low-trust-06-current,verified-registry-6,truthgit_no_branches
+Dublin,gpt-4o-mini,main,False,True,"['Dublin', 'El Dorado']",Dublin,poisoning-low-trust-06-warning,verified-registry-6,truthgit_no_branches
+Oslo,gpt-4o-mini,main,True,False,"['Oslo', 'Gotham']",Oslo,poisoning-low-trust-07-current,verified-registry-7,truthgit_no_branches
+Oslo,gpt-4o-mini,main,False,True,"['Oslo', 'Gotham']",Oslo,poisoning-low-trust-07-warning,verified-registry-7,truthgit_no_branches
+Prague,gpt-4o-mini,main,True,False,"['Prague', 'Metropolis']",Prague,poisoning-low-trust-08-current,verified-registry-8,truthgit_no_branches
+Prague,gpt-4o-mini,main,False,True,"['Prague', 'Metropolis']",Prague,poisoning-low-trust-08-warning,verified-registry-8,truthgit_no_branches
+Vienna,gpt-4o-mini,main,True,False,"['Vienna', 'Narnia']",Vienna,poisoning-low-trust-09-current,verified-registry-9,truthgit_no_branches
+Vienna,gpt-4o-mini,main,False,True,"['Vienna', 'Narnia']",Vienna,poisoning-low-trust-09-warning,verified-registry-9,truthgit_no_branches
+Lisbon,gpt-4o-mini,main,False,False,['Lisbon'],Lisbon,branch-leakage-00-main-isolation,conference-itinerary-0,truthgit_no_branches
+Lisbon,gpt-4o-mini,trip-plan-0,True,False,['Lisbon'],Lisbon,branch-leakage-00-branch-visible,conference-itinerary-0,truthgit_no_branches
+Lisbon,gpt-4o-mini,trip-plan-0,True,False,['Lisbon'],Lisbon,branch-leakage-00-branch-source,conference-itinerary-0,truthgit_no_branches
+Dublin,gpt-4o-mini,main,False,False,['Dublin'],Dublin,branch-leakage-01-main-isolation,conference-itinerary-1,truthgit_no_branches
+Dublin,gpt-4o-mini,trip-plan-1,True,False,['Dublin'],Dublin,branch-leakage-01-branch-visible,conference-itinerary-1,truthgit_no_branches
+Dublin,gpt-4o-mini,trip-plan-1,True,False,['Dublin'],Dublin,branch-leakage-01-branch-source,conference-itinerary-1,truthgit_no_branches
+Oslo,gpt-4o-mini,main,False,False,['Oslo'],Oslo,branch-leakage-02-main-isolation,conference-itinerary-2,truthgit_no_branches
+Oslo,gpt-4o-mini,trip-plan-2,True,False,['Oslo'],Oslo,branch-leakage-02-branch-visible,conference-itinerary-2,truthgit_no_branches
+Oslo,gpt-4o-mini,trip-plan-2,True,False,['Oslo'],Oslo,branch-leakage-02-branch-source,conference-itinerary-2,truthgit_no_branches
+Prague,gpt-4o-mini,main,False,False,['Prague'],Prague,branch-leakage-03-main-isolation,conference-itinerary-3,truthgit_no_branches
+Prague,gpt-4o-mini,trip-plan-3,True,False,['Prague'],Prague,branch-leakage-03-branch-visible,conference-itinerary-3,truthgit_no_branches
+Prague,gpt-4o-mini,trip-plan-3,True,False,['Prague'],Prague,branch-leakage-03-branch-source,conference-itinerary-3,truthgit_no_branches
+Vienna,gpt-4o-mini,main,False,False,['Vienna'],Vienna,branch-leakage-04-main-isolation,conference-itinerary-4,truthgit_no_branches
+Vienna,gpt-4o-mini,trip-plan-4,True,False,['Vienna'],Vienna,branch-leakage-04-branch-visible,conference-itinerary-4,truthgit_no_branches
+Vienna,gpt-4o-mini,trip-plan-4,True,False,['Vienna'],Vienna,branch-leakage-04-branch-source,conference-itinerary-4,truthgit_no_branches
+Lima,gpt-4o-mini,main,False,False,['Lima'],Lima,branch-leakage-05-main-isolation,conference-itinerary-5,truthgit_no_branches
+Lima,gpt-4o-mini,trip-plan-5,True,False,['Lima'],Lima,branch-leakage-05-branch-visible,conference-itinerary-5,truthgit_no_branches
+Lima,gpt-4o-mini,trip-plan-5,True,False,['Lima'],Lima,branch-leakage-05-branch-source,conference-itinerary-5,truthgit_no_branches
+Quito,gpt-4o-mini,main,False,False,['Quito'],Quito,branch-leakage-06-main-isolation,conference-itinerary-6,truthgit_no_branches
+Quito,gpt-4o-mini,trip-plan-6,True,False,['Quito'],Quito,branch-leakage-06-branch-visible,conference-itinerary-6,truthgit_no_branches
+Quito,gpt-4o-mini,trip-plan-6,True,False,['Quito'],Quito,branch-leakage-06-branch-source,conference-itinerary-6,truthgit_no_branches
+Hanoi,gpt-4o-mini,main,False,False,['Hanoi'],Hanoi,branch-leakage-07-main-isolation,conference-itinerary-7,truthgit_no_branches
+Hanoi,gpt-4o-mini,trip-plan-7,True,False,['Hanoi'],Hanoi,branch-leakage-07-branch-visible,conference-itinerary-7,truthgit_no_branches
+Hanoi,gpt-4o-mini,trip-plan-7,True,False,['Hanoi'],Hanoi,branch-leakage-07-branch-source,conference-itinerary-7,truthgit_no_branches
+Seoul,gpt-4o-mini,main,False,False,['Seoul'],Seoul,branch-leakage-08-main-isolation,conference-itinerary-8,truthgit_no_branches
+Seoul,gpt-4o-mini,trip-plan-8,True,False,['Seoul'],Seoul,branch-leakage-08-branch-visible,conference-itinerary-8,truthgit_no_branches
+Seoul,gpt-4o-mini,trip-plan-8,True,False,['Seoul'],Seoul,branch-leakage-08-branch-source,conference-itinerary-8,truthgit_no_branches
+Busan,gpt-4o-mini,main,False,False,['Busan'],Busan,branch-leakage-09-main-isolation,conference-itinerary-9,truthgit_no_branches
+Busan,gpt-4o-mini,trip-plan-9,True,False,['Busan'],Busan,branch-leakage-09-branch-visible,conference-itinerary-9,truthgit_no_branches
+Busan,gpt-4o-mini,trip-plan-9,True,False,['Busan'],Busan,branch-leakage-09-branch-source,conference-itinerary-9,truthgit_no_branches
+Madrid,gpt-4o-mini,main,True,False,['Madrid'],Madrid,rollback-bad-commit-00-recovery,verified-profile-0,truthgit_no_branches
+Madrid,gpt-4o-mini,main,False,False,['Madrid'],Madrid,rollback-bad-commit-00-history-after-rollback,verified-profile-0,truthgit_no_branches
+Rome,gpt-4o-mini,main,True,False,['Rome'],Rome,rollback-bad-commit-01-recovery,verified-profile-1,truthgit_no_branches
+Rome,gpt-4o-mini,main,False,False,['Rome'],Rome,rollback-bad-commit-01-history-after-rollback,verified-profile-1,truthgit_no_branches
+Berlin,gpt-4o-mini,main,True,False,['Berlin'],Berlin,rollback-bad-commit-02-recovery,verified-profile-2,truthgit_no_branches
+Berlin,gpt-4o-mini,main,False,False,['Berlin'],Berlin,rollback-bad-commit-02-history-after-rollback,verified-profile-2,truthgit_no_branches
+Paris,gpt-4o-mini,main,True,False,['Paris'],Paris,rollback-bad-commit-03-recovery,verified-profile-3,truthgit_no_branches
+Paris,gpt-4o-mini,main,False,False,['Paris'],Paris,rollback-bad-commit-03-history-after-rollback,verified-profile-3,truthgit_no_branches
+Lisbon,gpt-4o-mini,main,True,False,['Lisbon'],Lisbon,rollback-bad-commit-04-recovery,verified-profile-4,truthgit_no_branches
+Dublin,gpt-4o-mini,main,True,False,['Dublin'],Dublin,rollback-bad-commit-05-recovery,verified-profile-5,truthgit_no_branches
+Oslo,gpt-4o-mini,main,True,False,['Oslo'],Oslo,rollback-bad-commit-06-recovery,verified-profile-6,truthgit_no_branches
+Prague,gpt-4o-mini,main,True,False,['Prague'],Prague,rollback-bad-commit-07-recovery,verified-profile-7,truthgit_no_branches
+Lab C,gpt-4o-mini,main,True,False,"['Lab A', 'Lab C']",Lab C,merge-conflict-00-merged-current,signed-reorg-plan-0,truthgit_no_branches
+Lab D,gpt-4o-mini,main,True,False,"['Lab B', 'Lab D']",Lab D,merge-conflict-01-merged-current,signed-reorg-plan-1,truthgit_no_branches
+Lab E,gpt-4o-mini,main,True,False,"['Lab C', 'Lab E']",Lab E,merge-conflict-02-merged-current,signed-reorg-plan-2,truthgit_no_branches
+Lab F,gpt-4o-mini,main,True,False,"['Lab D', 'Lab F']",Lab F,merge-conflict-03-merged-current,signed-reorg-plan-3,truthgit_no_branches
+Lab A,gpt-4o-mini,main,True,False,"['Lab E', 'Lab A']",Lab A,merge-conflict-04-merged-current,signed-reorg-plan-4,truthgit_no_branches
+Berlin,gpt-4o-mini,main,True,False,"['Busan', 'Berlin']",Berlin,exact-provenance-00-source,signed-registry-0,truthgit_no_branches
+Paris,gpt-4o-mini,main,True,False,"['Tokyo', 'Paris']",Paris,exact-provenance-01-source,signed-registry-1,truthgit_no_branches
+Lisbon,gpt-4o-mini,main,True,False,"['Madrid', 'Lisbon']",Lisbon,exact-provenance-02-source,signed-registry-2,truthgit_no_branches
+Dublin,gpt-4o-mini,main,True,False,"['Rome', 'Dublin']",Dublin,exact-provenance-03-source,signed-registry-3,truthgit_no_branches
+Oslo,gpt-4o-mini,main,True,False,"['Berlin', 'Oslo']",Oslo,exact-provenance-04-source,signed-registry-4,truthgit_no_branches
+Dublin,gpt-4o-mini,main,True,False,"['Seoul', 'Rome', 'Dublin']",Dublin,temporal-supersession-00-current,residence-ledger-0-c,truthgit_no_rollback
+Dublin,gpt-4o-mini,main,False,False,"['Seoul', 'Rome', 'Dublin']",Dublin,temporal-supersession-00-history,residence-ledger-0-c,truthgit_no_rollback
+Dublin,gpt-4o-mini,main,True,False,"['Seoul', 'Rome', 'Dublin']",Dublin,temporal-supersession-00-provenance,residence-ledger-0-c,truthgit_no_rollback
+Rome,gpt-4o-mini,main,True,False,"['Seoul', 'Rome', 'Dublin']",Rome,temporal-supersession-00-slice-middle,residence-ledger-0-b,truthgit_no_rollback
+Oslo,gpt-4o-mini,main,True,False,"['Busan', 'Berlin', 'Oslo']",Oslo,temporal-supersession-01-current,residence-ledger-1-c,truthgit_no_rollback
+Oslo,gpt-4o-mini,main,False,False,"['Busan', 'Berlin', 'Oslo']",Oslo,temporal-supersession-01-history,residence-ledger-1-c,truthgit_no_rollback
+Oslo,gpt-4o-mini,main,True,False,"['Busan', 'Berlin', 'Oslo']",Oslo,temporal-supersession-01-provenance,residence-ledger-1-c,truthgit_no_rollback
+Berlin,gpt-4o-mini,main,True,False,"['Busan', 'Berlin', 'Oslo']",Berlin,temporal-supersession-01-slice-middle,residence-ledger-1-b,truthgit_no_rollback
+Prague,gpt-4o-mini,main,True,False,"['Tokyo', 'Paris', 'Prague']",Prague,temporal-supersession-02-current,residence-ledger-2-c,truthgit_no_rollback
+Prague,gpt-4o-mini,main,False,False,"['Tokyo', 'Paris', 'Prague']",Prague,temporal-supersession-02-history,residence-ledger-2-c,truthgit_no_rollback
+Prague,gpt-4o-mini,main,True,False,"['Tokyo', 'Paris', 'Prague']",Prague,temporal-supersession-02-provenance,residence-ledger-2-c,truthgit_no_rollback
+Paris,gpt-4o-mini,main,True,False,"['Tokyo', 'Paris', 'Prague']",Paris,temporal-supersession-02-slice-middle,residence-ledger-2-b,truthgit_no_rollback
+Vienna,gpt-4o-mini,main,True,False,"['Madrid', 'Lisbon', 'Vienna']",Vienna,temporal-supersession-03-current,residence-ledger-3-c,truthgit_no_rollback
+Vienna,gpt-4o-mini,main,False,False,"['Madrid', 'Lisbon', 'Vienna']",Vienna,temporal-supersession-03-history,residence-ledger-3-c,truthgit_no_rollback
+Vienna,gpt-4o-mini,main,True,False,"['Madrid', 'Lisbon', 'Vienna']",Vienna,temporal-supersession-03-provenance,residence-ledger-3-c,truthgit_no_rollback
+Lisbon,gpt-4o-mini,main,True,False,"['Madrid', 'Lisbon', 'Vienna']",Lisbon,temporal-supersession-03-slice-middle,residence-ledger-3-b,truthgit_no_rollback
+Lima,gpt-4o-mini,main,True,False,"['Rome', 'Dublin', 'Lima']",Lima,temporal-supersession-04-current,residence-ledger-4-c,truthgit_no_rollback
+Lima,gpt-4o-mini,main,False,False,"['Rome', 'Dublin', 'Lima']",Lima,temporal-supersession-04-history,residence-ledger-4-c,truthgit_no_rollback
+Lima,gpt-4o-mini,main,True,False,"['Rome', 'Dublin', 'Lima']",Lima,temporal-supersession-04-provenance,residence-ledger-4-c,truthgit_no_rollback
+Dublin,gpt-4o-mini,main,True,False,"['Rome', 'Dublin', 'Lima']",Dublin,temporal-supersession-04-slice-middle,residence-ledger-4-b,truthgit_no_rollback
+Quito,gpt-4o-mini,main,True,False,"['Berlin', 'Oslo', 'Quito']",Quito,temporal-supersession-05-current,residence-ledger-5-c,truthgit_no_rollback
+Quito,gpt-4o-mini,main,False,False,"['Berlin', 'Oslo', 'Quito']",Quito,temporal-supersession-05-history,residence-ledger-5-c,truthgit_no_rollback
+Quito,gpt-4o-mini,main,True,False,"['Berlin', 'Oslo', 'Quito']",Quito,temporal-supersession-05-provenance,residence-ledger-5-c,truthgit_no_rollback
+Oslo,gpt-4o-mini,main,True,False,"['Berlin', 'Oslo', 'Quito']",Oslo,temporal-supersession-05-slice-middle,residence-ledger-5-b,truthgit_no_rollback
+Hanoi,gpt-4o-mini,main,True,False,"['Paris', 'Prague', 'Hanoi']",Hanoi,temporal-supersession-06-current,residence-ledger-6-c,truthgit_no_rollback
+Hanoi,gpt-4o-mini,main,False,False,"['Paris', 'Prague', 'Hanoi']",Hanoi,temporal-supersession-06-history,residence-ledger-6-c,truthgit_no_rollback
+Hanoi,gpt-4o-mini,main,True,False,"['Paris', 'Prague', 'Hanoi']",Hanoi,temporal-supersession-06-provenance,residence-ledger-6-c,truthgit_no_rollback
+Seoul,gpt-4o-mini,main,True,False,"['Lisbon', 'Vienna', 'Seoul']",Seoul,temporal-supersession-07-current,residence-ledger-7-c,truthgit_no_rollback
+Seoul,gpt-4o-mini,main,False,False,"['Lisbon', 'Vienna', 'Seoul']",Seoul,temporal-supersession-07-history,residence-ledger-7-c,truthgit_no_rollback
+Seoul,gpt-4o-mini,main,True,False,"['Lisbon', 'Vienna', 'Seoul']",Seoul,temporal-supersession-07-provenance,residence-ledger-7-c,truthgit_no_rollback
+Busan,gpt-4o-mini,main,True,False,"['Dublin', 'Lima', 'Busan']",Busan,temporal-supersession-08-current,residence-ledger-8-c,truthgit_no_rollback
+Busan,gpt-4o-mini,main,False,False,"['Dublin', 'Lima', 'Busan']",Busan,temporal-supersession-08-history,residence-ledger-8-c,truthgit_no_rollback
+Busan,gpt-4o-mini,main,True,False,"['Dublin', 'Lima', 'Busan']",Busan,temporal-supersession-08-provenance,residence-ledger-8-c,truthgit_no_rollback
+Tokyo,gpt-4o-mini,main,True,False,"['Oslo', 'Quito', 'Tokyo']",Tokyo,temporal-supersession-09-current,residence-ledger-9-c,truthgit_no_rollback
+Tokyo,gpt-4o-mini,main,False,False,"['Oslo', 'Quito', 'Tokyo']",Tokyo,temporal-supersession-09-history,residence-ledger-9-c,truthgit_no_rollback
+Tokyo,gpt-4o-mini,main,True,False,"['Oslo', 'Quito', 'Tokyo']",Tokyo,temporal-supersession-09-provenance,residence-ledger-9-c,truthgit_no_rollback
+Madrid,gpt-4o-mini,main,True,False,"['Prague', 'Hanoi', 'Madrid']",Madrid,temporal-supersession-10-current,residence-ledger-10-c,truthgit_no_rollback
+Madrid,gpt-4o-mini,main,False,False,"['Prague', 'Hanoi', 'Madrid']",Madrid,temporal-supersession-10-history,residence-ledger-10-c,truthgit_no_rollback
+Madrid,gpt-4o-mini,main,True,False,"['Prague', 'Hanoi', 'Madrid']",Madrid,temporal-supersession-10-provenance,residence-ledger-10-c,truthgit_no_rollback
+Rome,gpt-4o-mini,main,True,False,"['Vienna', 'Seoul', 'Rome']",Rome,temporal-supersession-11-current,residence-ledger-11-c,truthgit_no_rollback
+Rome,gpt-4o-mini,main,False,False,"['Vienna', 'Seoul', 'Rome']",Rome,temporal-supersession-11-history,residence-ledger-11-c,truthgit_no_rollback
+Rome,gpt-4o-mini,main,True,False,"['Vienna', 'Seoul', 'Rome']",Rome,temporal-supersession-11-provenance,residence-ledger-11-c,truthgit_no_rollback
+Tokyo,gpt-4o-mini,main,True,False,"['Tokyo', 'Atlantis']",Tokyo,poisoning-low-trust-00-current,verified-registry-0,truthgit_no_rollback
+Tokyo,gpt-4o-mini,main,False,True,"['Tokyo', 'Atlantis']",Tokyo,poisoning-low-trust-00-warning,verified-registry-0,truthgit_no_rollback
+Madrid,gpt-4o-mini,main,True,False,"['Madrid', 'El Dorado']",Madrid,poisoning-low-trust-01-current,verified-registry-1,truthgit_no_rollback
+Madrid,gpt-4o-mini,main,False,True,"['Madrid', 'El Dorado']",Madrid,poisoning-low-trust-01-warning,verified-registry-1,truthgit_no_rollback
+Rome,gpt-4o-mini,main,True,False,"['Rome', 'Gotham']",Rome,poisoning-low-trust-02-current,verified-registry-2,truthgit_no_rollback
+Rome,gpt-4o-mini,main,False,True,"['Rome', 'Gotham']",Rome,poisoning-low-trust-02-warning,verified-registry-2,truthgit_no_rollback
+Berlin,gpt-4o-mini,main,True,False,"['Berlin', 'Metropolis']",Berlin,poisoning-low-trust-03-current,verified-registry-3,truthgit_no_rollback
+Berlin,gpt-4o-mini,main,False,True,"['Berlin', 'Metropolis']",Berlin,poisoning-low-trust-03-warning,verified-registry-3,truthgit_no_rollback
+Paris,gpt-4o-mini,main,True,False,"['Paris', 'Narnia']",Paris,poisoning-low-trust-04-current,verified-registry-4,truthgit_no_rollback
+Paris,gpt-4o-mini,main,False,True,"['Paris', 'Narnia']",Paris,poisoning-low-trust-04-warning,verified-registry-4,truthgit_no_rollback
+Lisbon,gpt-4o-mini,main,True,False,"['Lisbon', 'Atlantis']",Lisbon,poisoning-low-trust-05-current,verified-registry-5,truthgit_no_rollback
+Lisbon,gpt-4o-mini,main,False,True,"['Lisbon', 'Atlantis']",Lisbon,poisoning-low-trust-05-warning,verified-registry-5,truthgit_no_rollback
+Dublin,gpt-4o-mini,main,True,False,"['Dublin', 'El Dorado']",Dublin,poisoning-low-trust-06-current,verified-registry-6,truthgit_no_rollback
+Dublin,gpt-4o-mini,main,False,True,"['Dublin', 'El Dorado']",Dublin,poisoning-low-trust-06-warning,verified-registry-6,truthgit_no_rollback
+Oslo,gpt-4o-mini,main,True,False,"['Oslo', 'Gotham']",Oslo,poisoning-low-trust-07-current,verified-registry-7,truthgit_no_rollback
+Oslo,gpt-4o-mini,main,False,True,"['Oslo', 'Gotham']",Oslo,poisoning-low-trust-07-warning,verified-registry-7,truthgit_no_rollback
+Prague,gpt-4o-mini,main,True,False,"['Prague', 'Metropolis']",Prague,poisoning-low-trust-08-current,verified-registry-8,truthgit_no_rollback
+Prague,gpt-4o-mini,main,False,True,"['Prague', 'Metropolis']",Prague,poisoning-low-trust-08-warning,verified-registry-8,truthgit_no_rollback
+Vienna,gpt-4o-mini,main,True,False,"['Vienna', 'Narnia']",Vienna,poisoning-low-trust-09-current,verified-registry-9,truthgit_no_rollback
+Vienna,gpt-4o-mini,main,False,True,"['Vienna', 'Narnia']",Vienna,poisoning-low-trust-09-warning,verified-registry-9,truthgit_no_rollback
+unknown,gpt-4o-mini,main,False,False,['Lisbon'],,branch-leakage-00-main-isolation,,truthgit_no_rollback
+Lisbon,gpt-4o-mini,trip-plan-0,True,False,['Lisbon'],Lisbon,branch-leakage-00-branch-visible,conference-itinerary-0,truthgit_no_rollback
+Lisbon,gpt-4o-mini,trip-plan-0,True,False,['Lisbon'],Lisbon,branch-leakage-00-branch-source,conference-itinerary-0,truthgit_no_rollback
+unknown,gpt-4o-mini,main,False,False,['Dublin'],,branch-leakage-01-main-isolation,,truthgit_no_rollback
+Dublin,gpt-4o-mini,trip-plan-1,True,False,['Dublin'],Dublin,branch-leakage-01-branch-visible,conference-itinerary-1,truthgit_no_rollback
+Dublin,gpt-4o-mini,trip-plan-1,True,False,['Dublin'],Dublin,branch-leakage-01-branch-source,conference-itinerary-1,truthgit_no_rollback
+unknown,gpt-4o-mini,main,False,False,['Oslo'],,branch-leakage-02-main-isolation,,truthgit_no_rollback
+Oslo,gpt-4o-mini,trip-plan-2,True,False,['Oslo'],Oslo,branch-leakage-02-branch-visible,conference-itinerary-2,truthgit_no_rollback
+Oslo,gpt-4o-mini,trip-plan-2,True,False,['Oslo'],Oslo,branch-leakage-02-branch-source,conference-itinerary-2,truthgit_no_rollback
+unknown,gpt-4o-mini,main,False,False,['Prague'],,branch-leakage-03-main-isolation,,truthgit_no_rollback
+Prague,gpt-4o-mini,trip-plan-3,True,False,['Prague'],Prague,branch-leakage-03-branch-visible,conference-itinerary-3,truthgit_no_rollback
+Prague,gpt-4o-mini,trip-plan-3,True,False,['Prague'],Prague,branch-leakage-03-branch-source,conference-itinerary-3,truthgit_no_rollback
+unknown,gpt-4o-mini,main,False,False,['Vienna'],,branch-leakage-04-main-isolation,,truthgit_no_rollback
+Vienna,gpt-4o-mini,trip-plan-4,True,False,['Vienna'],Vienna,branch-leakage-04-branch-visible,conference-itinerary-4,truthgit_no_rollback
+Vienna,gpt-4o-mini,trip-plan-4,True,False,['Vienna'],Vienna,branch-leakage-04-branch-source,conference-itinerary-4,truthgit_no_rollback
+unknown,gpt-4o-mini,main,False,False,['Lima'],,branch-leakage-05-main-isolation,,truthgit_no_rollback
+Lima,gpt-4o-mini,trip-plan-5,True,False,['Lima'],Lima,branch-leakage-05-branch-visible,conference-itinerary-5,truthgit_no_rollback
+Lima,gpt-4o-mini,trip-plan-5,True,False,['Lima'],Lima,branch-leakage-05-branch-source,conference-itinerary-5,truthgit_no_rollback
+unknown,gpt-4o-mini,main,False,False,['Quito'],,branch-leakage-06-main-isolation,,truthgit_no_rollback
+Quito,gpt-4o-mini,trip-plan-6,True,False,['Quito'],Quito,branch-leakage-06-branch-visible,conference-itinerary-6,truthgit_no_rollback
+Quito,gpt-4o-mini,trip-plan-6,True,False,['Quito'],Quito,branch-leakage-06-branch-source,conference-itinerary-6,truthgit_no_rollback
+unknown,gpt-4o-mini,main,False,False,['Hanoi'],,branch-leakage-07-main-isolation,,truthgit_no_rollback
+Hanoi,gpt-4o-mini,trip-plan-7,True,False,['Hanoi'],Hanoi,branch-leakage-07-branch-visible,conference-itinerary-7,truthgit_no_rollback
+Hanoi,gpt-4o-mini,trip-plan-7,True,False,['Hanoi'],Hanoi,branch-leakage-07-branch-source,conference-itinerary-7,truthgit_no_rollback
+unknown,gpt-4o-mini,main,False,False,['Seoul'],,branch-leakage-08-main-isolation,,truthgit_no_rollback
+Seoul,gpt-4o-mini,trip-plan-8,True,False,['Seoul'],Seoul,branch-leakage-08-branch-visible,conference-itinerary-8,truthgit_no_rollback
+Seoul,gpt-4o-mini,trip-plan-8,True,False,['Seoul'],Seoul,branch-leakage-08-branch-source,conference-itinerary-8,truthgit_no_rollback
+unknown,gpt-4o-mini,main,False,False,['Busan'],,branch-leakage-09-main-isolation,,truthgit_no_rollback
+Busan,gpt-4o-mini,trip-plan-9,True,False,['Busan'],Busan,branch-leakage-09-branch-visible,conference-itinerary-9,truthgit_no_rollback
+Busan,gpt-4o-mini,trip-plan-9,True,False,['Busan'],Busan,branch-leakage-09-branch-source,conference-itinerary-9,truthgit_no_rollback
+Prague,gpt-4o-mini,main,False,False,"['Madrid', 'Prague']",Prague,rollback-bad-commit-00-recovery,corrupted-admin-import-0,truthgit_no_rollback
+Prague,gpt-4o-mini,main,False,False,"['Madrid', 'Prague']",Prague,rollback-bad-commit-00-history-after-rollback,corrupted-admin-import-0,truthgit_no_rollback
+Vienna,gpt-4o-mini,main,False,False,"['Rome', 'Vienna']",Vienna,rollback-bad-commit-01-recovery,corrupted-admin-import-1,truthgit_no_rollback
+Vienna,gpt-4o-mini,main,False,False,"['Rome', 'Vienna']",Vienna,rollback-bad-commit-01-history-after-rollback,corrupted-admin-import-1,truthgit_no_rollback
+Lima,gpt-4o-mini,main,False,False,"['Berlin', 'Lima']",Lima,rollback-bad-commit-02-recovery,corrupted-admin-import-2,truthgit_no_rollback
+Lima,gpt-4o-mini,main,False,False,"['Berlin', 'Lima']",Lima,rollback-bad-commit-02-history-after-rollback,corrupted-admin-import-2,truthgit_no_rollback
+Quito,gpt-4o-mini,main,False,False,"['Paris', 'Quito']",Quito,rollback-bad-commit-03-recovery,corrupted-admin-import-3,truthgit_no_rollback
+Quito,gpt-4o-mini,main,False,False,"['Paris', 'Quito']",Quito,rollback-bad-commit-03-history-after-rollback,corrupted-admin-import-3,truthgit_no_rollback
+Hanoi,gpt-4o-mini,main,False,False,"['Lisbon', 'Hanoi']",Hanoi,rollback-bad-commit-04-recovery,corrupted-admin-import-4,truthgit_no_rollback
+Seoul,gpt-4o-mini,main,False,False,"['Dublin', 'Seoul']",Seoul,rollback-bad-commit-05-recovery,corrupted-admin-import-5,truthgit_no_rollback
+Busan,gpt-4o-mini,main,False,False,"['Oslo', 'Busan']",Busan,rollback-bad-commit-06-recovery,corrupted-admin-import-6,truthgit_no_rollback
+Tokyo,gpt-4o-mini,main,False,False,"['Prague', 'Tokyo']",Tokyo,rollback-bad-commit-07-recovery,corrupted-admin-import-7,truthgit_no_rollback
+Lab C,gpt-4o-mini,main,True,False,"['Lab A', 'Lab C', 'Lab C']",Lab C,merge-conflict-00-merged-current,signed-reorg-plan-0,truthgit_no_rollback
+Lab D,gpt-4o-mini,main,True,False,"['Lab B', 'Lab D', 'Lab D']",Lab D,merge-conflict-01-merged-current,signed-reorg-plan-1,truthgit_no_rollback
+Lab E,gpt-4o-mini,main,True,False,"['Lab C', 'Lab E', 'Lab E']",Lab E,merge-conflict-02-merged-current,signed-reorg-plan-2,truthgit_no_rollback
+Lab F,gpt-4o-mini,main,True,False,"['Lab D', 'Lab F', 'Lab F']",Lab F,merge-conflict-03-merged-current,signed-reorg-plan-3,truthgit_no_rollback
+Lab A,gpt-4o-mini,main,True,False,"['Lab E', 'Lab A', 'Lab A']",Lab A,merge-conflict-04-merged-current,signed-reorg-plan-4,truthgit_no_rollback
+Berlin,gpt-4o-mini,main,True,False,"['Busan', 'Berlin']",Berlin,exact-provenance-00-source,signed-registry-0,truthgit_no_rollback
+Paris,gpt-4o-mini,main,True,False,"['Tokyo', 'Paris']",Paris,exact-provenance-01-source,signed-registry-1,truthgit_no_rollback
+Lisbon,gpt-4o-mini,main,True,False,"['Madrid', 'Lisbon']",Lisbon,exact-provenance-02-source,signed-registry-2,truthgit_no_rollback
+Dublin,gpt-4o-mini,main,True,False,"['Rome', 'Dublin']",Dublin,exact-provenance-03-source,signed-registry-3,truthgit_no_rollback
+Oslo,gpt-4o-mini,main,True,False,"['Berlin', 'Oslo']",Oslo,exact-provenance-04-source,signed-registry-4,truthgit_no_rollback
+Dublin,gpt-4o-mini,main,True,False,"['Seoul', 'Rome', 'Dublin']",Dublin,temporal-supersession-00-current,residence-ledger-0-c,truthgit_no_review_gate
+Dublin,gpt-4o-mini,main,False,False,"['Seoul', 'Rome', 'Dublin']",Dublin,temporal-supersession-00-history,residence-ledger-0-c,truthgit_no_review_gate
+Dublin,gpt-4o-mini,main,True,False,"['Seoul', 'Rome', 'Dublin']",Dublin,temporal-supersession-00-provenance,residence-ledger-0-c,truthgit_no_review_gate
+Rome,gpt-4o-mini,main,True,False,"['Seoul', 'Rome', 'Dublin']",Rome,temporal-supersession-00-slice-middle,residence-ledger-0-b,truthgit_no_review_gate
+Oslo,gpt-4o-mini,main,True,False,"['Busan', 'Berlin', 'Oslo']",Oslo,temporal-supersession-01-current,residence-ledger-1-c,truthgit_no_review_gate
+Oslo,gpt-4o-mini,main,False,False,"['Busan', 'Berlin', 'Oslo']",Oslo,temporal-supersession-01-history,residence-ledger-1-c,truthgit_no_review_gate
+Oslo,gpt-4o-mini,main,True,False,"['Busan', 'Berlin', 'Oslo']",Oslo,temporal-supersession-01-provenance,residence-ledger-1-c,truthgit_no_review_gate
+Berlin,gpt-4o-mini,main,True,False,"['Busan', 'Berlin', 'Oslo']",Berlin,temporal-supersession-01-slice-middle,residence-ledger-1-b,truthgit_no_review_gate
+Prague,gpt-4o-mini,main,True,False,"['Tokyo', 'Paris', 'Prague']",Prague,temporal-supersession-02-current,residence-ledger-2-c,truthgit_no_review_gate
+Prague,gpt-4o-mini,main,False,False,"['Tokyo', 'Paris', 'Prague']",Prague,temporal-supersession-02-history,residence-ledger-2-c,truthgit_no_review_gate
+Prague,gpt-4o-mini,main,True,False,"['Tokyo', 'Paris', 'Prague']",Prague,temporal-supersession-02-provenance,residence-ledger-2-c,truthgit_no_review_gate
+Paris,gpt-4o-mini,main,True,False,"['Tokyo', 'Paris', 'Prague']",Paris,temporal-supersession-02-slice-middle,residence-ledger-2-b,truthgit_no_review_gate
+Vienna,gpt-4o-mini,main,True,False,"['Madrid', 'Lisbon', 'Vienna']",Vienna,temporal-supersession-03-current,residence-ledger-3-c,truthgit_no_review_gate
+Vienna,gpt-4o-mini,main,False,False,"['Madrid', 'Lisbon', 'Vienna']",Vienna,temporal-supersession-03-history,residence-ledger-3-c,truthgit_no_review_gate
+Vienna,gpt-4o-mini,main,True,False,"['Madrid', 'Lisbon', 'Vienna']",Vienna,temporal-supersession-03-provenance,residence-ledger-3-c,truthgit_no_review_gate
+Lisbon,gpt-4o-mini,main,True,False,"['Madrid', 'Lisbon', 'Vienna']",Lisbon,temporal-supersession-03-slice-middle,residence-ledger-3-b,truthgit_no_review_gate
+Lima,gpt-4o-mini,main,True,False,"['Rome', 'Dublin', 'Lima']",Lima,temporal-supersession-04-current,residence-ledger-4-c,truthgit_no_review_gate
+Lima,gpt-4o-mini,main,False,False,"['Rome', 'Dublin', 'Lima']",Lima,temporal-supersession-04-history,residence-ledger-4-c,truthgit_no_review_gate
+Lima,gpt-4o-mini,main,True,False,"['Rome', 'Dublin', 'Lima']",Lima,temporal-supersession-04-provenance,residence-ledger-4-c,truthgit_no_review_gate
+Dublin,gpt-4o-mini,main,True,False,"['Rome', 'Dublin', 'Lima']",Dublin,temporal-supersession-04-slice-middle,residence-ledger-4-b,truthgit_no_review_gate
+Quito,gpt-4o-mini,main,True,False,"['Berlin', 'Oslo', 'Quito']",Quito,temporal-supersession-05-current,residence-ledger-5-c,truthgit_no_review_gate
+Quito,gpt-4o-mini,main,False,False,"['Berlin', 'Oslo', 'Quito']",Quito,temporal-supersession-05-history,residence-ledger-5-c,truthgit_no_review_gate
+Quito,gpt-4o-mini,main,True,False,"['Berlin', 'Oslo', 'Quito']",Quito,temporal-supersession-05-provenance,residence-ledger-5-c,truthgit_no_review_gate
+Oslo,gpt-4o-mini,main,True,False,"['Berlin', 'Oslo', 'Quito']",Oslo,temporal-supersession-05-slice-middle,residence-ledger-5-b,truthgit_no_review_gate
+Hanoi,gpt-4o-mini,main,True,False,"['Paris', 'Prague', 'Hanoi']",Hanoi,temporal-supersession-06-current,residence-ledger-6-c,truthgit_no_review_gate
+Hanoi,gpt-4o-mini,main,False,False,"['Paris', 'Prague', 'Hanoi']",Hanoi,temporal-supersession-06-history,residence-ledger-6-c,truthgit_no_review_gate
+Hanoi,gpt-4o-mini,main,True,False,"['Paris', 'Prague', 'Hanoi']",Hanoi,temporal-supersession-06-provenance,residence-ledger-6-c,truthgit_no_review_gate
+Seoul,gpt-4o-mini,main,True,False,"['Lisbon', 'Vienna', 'Seoul']",Seoul,temporal-supersession-07-current,residence-ledger-7-c,truthgit_no_review_gate
+Seoul,gpt-4o-mini,main,False,False,"['Lisbon', 'Vienna', 'Seoul']",Seoul,temporal-supersession-07-history,residence-ledger-7-c,truthgit_no_review_gate
+Seoul,gpt-4o-mini,main,True,False,"['Lisbon', 'Vienna', 'Seoul']",Seoul,temporal-supersession-07-provenance,residence-ledger-7-c,truthgit_no_review_gate
+Busan,gpt-4o-mini,main,True,False,"['Dublin', 'Lima', 'Busan']",Busan,temporal-supersession-08-current,residence-ledger-8-c,truthgit_no_review_gate
+Busan,gpt-4o-mini,main,False,False,"['Dublin', 'Lima', 'Busan']",Busan,temporal-supersession-08-history,residence-ledger-8-c,truthgit_no_review_gate
+Busan,gpt-4o-mini,main,True,False,"['Dublin', 'Lima', 'Busan']",Busan,temporal-supersession-08-provenance,residence-ledger-8-c,truthgit_no_review_gate
+Tokyo,gpt-4o-mini,main,True,False,"['Oslo', 'Quito', 'Tokyo']",Tokyo,temporal-supersession-09-current,residence-ledger-9-c,truthgit_no_review_gate
+Tokyo,gpt-4o-mini,main,False,False,"['Oslo', 'Quito', 'Tokyo']",Tokyo,temporal-supersession-09-history,residence-ledger-9-c,truthgit_no_review_gate
+Tokyo,gpt-4o-mini,main,True,False,"['Oslo', 'Quito', 'Tokyo']",Tokyo,temporal-supersession-09-provenance,residence-ledger-9-c,truthgit_no_review_gate
+Madrid,gpt-4o-mini,main,True,False,"['Prague', 'Hanoi', 'Madrid']",Madrid,temporal-supersession-10-current,residence-ledger-10-c,truthgit_no_review_gate
+Madrid,gpt-4o-mini,main,False,False,"['Prague', 'Hanoi', 'Madrid']",Madrid,temporal-supersession-10-history,residence-ledger-10-c,truthgit_no_review_gate
+Madrid,gpt-4o-mini,main,True,False,"['Prague', 'Hanoi', 'Madrid']",Madrid,temporal-supersession-10-provenance,residence-ledger-10-c,truthgit_no_review_gate
+Rome,gpt-4o-mini,main,True,False,"['Vienna', 'Seoul', 'Rome']",Rome,temporal-supersession-11-current,residence-ledger-11-c,truthgit_no_review_gate
+Rome,gpt-4o-mini,main,False,False,"['Vienna', 'Seoul', 'Rome']",Rome,temporal-supersession-11-history,residence-ledger-11-c,truthgit_no_review_gate
+Rome,gpt-4o-mini,main,True,False,"['Vienna', 'Seoul', 'Rome']",Rome,temporal-supersession-11-provenance,residence-ledger-11-c,truthgit_no_review_gate
+Tokyo,gpt-4o-mini,main,True,False,"['Tokyo', 'Atlantis']",Tokyo,poisoning-low-trust-00-current,verified-registry-0,truthgit_no_review_gate
+Tokyo,gpt-4o-mini,main,False,False,"['Tokyo', 'Atlantis']",Tokyo,poisoning-low-trust-00-warning,verified-registry-0,truthgit_no_review_gate
+Madrid,gpt-4o-mini,main,True,False,"['Madrid', 'El Dorado']",Madrid,poisoning-low-trust-01-current,verified-registry-1,truthgit_no_review_gate
+Madrid,gpt-4o-mini,main,False,False,"['Madrid', 'El Dorado']",Madrid,poisoning-low-trust-01-warning,verified-registry-1,truthgit_no_review_gate
+Rome,gpt-4o-mini,main,True,False,"['Rome', 'Gotham']",Rome,poisoning-low-trust-02-current,verified-registry-2,truthgit_no_review_gate
+Rome,gpt-4o-mini,main,False,False,"['Rome', 'Gotham']",Rome,poisoning-low-trust-02-warning,verified-registry-2,truthgit_no_review_gate
+Berlin,gpt-4o-mini,main,True,False,"['Berlin', 'Metropolis']",Berlin,poisoning-low-trust-03-current,verified-registry-3,truthgit_no_review_gate
+Berlin,gpt-4o-mini,main,False,False,"['Berlin', 'Metropolis']",Berlin,poisoning-low-trust-03-warning,verified-registry-3,truthgit_no_review_gate
+Paris,gpt-4o-mini,main,True,False,"['Paris', 'Narnia']",Paris,poisoning-low-trust-04-current,verified-registry-4,truthgit_no_review_gate
+Paris,gpt-4o-mini,main,False,False,"['Paris', 'Narnia']",Paris,poisoning-low-trust-04-warning,verified-registry-4,truthgit_no_review_gate
+Lisbon,gpt-4o-mini,main,True,False,"['Lisbon', 'Atlantis']",Lisbon,poisoning-low-trust-05-current,verified-registry-5,truthgit_no_review_gate
+Lisbon,gpt-4o-mini,main,False,False,"['Lisbon', 'Atlantis']",Lisbon,poisoning-low-trust-05-warning,verified-registry-5,truthgit_no_review_gate
+Dublin,gpt-4o-mini,main,True,False,"['Dublin', 'El Dorado']",Dublin,poisoning-low-trust-06-current,verified-registry-6,truthgit_no_review_gate
+Dublin,gpt-4o-mini,main,False,False,"['Dublin', 'El Dorado']",Dublin,poisoning-low-trust-06-warning,verified-registry-6,truthgit_no_review_gate
+Oslo,gpt-4o-mini,main,True,False,"['Oslo', 'Gotham']",Oslo,poisoning-low-trust-07-current,verified-registry-7,truthgit_no_review_gate
+Oslo,gpt-4o-mini,main,False,False,"['Oslo', 'Gotham']",Oslo,poisoning-low-trust-07-warning,verified-registry-7,truthgit_no_review_gate
+Prague,gpt-4o-mini,main,True,False,"['Prague', 'Metropolis']",Prague,poisoning-low-trust-08-current,verified-registry-8,truthgit_no_review_gate
+Prague,gpt-4o-mini,main,False,False,"['Prague', 'Metropolis']",Prague,poisoning-low-trust-08-warning,verified-registry-8,truthgit_no_review_gate
+Vienna,gpt-4o-mini,main,True,False,"['Vienna', 'Narnia']",Vienna,poisoning-low-trust-09-current,verified-registry-9,truthgit_no_review_gate
+Vienna,gpt-4o-mini,main,False,False,"['Vienna', 'Narnia']",Vienna,poisoning-low-trust-09-warning,verified-registry-9,truthgit_no_review_gate
+unknown,gpt-4o-mini,main,False,False,['Lisbon'],,branch-leakage-00-main-isolation,,truthgit_no_review_gate
+Lisbon,gpt-4o-mini,trip-plan-0,True,False,['Lisbon'],Lisbon,branch-leakage-00-branch-visible,conference-itinerary-0,truthgit_no_review_gate
+Lisbon,gpt-4o-mini,trip-plan-0,True,False,['Lisbon'],Lisbon,branch-leakage-00-branch-source,conference-itinerary-0,truthgit_no_review_gate
+unknown,gpt-4o-mini,main,False,False,['Dublin'],,branch-leakage-01-main-isolation,,truthgit_no_review_gate
+Dublin,gpt-4o-mini,trip-plan-1,True,False,['Dublin'],Dublin,branch-leakage-01-branch-visible,conference-itinerary-1,truthgit_no_review_gate
+Dublin,gpt-4o-mini,trip-plan-1,True,False,['Dublin'],Dublin,branch-leakage-01-branch-source,conference-itinerary-1,truthgit_no_review_gate
+unknown,gpt-4o-mini,main,False,False,['Oslo'],,branch-leakage-02-main-isolation,,truthgit_no_review_gate
+Oslo,gpt-4o-mini,trip-plan-2,True,False,['Oslo'],Oslo,branch-leakage-02-branch-visible,conference-itinerary-2,truthgit_no_review_gate
+Oslo,gpt-4o-mini,trip-plan-2,True,False,['Oslo'],Oslo,branch-leakage-02-branch-source,conference-itinerary-2,truthgit_no_review_gate
+unknown,gpt-4o-mini,main,False,False,['Prague'],,branch-leakage-03-main-isolation,,truthgit_no_review_gate
+Prague,gpt-4o-mini,trip-plan-3,True,False,['Prague'],Prague,branch-leakage-03-branch-visible,conference-itinerary-3,truthgit_no_review_gate
+Prague,gpt-4o-mini,trip-plan-3,True,False,['Prague'],Prague,branch-leakage-03-branch-source,conference-itinerary-3,truthgit_no_review_gate
+unknown,gpt-4o-mini,main,False,False,['Vienna'],,branch-leakage-04-main-isolation,,truthgit_no_review_gate
+Vienna,gpt-4o-mini,trip-plan-4,True,False,['Vienna'],Vienna,branch-leakage-04-branch-visible,conference-itinerary-4,truthgit_no_review_gate
+Vienna,gpt-4o-mini,trip-plan-4,True,False,['Vienna'],Vienna,branch-leakage-04-branch-source,conference-itinerary-4,truthgit_no_review_gate
+unknown,gpt-4o-mini,main,False,False,['Lima'],,branch-leakage-05-main-isolation,,truthgit_no_review_gate
+Lima,gpt-4o-mini,trip-plan-5,True,False,['Lima'],Lima,branch-leakage-05-branch-visible,conference-itinerary-5,truthgit_no_review_gate
+Lima,gpt-4o-mini,trip-plan-5,True,False,['Lima'],Lima,branch-leakage-05-branch-source,conference-itinerary-5,truthgit_no_review_gate
+unknown,gpt-4o-mini,main,False,False,['Quito'],,branch-leakage-06-main-isolation,,truthgit_no_review_gate
+Quito,gpt-4o-mini,trip-plan-6,True,False,['Quito'],Quito,branch-leakage-06-branch-visible,conference-itinerary-6,truthgit_no_review_gate
+Quito,gpt-4o-mini,trip-plan-6,True,False,['Quito'],Quito,branch-leakage-06-branch-source,conference-itinerary-6,truthgit_no_review_gate
+unknown,gpt-4o-mini,main,False,False,['Hanoi'],,branch-leakage-07-main-isolation,,truthgit_no_review_gate
+Hanoi,gpt-4o-mini,trip-plan-7,True,False,['Hanoi'],Hanoi,branch-leakage-07-branch-visible,conference-itinerary-7,truthgit_no_review_gate
+Hanoi,gpt-4o-mini,trip-plan-7,True,False,['Hanoi'],Hanoi,branch-leakage-07-branch-source,conference-itinerary-7,truthgit_no_review_gate
+unknown,gpt-4o-mini,main,False,False,['Seoul'],,branch-leakage-08-main-isolation,,truthgit_no_review_gate
+Seoul,gpt-4o-mini,trip-plan-8,True,False,['Seoul'],Seoul,branch-leakage-08-branch-visible,conference-itinerary-8,truthgit_no_review_gate
+Seoul,gpt-4o-mini,trip-plan-8,True,False,['Seoul'],Seoul,branch-leakage-08-branch-source,conference-itinerary-8,truthgit_no_review_gate
+unknown,gpt-4o-mini,main,False,False,['Busan'],,branch-leakage-09-main-isolation,,truthgit_no_review_gate
+Busan,gpt-4o-mini,trip-plan-9,True,False,['Busan'],Busan,branch-leakage-09-branch-visible,conference-itinerary-9,truthgit_no_review_gate
+Busan,gpt-4o-mini,trip-plan-9,True,False,['Busan'],Busan,branch-leakage-09-branch-source,conference-itinerary-9,truthgit_no_review_gate
+Madrid,gpt-4o-mini,main,True,False,['Madrid'],Madrid,rollback-bad-commit-00-recovery,verified-profile-0,truthgit_no_review_gate
+Madrid,gpt-4o-mini,main,False,False,['Madrid'],Madrid,rollback-bad-commit-00-history-after-rollback,verified-profile-0,truthgit_no_review_gate
+Rome,gpt-4o-mini,main,True,False,['Rome'],Rome,rollback-bad-commit-01-recovery,verified-profile-1,truthgit_no_review_gate
+Rome,gpt-4o-mini,main,False,False,['Rome'],Rome,rollback-bad-commit-01-history-after-rollback,verified-profile-1,truthgit_no_review_gate
+Berlin,gpt-4o-mini,main,True,False,['Berlin'],Berlin,rollback-bad-commit-02-recovery,verified-profile-2,truthgit_no_review_gate
+Berlin,gpt-4o-mini,main,False,False,['Berlin'],Berlin,rollback-bad-commit-02-history-after-rollback,verified-profile-2,truthgit_no_review_gate
+Paris,gpt-4o-mini,main,True,False,['Paris'],Paris,rollback-bad-commit-03-recovery,verified-profile-3,truthgit_no_review_gate
+Paris,gpt-4o-mini,main,False,False,['Paris'],Paris,rollback-bad-commit-03-history-after-rollback,verified-profile-3,truthgit_no_review_gate
+Lisbon,gpt-4o-mini,main,True,False,['Lisbon'],Lisbon,rollback-bad-commit-04-recovery,verified-profile-4,truthgit_no_review_gate
+Dublin,gpt-4o-mini,main,True,False,['Dublin'],Dublin,rollback-bad-commit-05-recovery,verified-profile-5,truthgit_no_review_gate
+Oslo,gpt-4o-mini,main,True,False,['Oslo'],Oslo,rollback-bad-commit-06-recovery,verified-profile-6,truthgit_no_review_gate
+Prague,gpt-4o-mini,main,True,False,['Prague'],Prague,rollback-bad-commit-07-recovery,verified-profile-7,truthgit_no_review_gate
+Lab C,gpt-4o-mini,main,True,False,"['Lab A', 'Lab C', 'Lab C']",Lab C,merge-conflict-00-merged-current,signed-reorg-plan-0,truthgit_no_review_gate
+Lab D,gpt-4o-mini,main,True,False,"['Lab B', 'Lab D', 'Lab D']",Lab D,merge-conflict-01-merged-current,signed-reorg-plan-1,truthgit_no_review_gate
+Lab E,gpt-4o-mini,main,True,False,"['Lab C', 'Lab E', 'Lab E']",Lab E,merge-conflict-02-merged-current,signed-reorg-plan-2,truthgit_no_review_gate
+Lab F,gpt-4o-mini,main,True,False,"['Lab D', 'Lab F', 'Lab F']",Lab F,merge-conflict-03-merged-current,signed-reorg-plan-3,truthgit_no_review_gate
+Lab A,gpt-4o-mini,main,True,False,"['Lab E', 'Lab A', 'Lab A']",Lab A,merge-conflict-04-merged-current,signed-reorg-plan-4,truthgit_no_review_gate
+Berlin,gpt-4o-mini,main,True,False,"['Busan', 'Berlin']",Berlin,exact-provenance-00-source,signed-registry-0,truthgit_no_review_gate
+Paris,gpt-4o-mini,main,True,False,"['Tokyo', 'Paris']",Paris,exact-provenance-01-source,signed-registry-1,truthgit_no_review_gate
+Lisbon,gpt-4o-mini,main,True,False,"['Madrid', 'Lisbon']",Lisbon,exact-provenance-02-source,signed-registry-2,truthgit_no_review_gate
+Dublin,gpt-4o-mini,main,True,False,"['Rome', 'Dublin']",Dublin,exact-provenance-03-source,signed-registry-3,truthgit_no_review_gate
+Oslo,gpt-4o-mini,main,True,False,"['Berlin', 'Oslo']",Oslo,exact-provenance-04-source,signed-registry-4,truthgit_no_review_gate
+Dublin,gpt-4o-mini,main,True,False,"['Seoul', 'Rome', 'Dublin']",Dublin,temporal-supersession-00-current,residence-ledger-0-c,truthgit_no_trust_scoring
+Dublin,gpt-4o-mini,main,False,False,"['Seoul', 'Rome', 'Dublin']",Dublin,temporal-supersession-00-history,residence-ledger-0-c,truthgit_no_trust_scoring
+Dublin,gpt-4o-mini,main,True,False,"['Seoul', 'Rome', 'Dublin']",Dublin,temporal-supersession-00-provenance,residence-ledger-0-c,truthgit_no_trust_scoring
+Rome,gpt-4o-mini,main,True,False,"['Seoul', 'Rome', 'Dublin']",Rome,temporal-supersession-00-slice-middle,residence-ledger-0-b,truthgit_no_trust_scoring
+Oslo,gpt-4o-mini,main,True,False,"['Busan', 'Berlin', 'Oslo']",Oslo,temporal-supersession-01-current,residence-ledger-1-c,truthgit_no_trust_scoring
+Oslo,gpt-4o-mini,main,False,False,"['Busan', 'Berlin', 'Oslo']",Oslo,temporal-supersession-01-history,residence-ledger-1-c,truthgit_no_trust_scoring
+Oslo,gpt-4o-mini,main,True,False,"['Busan', 'Berlin', 'Oslo']",Oslo,temporal-supersession-01-provenance,residence-ledger-1-c,truthgit_no_trust_scoring
+Berlin,gpt-4o-mini,main,True,False,"['Busan', 'Berlin', 'Oslo']",Berlin,temporal-supersession-01-slice-middle,residence-ledger-1-b,truthgit_no_trust_scoring
+Prague,gpt-4o-mini,main,True,False,"['Tokyo', 'Paris', 'Prague']",Prague,temporal-supersession-02-current,residence-ledger-2-c,truthgit_no_trust_scoring
+Prague,gpt-4o-mini,main,False,False,"['Tokyo', 'Paris', 'Prague']",Prague,temporal-supersession-02-history,residence-ledger-2-c,truthgit_no_trust_scoring
+Prague,gpt-4o-mini,main,True,False,"['Tokyo', 'Paris', 'Prague']",Prague,temporal-supersession-02-provenance,residence-ledger-2-c,truthgit_no_trust_scoring
+Paris,gpt-4o-mini,main,True,False,"['Tokyo', 'Paris', 'Prague']",Paris,temporal-supersession-02-slice-middle,residence-ledger-2-b,truthgit_no_trust_scoring
+Vienna,gpt-4o-mini,main,True,False,"['Madrid', 'Lisbon', 'Vienna']",Vienna,temporal-supersession-03-current,residence-ledger-3-c,truthgit_no_trust_scoring
+Vienna,gpt-4o-mini,main,False,False,"['Madrid', 'Lisbon', 'Vienna']",Vienna,temporal-supersession-03-history,residence-ledger-3-c,truthgit_no_trust_scoring
+Vienna,gpt-4o-mini,main,True,False,"['Madrid', 'Lisbon', 'Vienna']",Vienna,temporal-supersession-03-provenance,residence-ledger-3-c,truthgit_no_trust_scoring
+Lisbon,gpt-4o-mini,main,True,False,"['Madrid', 'Lisbon', 'Vienna']",Lisbon,temporal-supersession-03-slice-middle,residence-ledger-3-b,truthgit_no_trust_scoring
+Lima,gpt-4o-mini,main,True,False,"['Rome', 'Dublin', 'Lima']",Lima,temporal-supersession-04-current,residence-ledger-4-c,truthgit_no_trust_scoring
+Lima,gpt-4o-mini,main,False,False,"['Rome', 'Dublin', 'Lima']",Lima,temporal-supersession-04-history,residence-ledger-4-c,truthgit_no_trust_scoring
+Lima,gpt-4o-mini,main,True,False,"['Rome', 'Dublin', 'Lima']",Lima,temporal-supersession-04-provenance,residence-ledger-4-c,truthgit_no_trust_scoring
+Dublin,gpt-4o-mini,main,True,False,"['Rome', 'Dublin', 'Lima']",Dublin,temporal-supersession-04-slice-middle,residence-ledger-4-b,truthgit_no_trust_scoring
+Quito,gpt-4o-mini,main,True,False,"['Berlin', 'Oslo', 'Quito']",Quito,temporal-supersession-05-current,residence-ledger-5-c,truthgit_no_trust_scoring
+Quito,gpt-4o-mini,main,False,False,"['Berlin', 'Oslo', 'Quito']",Quito,temporal-supersession-05-history,residence-ledger-5-c,truthgit_no_trust_scoring
+Quito,gpt-4o-mini,main,True,False,"['Berlin', 'Oslo', 'Quito']",Quito,temporal-supersession-05-provenance,residence-ledger-5-c,truthgit_no_trust_scoring
+Oslo,gpt-4o-mini,main,True,False,"['Berlin', 'Oslo', 'Quito']",Oslo,temporal-supersession-05-slice-middle,residence-ledger-5-b,truthgit_no_trust_scoring
+Hanoi,gpt-4o-mini,main,True,False,"['Paris', 'Prague', 'Hanoi']",Hanoi,temporal-supersession-06-current,residence-ledger-6-c,truthgit_no_trust_scoring
+Hanoi,gpt-4o-mini,main,False,False,"['Paris', 'Prague', 'Hanoi']",Hanoi,temporal-supersession-06-history,residence-ledger-6-c,truthgit_no_trust_scoring
+Hanoi,gpt-4o-mini,main,True,False,"['Paris', 'Prague', 'Hanoi']",Hanoi,temporal-supersession-06-provenance,residence-ledger-6-c,truthgit_no_trust_scoring
+Seoul,gpt-4o-mini,main,True,False,"['Lisbon', 'Vienna', 'Seoul']",Seoul,temporal-supersession-07-current,residence-ledger-7-c,truthgit_no_trust_scoring
+Seoul,gpt-4o-mini,main,False,False,"['Lisbon', 'Vienna', 'Seoul']",Seoul,temporal-supersession-07-history,residence-ledger-7-c,truthgit_no_trust_scoring
+Seoul,gpt-4o-mini,main,True,False,"['Lisbon', 'Vienna', 'Seoul']",Seoul,temporal-supersession-07-provenance,residence-ledger-7-c,truthgit_no_trust_scoring
+Busan,gpt-4o-mini,main,True,False,"['Dublin', 'Lima', 'Busan']",Busan,temporal-supersession-08-current,residence-ledger-8-c,truthgit_no_trust_scoring
+Busan,gpt-4o-mini,main,False,False,"['Dublin', 'Lima', 'Busan']",Busan,temporal-supersession-08-history,residence-ledger-8-c,truthgit_no_trust_scoring
+Busan,gpt-4o-mini,main,True,False,"['Dublin', 'Lima', 'Busan']",Busan,temporal-supersession-08-provenance,residence-ledger-8-c,truthgit_no_trust_scoring
+Tokyo,gpt-4o-mini,main,True,False,"['Oslo', 'Quito', 'Tokyo']",Tokyo,temporal-supersession-09-current,residence-ledger-9-c,truthgit_no_trust_scoring
+Tokyo,gpt-4o-mini,main,False,False,"['Oslo', 'Quito', 'Tokyo']",Tokyo,temporal-supersession-09-history,residence-ledger-9-c,truthgit_no_trust_scoring
+Tokyo,gpt-4o-mini,main,True,False,"['Oslo', 'Quito', 'Tokyo']",Tokyo,temporal-supersession-09-provenance,residence-ledger-9-c,truthgit_no_trust_scoring
+Madrid,gpt-4o-mini,main,True,False,"['Prague', 'Hanoi', 'Madrid']",Madrid,temporal-supersession-10-current,residence-ledger-10-c,truthgit_no_trust_scoring
+Madrid,gpt-4o-mini,main,False,False,"['Prague', 'Hanoi', 'Madrid']",Madrid,temporal-supersession-10-history,residence-ledger-10-c,truthgit_no_trust_scoring
+Madrid,gpt-4o-mini,main,True,False,"['Prague', 'Hanoi', 'Madrid']",Madrid,temporal-supersession-10-provenance,residence-ledger-10-c,truthgit_no_trust_scoring
+Rome,gpt-4o-mini,main,True,False,"['Vienna', 'Seoul', 'Rome']",Rome,temporal-supersession-11-current,residence-ledger-11-c,truthgit_no_trust_scoring
+Rome,gpt-4o-mini,main,False,False,"['Vienna', 'Seoul', 'Rome']",Rome,temporal-supersession-11-history,residence-ledger-11-c,truthgit_no_trust_scoring
+Rome,gpt-4o-mini,main,True,False,"['Vienna', 'Seoul', 'Rome']",Rome,temporal-supersession-11-provenance,residence-ledger-11-c,truthgit_no_trust_scoring
+Atlantis,gpt-4o-mini,main,False,False,"['Tokyo', 'Atlantis']",Atlantis,poisoning-low-trust-00-current,untrusted-scrape-0,truthgit_no_trust_scoring
+Atlantis,gpt-4o-mini,main,False,False,"['Tokyo', 'Atlantis']",Atlantis,poisoning-low-trust-00-warning,untrusted-scrape-0,truthgit_no_trust_scoring
+El Dorado,gpt-4o-mini,main,False,False,"['Madrid', 'El Dorado']",El Dorado,poisoning-low-trust-01-current,untrusted-scrape-1,truthgit_no_trust_scoring
+El Dorado,gpt-4o-mini,main,False,False,"['Madrid', 'El Dorado']",El Dorado,poisoning-low-trust-01-warning,untrusted-scrape-1,truthgit_no_trust_scoring
+Gotham,gpt-4o-mini,main,False,False,"['Rome', 'Gotham']",Gotham,poisoning-low-trust-02-current,untrusted-scrape-2,truthgit_no_trust_scoring
+Gotham,gpt-4o-mini,main,False,False,"['Rome', 'Gotham']",Gotham,poisoning-low-trust-02-warning,untrusted-scrape-2,truthgit_no_trust_scoring
+Metropolis,gpt-4o-mini,main,False,False,"['Berlin', 'Metropolis']",Metropolis,poisoning-low-trust-03-current,untrusted-scrape-3,truthgit_no_trust_scoring
+Metropolis,gpt-4o-mini,main,False,False,"['Berlin', 'Metropolis']",Metropolis,poisoning-low-trust-03-warning,untrusted-scrape-3,truthgit_no_trust_scoring
+Narnia,gpt-4o-mini,main,False,False,"['Paris', 'Narnia']",Narnia,poisoning-low-trust-04-current,untrusted-scrape-4,truthgit_no_trust_scoring
+Narnia,gpt-4o-mini,main,False,False,"['Paris', 'Narnia']",Narnia,poisoning-low-trust-04-warning,untrusted-scrape-4,truthgit_no_trust_scoring
+Atlantis,gpt-4o-mini,main,False,False,"['Lisbon', 'Atlantis']",Atlantis,poisoning-low-trust-05-current,untrusted-scrape-5,truthgit_no_trust_scoring
+Atlantis,gpt-4o-mini,main,False,False,"['Lisbon', 'Atlantis']",Atlantis,poisoning-low-trust-05-warning,untrusted-scrape-5,truthgit_no_trust_scoring
+El Dorado,gpt-4o-mini,main,False,False,"['Dublin', 'El Dorado']",El Dorado,poisoning-low-trust-06-current,untrusted-scrape-6,truthgit_no_trust_scoring
+El Dorado,gpt-4o-mini,main,False,False,"['Dublin', 'El Dorado']",El Dorado,poisoning-low-trust-06-warning,untrusted-scrape-6,truthgit_no_trust_scoring
+Gotham,gpt-4o-mini,main,False,False,"['Oslo', 'Gotham']",Gotham,poisoning-low-trust-07-current,untrusted-scrape-7,truthgit_no_trust_scoring
+Gotham,gpt-4o-mini,main,False,False,"['Oslo', 'Gotham']",Gotham,poisoning-low-trust-07-warning,untrusted-scrape-7,truthgit_no_trust_scoring
+Metropolis,gpt-4o-mini,main,False,False,"['Prague', 'Metropolis']",Metropolis,poisoning-low-trust-08-current,untrusted-scrape-8,truthgit_no_trust_scoring
+Metropolis,gpt-4o-mini,main,False,False,"['Prague', 'Metropolis']",Metropolis,poisoning-low-trust-08-warning,untrusted-scrape-8,truthgit_no_trust_scoring
+Narnia,gpt-4o-mini,main,False,False,"['Vienna', 'Narnia']",Narnia,poisoning-low-trust-09-current,untrusted-scrape-9,truthgit_no_trust_scoring
+Narnia,gpt-4o-mini,main,False,False,"['Vienna', 'Narnia']",Narnia,poisoning-low-trust-09-warning,untrusted-scrape-9,truthgit_no_trust_scoring
+unknown,gpt-4o-mini,main,False,False,['Lisbon'],,branch-leakage-00-main-isolation,,truthgit_no_trust_scoring
+Lisbon,gpt-4o-mini,trip-plan-0,True,False,['Lisbon'],Lisbon,branch-leakage-00-branch-visible,conference-itinerary-0,truthgit_no_trust_scoring
+Lisbon,gpt-4o-mini,trip-plan-0,True,False,['Lisbon'],Lisbon,branch-leakage-00-branch-source,conference-itinerary-0,truthgit_no_trust_scoring
+unknown,gpt-4o-mini,main,False,False,['Dublin'],,branch-leakage-01-main-isolation,,truthgit_no_trust_scoring
+Dublin,gpt-4o-mini,trip-plan-1,True,False,['Dublin'],Dublin,branch-leakage-01-branch-visible,conference-itinerary-1,truthgit_no_trust_scoring
+Dublin,gpt-4o-mini,trip-plan-1,True,False,['Dublin'],Dublin,branch-leakage-01-branch-source,conference-itinerary-1,truthgit_no_trust_scoring
+unknown,gpt-4o-mini,main,False,False,['Oslo'],,branch-leakage-02-main-isolation,,truthgit_no_trust_scoring
+Oslo,gpt-4o-mini,trip-plan-2,True,False,['Oslo'],Oslo,branch-leakage-02-branch-visible,conference-itinerary-2,truthgit_no_trust_scoring
+Oslo,gpt-4o-mini,trip-plan-2,True,False,['Oslo'],Oslo,branch-leakage-02-branch-source,conference-itinerary-2,truthgit_no_trust_scoring
+unknown,gpt-4o-mini,main,False,False,['Prague'],,branch-leakage-03-main-isolation,,truthgit_no_trust_scoring
+Prague,gpt-4o-mini,trip-plan-3,True,False,['Prague'],Prague,branch-leakage-03-branch-visible,conference-itinerary-3,truthgit_no_trust_scoring
+Prague,gpt-4o-mini,trip-plan-3,True,False,['Prague'],Prague,branch-leakage-03-branch-source,conference-itinerary-3,truthgit_no_trust_scoring
+unknown,gpt-4o-mini,main,False,False,['Vienna'],,branch-leakage-04-main-isolation,,truthgit_no_trust_scoring
+Vienna,gpt-4o-mini,trip-plan-4,True,False,['Vienna'],Vienna,branch-leakage-04-branch-visible,conference-itinerary-4,truthgit_no_trust_scoring
+Vienna,gpt-4o-mini,trip-plan-4,True,False,['Vienna'],Vienna,branch-leakage-04-branch-source,conference-itinerary-4,truthgit_no_trust_scoring
+unknown,gpt-4o-mini,main,False,False,['Lima'],,branch-leakage-05-main-isolation,,truthgit_no_trust_scoring
+Lima,gpt-4o-mini,trip-plan-5,True,False,['Lima'],Lima,branch-leakage-05-branch-visible,conference-itinerary-5,truthgit_no_trust_scoring
+Lima,gpt-4o-mini,trip-plan-5,True,False,['Lima'],Lima,branch-leakage-05-branch-source,conference-itinerary-5,truthgit_no_trust_scoring
+unknown,gpt-4o-mini,main,False,False,['Quito'],,branch-leakage-06-main-isolation,,truthgit_no_trust_scoring
+Quito,gpt-4o-mini,trip-plan-6,True,False,['Quito'],Quito,branch-leakage-06-branch-visible,conference-itinerary-6,truthgit_no_trust_scoring
+Quito,gpt-4o-mini,trip-plan-6,True,False,['Quito'],Quito,branch-leakage-06-branch-source,conference-itinerary-6,truthgit_no_trust_scoring
+unknown,gpt-4o-mini,main,False,False,['Hanoi'],,branch-leakage-07-main-isolation,,truthgit_no_trust_scoring
+Hanoi,gpt-4o-mini,trip-plan-7,True,False,['Hanoi'],Hanoi,branch-leakage-07-branch-visible,conference-itinerary-7,truthgit_no_trust_scoring
+Hanoi,gpt-4o-mini,trip-plan-7,True,False,['Hanoi'],Hanoi,branch-leakage-07-branch-source,conference-itinerary-7,truthgit_no_trust_scoring
+unknown,gpt-4o-mini,main,False,False,['Seoul'],,branch-leakage-08-main-isolation,,truthgit_no_trust_scoring
+Seoul,gpt-4o-mini,trip-plan-8,True,False,['Seoul'],Seoul,branch-leakage-08-branch-visible,conference-itinerary-8,truthgit_no_trust_scoring
+Seoul,gpt-4o-mini,trip-plan-8,True,False,['Seoul'],Seoul,branch-leakage-08-branch-source,conference-itinerary-8,truthgit_no_trust_scoring
+unknown,gpt-4o-mini,main,False,False,['Busan'],,branch-leakage-09-main-isolation,,truthgit_no_trust_scoring
+Busan,gpt-4o-mini,trip-plan-9,True,False,['Busan'],Busan,branch-leakage-09-branch-visible,conference-itinerary-9,truthgit_no_trust_scoring
+Busan,gpt-4o-mini,trip-plan-9,True,False,['Busan'],Busan,branch-leakage-09-branch-source,conference-itinerary-9,truthgit_no_trust_scoring
+Madrid,gpt-4o-mini,main,True,False,['Madrid'],Madrid,rollback-bad-commit-00-recovery,verified-profile-0,truthgit_no_trust_scoring
+Madrid,gpt-4o-mini,main,False,False,['Madrid'],Madrid,rollback-bad-commit-00-history-after-rollback,verified-profile-0,truthgit_no_trust_scoring
+Rome,gpt-4o-mini,main,True,False,['Rome'],Rome,rollback-bad-commit-01-recovery,verified-profile-1,truthgit_no_trust_scoring
+Rome,gpt-4o-mini,main,False,False,['Rome'],Rome,rollback-bad-commit-01-history-after-rollback,verified-profile-1,truthgit_no_trust_scoring
+Berlin,gpt-4o-mini,main,True,False,['Berlin'],Berlin,rollback-bad-commit-02-recovery,verified-profile-2,truthgit_no_trust_scoring
+Berlin,gpt-4o-mini,main,False,False,['Berlin'],Berlin,rollback-bad-commit-02-history-after-rollback,verified-profile-2,truthgit_no_trust_scoring
+Paris,gpt-4o-mini,main,True,False,['Paris'],Paris,rollback-bad-commit-03-recovery,verified-profile-3,truthgit_no_trust_scoring
+Paris,gpt-4o-mini,main,False,False,['Paris'],Paris,rollback-bad-commit-03-history-after-rollback,verified-profile-3,truthgit_no_trust_scoring
+Lisbon,gpt-4o-mini,main,True,False,['Lisbon'],Lisbon,rollback-bad-commit-04-recovery,verified-profile-4,truthgit_no_trust_scoring
+Dublin,gpt-4o-mini,main,True,False,['Dublin'],Dublin,rollback-bad-commit-05-recovery,verified-profile-5,truthgit_no_trust_scoring
+Oslo,gpt-4o-mini,main,True,False,['Oslo'],Oslo,rollback-bad-commit-06-recovery,verified-profile-6,truthgit_no_trust_scoring
+Prague,gpt-4o-mini,main,True,False,['Prague'],Prague,rollback-bad-commit-07-recovery,verified-profile-7,truthgit_no_trust_scoring
+Lab C,gpt-4o-mini,main,True,False,"['Lab A', 'Lab C', 'Lab C']",Lab C,merge-conflict-00-merged-current,signed-reorg-plan-0,truthgit_no_trust_scoring
+Lab D,gpt-4o-mini,main,True,False,"['Lab B', 'Lab D', 'Lab D']",Lab D,merge-conflict-01-merged-current,signed-reorg-plan-1,truthgit_no_trust_scoring
+Lab E,gpt-4o-mini,main,True,False,"['Lab C', 'Lab E', 'Lab E']",Lab E,merge-conflict-02-merged-current,signed-reorg-plan-2,truthgit_no_trust_scoring
+Lab F,gpt-4o-mini,main,True,False,"['Lab D', 'Lab F', 'Lab F']",Lab F,merge-conflict-03-merged-current,signed-reorg-plan-3,truthgit_no_trust_scoring
+Lab A,gpt-4o-mini,main,True,False,"['Lab E', 'Lab A', 'Lab A']",Lab A,merge-conflict-04-merged-current,signed-reorg-plan-4,truthgit_no_trust_scoring
+Berlin,gpt-4o-mini,main,True,False,"['Busan', 'Berlin']",Berlin,exact-provenance-00-source,signed-registry-0,truthgit_no_trust_scoring
+Paris,gpt-4o-mini,main,True,False,"['Tokyo', 'Paris']",Paris,exact-provenance-01-source,signed-registry-1,truthgit_no_trust_scoring
+Lisbon,gpt-4o-mini,main,True,False,"['Madrid', 'Lisbon']",Lisbon,exact-provenance-02-source,signed-registry-2,truthgit_no_trust_scoring
+Dublin,gpt-4o-mini,main,True,False,"['Rome', 'Dublin']",Dublin,exact-provenance-03-source,signed-registry-3,truthgit_no_trust_scoring
+Oslo,gpt-4o-mini,main,True,False,"['Berlin', 'Oslo']",Oslo,exact-provenance-04-source,signed-registry-4,truthgit_no_trust_scoring

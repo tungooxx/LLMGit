@@ -27,9 +27,7 @@ def score_answer(question: BenchmarkQuestion, answer: SystemAnswer) -> float:
     if question.metric == "current_truth_accuracy":
         return _truth_match(question, answer)
     if question.metric == "historical_truth_accuracy":
-        expected = {value.lower() for value in question.expected_historical_objects}
-        observed = {value.lower() for value in answer.historical_objects}
-        return 1.0 if expected.issubset(observed) else 0.0
+        return _historical_match(question, answer)
     if question.metric == "provenance_accuracy":
         return 1.0 if answer.source_ref == question.expected_source_ref else 0.0
     if question.metric == "rollback_recovery_rate":
@@ -55,7 +53,16 @@ def score_questions(
     scores: list[QuestionScore] = []
     for question in questions:
         answer = answer_by_id[question.question_id]
-        expected = question.expected_object_value or question.expected_source_ref
+        expected = (
+            " -> ".join(question.expected_historical_objects)
+            if question.metric == "historical_truth_accuracy" and question.expected_historical_objects
+            else question.expected_object_value or question.expected_source_ref
+        )
+        observed = (
+            " -> ".join(answer.historical_objects)
+            if question.metric == "historical_truth_accuracy" and question.expected_historical_objects
+            else answer.object_value or answer.source_ref
+        )
         scores.append(
             QuestionScore(
                 system_name=system_name,
@@ -63,7 +70,7 @@ def score_questions(
                 metric=question.metric,
                 score=score_answer(question, answer),
                 expected=expected,
-                observed=answer.object_value or answer.source_ref,
+                observed=observed,
                 answer_text=answer.answer_text,
             )
         )
@@ -107,3 +114,11 @@ def _truth_match(question: BenchmarkQuestion, answer: SystemAnswer) -> float:
         if forbidden in text:
             return 0.0
     return 1.0
+
+
+def _historical_match(question: BenchmarkQuestion, answer: SystemAnswer) -> float:
+    if question.as_of is not None:
+        return _truth_match(question, answer)
+    expected = [value.lower() for value in question.expected_historical_objects]
+    observed = [value.lower() for value in answer.historical_objects]
+    return 1.0 if observed == expected else 0.0

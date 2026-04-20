@@ -60,13 +60,17 @@ class BenchmarkQuestion:
     expected_object_value: str | None = None
     forbidden_object_value: str | None = None
     expected_historical_objects: list[str] = field(default_factory=list)
+    as_of: date | None = None
     expected_source_ref: str | None = None
     expected_low_trust_warning: bool = False
     expected_conflict_resolution: bool = False
     related_event_id: str | None = None
 
     def to_json(self) -> dict[str, Any]:
-        return asdict(self)
+        data = asdict(self)
+        if data["as_of"] is not None:
+            data["as_of"] = data["as_of"].isoformat()
+        return data
 
 
 @dataclass(frozen=True)
@@ -147,7 +151,7 @@ class SyntheticBenchmarkGenerator:
             third = self.cities[(idx + 8) % len(self.cities)]
             y1 = 2024 + (idx % 2)
             y2 = 2025 + (idx % 2)
-            y3 = 2026
+            y3 = y2 + 1
             case_id = f"temporal-supersession-{idx:02d}"
             events = [
                 BenchmarkEvent(
@@ -215,6 +219,19 @@ class SyntheticBenchmarkGenerator:
                     expected_source_ref=f"residence-ledger-{idx}-c",
                 ),
             ]
+            if idx < 6:
+                questions.append(
+                    BenchmarkQuestion(
+                        question_id=f"{case_id}-slice-middle",
+                        metric="historical_truth_accuracy",
+                        prompt=f"Where did {person} live in December {y2}?",
+                        subject=person,
+                        predicate="lives_in",
+                        expected_object_value=second,
+                        forbidden_object_value=third,
+                        as_of=date(y2, 12, 1),
+                    )
+                )
             cases.append(
                 BenchmarkCase(
                     case_id=case_id,
@@ -410,6 +427,17 @@ class SyntheticBenchmarkGenerator:
                     related_event_id=f"{case_id}-rollback",
                 )
             ]
+            if idx < 4:
+                questions.append(
+                    BenchmarkQuestion(
+                        question_id=f"{case_id}-history-after-rollback",
+                        metric="historical_truth_accuracy",
+                        prompt=f"What is {person}'s rollback-cleaned residence timeline?",
+                        subject=person,
+                        predicate="lives_in",
+                        expected_historical_objects=[correct],
+                    )
+                )
             cases.append(
                 BenchmarkCase(
                     case_id=case_id,

@@ -1,0 +1,913 @@
+answer_text,expected,metric,observed,question_id,score,system_name
+Dublin,Dublin,current_truth_accuracy,Dublin,temporal-supersession-00-current,1.0,naive_chat_history
+Dublin,Seoul -> Rome -> Dublin,historical_truth_accuracy,Seoul -> Rome -> Dublin,temporal-supersession-00-history,1.0,naive_chat_history
+Dublin,Dublin,provenance_accuracy,Dublin,temporal-supersession-00-provenance,1.0,naive_chat_history
+Dublin,Rome,historical_truth_accuracy,Dublin,temporal-supersession-00-slice-middle,0.0,naive_chat_history
+Oslo,Oslo,current_truth_accuracy,Oslo,temporal-supersession-01-current,1.0,naive_chat_history
+Oslo,Busan -> Berlin -> Oslo,historical_truth_accuracy,Busan -> Berlin -> Oslo,temporal-supersession-01-history,1.0,naive_chat_history
+Oslo,Oslo,provenance_accuracy,Oslo,temporal-supersession-01-provenance,1.0,naive_chat_history
+Oslo,Berlin,historical_truth_accuracy,Oslo,temporal-supersession-01-slice-middle,0.0,naive_chat_history
+Prague,Prague,current_truth_accuracy,Prague,temporal-supersession-02-current,1.0,naive_chat_history
+Prague,Tokyo -> Paris -> Prague,historical_truth_accuracy,Tokyo -> Paris -> Prague,temporal-supersession-02-history,1.0,naive_chat_history
+Prague,Prague,provenance_accuracy,Prague,temporal-supersession-02-provenance,1.0,naive_chat_history
+Prague,Paris,historical_truth_accuracy,Prague,temporal-supersession-02-slice-middle,0.0,naive_chat_history
+Vienna,Vienna,current_truth_accuracy,Vienna,temporal-supersession-03-current,1.0,naive_chat_history
+Vienna,Madrid -> Lisbon -> Vienna,historical_truth_accuracy,Madrid -> Lisbon -> Vienna,temporal-supersession-03-history,1.0,naive_chat_history
+Vienna,Vienna,provenance_accuracy,Vienna,temporal-supersession-03-provenance,1.0,naive_chat_history
+Vienna,Lisbon,historical_truth_accuracy,Vienna,temporal-supersession-03-slice-middle,0.0,naive_chat_history
+Lima,Lima,current_truth_accuracy,Lima,temporal-supersession-04-current,1.0,naive_chat_history
+Lima,Rome -> Dublin -> Lima,historical_truth_accuracy,Rome -> Dublin -> Lima,temporal-supersession-04-history,1.0,naive_chat_history
+Lima,Lima,provenance_accuracy,Lima,temporal-supersession-04-provenance,1.0,naive_chat_history
+Lima,Dublin,historical_truth_accuracy,Lima,temporal-supersession-04-slice-middle,0.0,naive_chat_history
+Quito,Quito,current_truth_accuracy,Quito,temporal-supersession-05-current,1.0,naive_chat_history
+Quito,Berlin -> Oslo -> Quito,historical_truth_accuracy,Berlin -> Oslo -> Quito,temporal-supersession-05-history,1.0,naive_chat_history
+Quito,Quito,provenance_accuracy,Quito,temporal-supersession-05-provenance,1.0,naive_chat_history
+Quito,Oslo,historical_truth_accuracy,Quito,temporal-supersession-05-slice-middle,0.0,naive_chat_history
+Hanoi,Hanoi,current_truth_accuracy,Hanoi,temporal-supersession-06-current,1.0,naive_chat_history
+Hanoi,Paris -> Prague -> Hanoi,historical_truth_accuracy,Paris -> Prague -> Hanoi,temporal-supersession-06-history,1.0,naive_chat_history
+Hanoi,Hanoi,provenance_accuracy,Hanoi,temporal-supersession-06-provenance,1.0,naive_chat_history
+Seoul,Seoul,current_truth_accuracy,Seoul,temporal-supersession-07-current,1.0,naive_chat_history
+Seoul,Lisbon -> Vienna -> Seoul,historical_truth_accuracy,Lisbon -> Vienna -> Seoul,temporal-supersession-07-history,1.0,naive_chat_history
+Seoul,Seoul,provenance_accuracy,Seoul,temporal-supersession-07-provenance,1.0,naive_chat_history
+Busan,Busan,current_truth_accuracy,Busan,temporal-supersession-08-current,1.0,naive_chat_history
+Busan,Dublin -> Lima -> Busan,historical_truth_accuracy,Dublin -> Lima -> Busan,temporal-supersession-08-history,1.0,naive_chat_history
+Busan,Busan,provenance_accuracy,Busan,temporal-supersession-08-provenance,1.0,naive_chat_history
+Tokyo,Tokyo,current_truth_accuracy,Tokyo,temporal-supersession-09-current,1.0,naive_chat_history
+Tokyo,Oslo -> Quito -> Tokyo,historical_truth_accuracy,Oslo -> Quito -> Tokyo,temporal-supersession-09-history,1.0,naive_chat_history
+Tokyo,Tokyo,provenance_accuracy,Tokyo,temporal-supersession-09-provenance,1.0,naive_chat_history
+Madrid,Madrid,current_truth_accuracy,Madrid,temporal-supersession-10-current,1.0,naive_chat_history
+Madrid,Prague -> Hanoi -> Madrid,historical_truth_accuracy,Prague -> Hanoi -> Madrid,temporal-supersession-10-history,1.0,naive_chat_history
+Madrid,Madrid,provenance_accuracy,Madrid,temporal-supersession-10-provenance,1.0,naive_chat_history
+Rome,Rome,current_truth_accuracy,Rome,temporal-supersession-11-current,1.0,naive_chat_history
+Rome,Vienna -> Seoul -> Rome,historical_truth_accuracy,Vienna -> Seoul -> Rome,temporal-supersession-11-history,1.0,naive_chat_history
+Rome,Rome,provenance_accuracy,Rome,temporal-supersession-11-provenance,1.0,naive_chat_history
+Atlantis,Tokyo,current_truth_accuracy,Atlantis,poisoning-low-trust-00-current,0.0,naive_chat_history
+Atlantis,,low_trust_warning_rate,Atlantis,poisoning-low-trust-00-warning,0.0,naive_chat_history
+El Dorado,Madrid,current_truth_accuracy,El Dorado,poisoning-low-trust-01-current,0.0,naive_chat_history
+El Dorado,,low_trust_warning_rate,El Dorado,poisoning-low-trust-01-warning,0.0,naive_chat_history
+Gotham,Rome,current_truth_accuracy,Gotham,poisoning-low-trust-02-current,0.0,naive_chat_history
+Gotham,,low_trust_warning_rate,Gotham,poisoning-low-trust-02-warning,0.0,naive_chat_history
+Metropolis,Berlin,current_truth_accuracy,Metropolis,poisoning-low-trust-03-current,0.0,naive_chat_history
+Metropolis,,low_trust_warning_rate,Metropolis,poisoning-low-trust-03-warning,0.0,naive_chat_history
+Narnia,Paris,current_truth_accuracy,Narnia,poisoning-low-trust-04-current,0.0,naive_chat_history
+Narnia,,low_trust_warning_rate,Narnia,poisoning-low-trust-04-warning,0.0,naive_chat_history
+Atlantis,Lisbon,current_truth_accuracy,Atlantis,poisoning-low-trust-05-current,0.0,naive_chat_history
+Atlantis,,low_trust_warning_rate,Atlantis,poisoning-low-trust-05-warning,0.0,naive_chat_history
+El Dorado,Dublin,current_truth_accuracy,El Dorado,poisoning-low-trust-06-current,0.0,naive_chat_history
+El Dorado,,low_trust_warning_rate,El Dorado,poisoning-low-trust-06-warning,0.0,naive_chat_history
+Gotham,Oslo,current_truth_accuracy,Gotham,poisoning-low-trust-07-current,0.0,naive_chat_history
+Gotham,,low_trust_warning_rate,Gotham,poisoning-low-trust-07-warning,0.0,naive_chat_history
+Metropolis,Prague,current_truth_accuracy,Metropolis,poisoning-low-trust-08-current,0.0,naive_chat_history
+Metropolis,,low_trust_warning_rate,Metropolis,poisoning-low-trust-08-warning,0.0,naive_chat_history
+Narnia,Vienna,current_truth_accuracy,Narnia,poisoning-low-trust-09-current,0.0,naive_chat_history
+Narnia,,low_trust_warning_rate,Narnia,poisoning-low-trust-09-warning,0.0,naive_chat_history
+Lisbon,,branch_isolation_score,Lisbon,branch-leakage-00-main-isolation,0.0,naive_chat_history
+Lisbon,Lisbon,branch_isolation_score,Lisbon,branch-leakage-00-branch-visible,1.0,naive_chat_history
+Lisbon,Lisbon,provenance_accuracy,Lisbon,branch-leakage-00-branch-source,1.0,naive_chat_history
+Dublin,,branch_isolation_score,Dublin,branch-leakage-01-main-isolation,0.0,naive_chat_history
+Dublin,Dublin,branch_isolation_score,Dublin,branch-leakage-01-branch-visible,1.0,naive_chat_history
+Dublin,Dublin,provenance_accuracy,Dublin,branch-leakage-01-branch-source,1.0,naive_chat_history
+Oslo,,branch_isolation_score,Oslo,branch-leakage-02-main-isolation,0.0,naive_chat_history
+Oslo,Oslo,branch_isolation_score,Oslo,branch-leakage-02-branch-visible,1.0,naive_chat_history
+Oslo,Oslo,provenance_accuracy,Oslo,branch-leakage-02-branch-source,1.0,naive_chat_history
+Prague,,branch_isolation_score,Prague,branch-leakage-03-main-isolation,0.0,naive_chat_history
+Prague,Prague,branch_isolation_score,Prague,branch-leakage-03-branch-visible,1.0,naive_chat_history
+Prague,Prague,provenance_accuracy,Prague,branch-leakage-03-branch-source,1.0,naive_chat_history
+Vienna,,branch_isolation_score,Vienna,branch-leakage-04-main-isolation,0.0,naive_chat_history
+Vienna,Vienna,branch_isolation_score,Vienna,branch-leakage-04-branch-visible,1.0,naive_chat_history
+Vienna,Vienna,provenance_accuracy,Vienna,branch-leakage-04-branch-source,1.0,naive_chat_history
+Lima,,branch_isolation_score,Lima,branch-leakage-05-main-isolation,0.0,naive_chat_history
+Lima,Lima,branch_isolation_score,Lima,branch-leakage-05-branch-visible,1.0,naive_chat_history
+Lima,Lima,provenance_accuracy,Lima,branch-leakage-05-branch-source,1.0,naive_chat_history
+Quito,,branch_isolation_score,Quito,branch-leakage-06-main-isolation,0.0,naive_chat_history
+Quito,Quito,branch_isolation_score,Quito,branch-leakage-06-branch-visible,1.0,naive_chat_history
+Quito,Quito,provenance_accuracy,Quito,branch-leakage-06-branch-source,1.0,naive_chat_history
+Hanoi,,branch_isolation_score,Hanoi,branch-leakage-07-main-isolation,0.0,naive_chat_history
+Hanoi,Hanoi,branch_isolation_score,Hanoi,branch-leakage-07-branch-visible,1.0,naive_chat_history
+Hanoi,Hanoi,provenance_accuracy,Hanoi,branch-leakage-07-branch-source,1.0,naive_chat_history
+Seoul,,branch_isolation_score,Seoul,branch-leakage-08-main-isolation,0.0,naive_chat_history
+Seoul,Seoul,branch_isolation_score,Seoul,branch-leakage-08-branch-visible,1.0,naive_chat_history
+Seoul,Seoul,provenance_accuracy,Seoul,branch-leakage-08-branch-source,1.0,naive_chat_history
+Busan,,branch_isolation_score,Busan,branch-leakage-09-main-isolation,0.0,naive_chat_history
+Busan,Busan,branch_isolation_score,Busan,branch-leakage-09-branch-visible,1.0,naive_chat_history
+Busan,Busan,provenance_accuracy,Busan,branch-leakage-09-branch-source,1.0,naive_chat_history
+Prague,Madrid,rollback_recovery_rate,Prague,rollback-bad-commit-00-recovery,0.0,naive_chat_history
+Prague,Madrid,historical_truth_accuracy,Madrid -> Prague,rollback-bad-commit-00-history-after-rollback,0.0,naive_chat_history
+Vienna,Rome,rollback_recovery_rate,Vienna,rollback-bad-commit-01-recovery,0.0,naive_chat_history
+Vienna,Rome,historical_truth_accuracy,Rome -> Vienna,rollback-bad-commit-01-history-after-rollback,0.0,naive_chat_history
+Lima,Berlin,rollback_recovery_rate,Lima,rollback-bad-commit-02-recovery,0.0,naive_chat_history
+Lima,Berlin,historical_truth_accuracy,Berlin -> Lima,rollback-bad-commit-02-history-after-rollback,0.0,naive_chat_history
+Quito,Paris,rollback_recovery_rate,Quito,rollback-bad-commit-03-recovery,0.0,naive_chat_history
+Quito,Paris,historical_truth_accuracy,Paris -> Quito,rollback-bad-commit-03-history-after-rollback,0.0,naive_chat_history
+Hanoi,Lisbon,rollback_recovery_rate,Hanoi,rollback-bad-commit-04-recovery,0.0,naive_chat_history
+Seoul,Dublin,rollback_recovery_rate,Seoul,rollback-bad-commit-05-recovery,0.0,naive_chat_history
+Busan,Oslo,rollback_recovery_rate,Busan,rollback-bad-commit-06-recovery,0.0,naive_chat_history
+Tokyo,Prague,rollback_recovery_rate,Tokyo,rollback-bad-commit-07-recovery,0.0,naive_chat_history
+Lab C,Lab C,merge_conflict_resolution_score,Lab C,merge-conflict-00-merged-current,1.0,naive_chat_history
+Lab D,Lab D,merge_conflict_resolution_score,Lab D,merge-conflict-01-merged-current,1.0,naive_chat_history
+Lab E,Lab E,merge_conflict_resolution_score,Lab E,merge-conflict-02-merged-current,1.0,naive_chat_history
+Lab F,Lab F,merge_conflict_resolution_score,Lab F,merge-conflict-03-merged-current,1.0,naive_chat_history
+Lab A,Lab A,merge_conflict_resolution_score,Lab A,merge-conflict-04-merged-current,1.0,naive_chat_history
+Berlin,Berlin,provenance_accuracy,Berlin,exact-provenance-00-source,1.0,naive_chat_history
+Paris,Paris,provenance_accuracy,Paris,exact-provenance-01-source,1.0,naive_chat_history
+Lisbon,Lisbon,provenance_accuracy,Lisbon,exact-provenance-02-source,1.0,naive_chat_history
+Dublin,Dublin,provenance_accuracy,Dublin,exact-provenance-03-source,1.0,naive_chat_history
+Oslo,Oslo,provenance_accuracy,Oslo,exact-provenance-04-source,1.0,naive_chat_history
+Dublin,Dublin,current_truth_accuracy,Dublin,temporal-supersession-00-current,1.0,simple_rag
+Dublin,Seoul -> Rome -> Dublin,historical_truth_accuracy,Seoul -> Rome -> Dublin,temporal-supersession-00-history,1.0,simple_rag
+Dublin,Dublin,provenance_accuracy,Dublin,temporal-supersession-00-provenance,1.0,simple_rag
+Dublin,Rome,historical_truth_accuracy,Dublin,temporal-supersession-00-slice-middle,0.0,simple_rag
+Oslo,Oslo,current_truth_accuracy,Oslo,temporal-supersession-01-current,1.0,simple_rag
+Oslo,Busan -> Berlin -> Oslo,historical_truth_accuracy,Busan -> Berlin -> Oslo,temporal-supersession-01-history,1.0,simple_rag
+Oslo,Oslo,provenance_accuracy,Oslo,temporal-supersession-01-provenance,1.0,simple_rag
+Oslo,Berlin,historical_truth_accuracy,Oslo,temporal-supersession-01-slice-middle,0.0,simple_rag
+Prague,Prague,current_truth_accuracy,Prague,temporal-supersession-02-current,1.0,simple_rag
+Prague,Tokyo -> Paris -> Prague,historical_truth_accuracy,Tokyo -> Paris -> Prague,temporal-supersession-02-history,1.0,simple_rag
+Prague,Prague,provenance_accuracy,Prague,temporal-supersession-02-provenance,1.0,simple_rag
+Prague,Paris,historical_truth_accuracy,Prague,temporal-supersession-02-slice-middle,0.0,simple_rag
+Vienna,Vienna,current_truth_accuracy,Vienna,temporal-supersession-03-current,1.0,simple_rag
+Vienna,Madrid -> Lisbon -> Vienna,historical_truth_accuracy,Madrid -> Lisbon -> Vienna,temporal-supersession-03-history,1.0,simple_rag
+Vienna,Vienna,provenance_accuracy,Vienna,temporal-supersession-03-provenance,1.0,simple_rag
+Vienna,Lisbon,historical_truth_accuracy,Vienna,temporal-supersession-03-slice-middle,0.0,simple_rag
+Lima,Lima,current_truth_accuracy,Lima,temporal-supersession-04-current,1.0,simple_rag
+Lima,Rome -> Dublin -> Lima,historical_truth_accuracy,Rome -> Dublin -> Lima,temporal-supersession-04-history,1.0,simple_rag
+Lima,Lima,provenance_accuracy,Lima,temporal-supersession-04-provenance,1.0,simple_rag
+Lima,Dublin,historical_truth_accuracy,Lima,temporal-supersession-04-slice-middle,0.0,simple_rag
+Quito,Quito,current_truth_accuracy,Quito,temporal-supersession-05-current,1.0,simple_rag
+Quito,Berlin -> Oslo -> Quito,historical_truth_accuracy,Berlin -> Oslo -> Quito,temporal-supersession-05-history,1.0,simple_rag
+Quito,Quito,provenance_accuracy,Quito,temporal-supersession-05-provenance,1.0,simple_rag
+Quito,Oslo,historical_truth_accuracy,Quito,temporal-supersession-05-slice-middle,0.0,simple_rag
+Hanoi,Hanoi,current_truth_accuracy,Hanoi,temporal-supersession-06-current,1.0,simple_rag
+Hanoi,Paris -> Prague -> Hanoi,historical_truth_accuracy,Paris -> Prague -> Hanoi,temporal-supersession-06-history,1.0,simple_rag
+Hanoi,Hanoi,provenance_accuracy,Hanoi,temporal-supersession-06-provenance,1.0,simple_rag
+Seoul,Seoul,current_truth_accuracy,Seoul,temporal-supersession-07-current,1.0,simple_rag
+Seoul,Lisbon -> Vienna -> Seoul,historical_truth_accuracy,Lisbon -> Vienna -> Seoul,temporal-supersession-07-history,1.0,simple_rag
+Seoul,Seoul,provenance_accuracy,Seoul,temporal-supersession-07-provenance,1.0,simple_rag
+Busan,Busan,current_truth_accuracy,Busan,temporal-supersession-08-current,1.0,simple_rag
+Busan,Dublin -> Lima -> Busan,historical_truth_accuracy,Dublin -> Lima -> Busan,temporal-supersession-08-history,1.0,simple_rag
+Busan,Busan,provenance_accuracy,Busan,temporal-supersession-08-provenance,1.0,simple_rag
+Tokyo,Tokyo,current_truth_accuracy,Tokyo,temporal-supersession-09-current,1.0,simple_rag
+Tokyo,Oslo -> Quito -> Tokyo,historical_truth_accuracy,Oslo -> Quito -> Tokyo,temporal-supersession-09-history,1.0,simple_rag
+Tokyo,Tokyo,provenance_accuracy,Tokyo,temporal-supersession-09-provenance,1.0,simple_rag
+Madrid,Madrid,current_truth_accuracy,Madrid,temporal-supersession-10-current,1.0,simple_rag
+Madrid,Prague -> Hanoi -> Madrid,historical_truth_accuracy,Prague -> Hanoi -> Madrid,temporal-supersession-10-history,1.0,simple_rag
+Madrid,Madrid,provenance_accuracy,Madrid,temporal-supersession-10-provenance,1.0,simple_rag
+Rome,Rome,current_truth_accuracy,Rome,temporal-supersession-11-current,1.0,simple_rag
+Rome,Vienna -> Seoul -> Rome,historical_truth_accuracy,Vienna -> Seoul -> Rome,temporal-supersession-11-history,1.0,simple_rag
+Rome,Rome,provenance_accuracy,Rome,temporal-supersession-11-provenance,1.0,simple_rag
+Tokyo,Tokyo,current_truth_accuracy,Tokyo,poisoning-low-trust-00-current,1.0,simple_rag
+Tokyo,,low_trust_warning_rate,Tokyo,poisoning-low-trust-00-warning,0.0,simple_rag
+Madrid,Madrid,current_truth_accuracy,Madrid,poisoning-low-trust-01-current,1.0,simple_rag
+Madrid,,low_trust_warning_rate,Madrid,poisoning-low-trust-01-warning,0.0,simple_rag
+Rome,Rome,current_truth_accuracy,Rome,poisoning-low-trust-02-current,1.0,simple_rag
+Rome,,low_trust_warning_rate,Rome,poisoning-low-trust-02-warning,0.0,simple_rag
+Berlin,Berlin,current_truth_accuracy,Berlin,poisoning-low-trust-03-current,1.0,simple_rag
+Berlin,,low_trust_warning_rate,Berlin,poisoning-low-trust-03-warning,0.0,simple_rag
+Paris,Paris,current_truth_accuracy,Paris,poisoning-low-trust-04-current,1.0,simple_rag
+Paris,,low_trust_warning_rate,Paris,poisoning-low-trust-04-warning,0.0,simple_rag
+Lisbon,Lisbon,current_truth_accuracy,Lisbon,poisoning-low-trust-05-current,1.0,simple_rag
+Lisbon,,low_trust_warning_rate,Lisbon,poisoning-low-trust-05-warning,0.0,simple_rag
+Dublin,Dublin,current_truth_accuracy,Dublin,poisoning-low-trust-06-current,1.0,simple_rag
+Dublin,,low_trust_warning_rate,Dublin,poisoning-low-trust-06-warning,0.0,simple_rag
+Oslo,Oslo,current_truth_accuracy,Oslo,poisoning-low-trust-07-current,1.0,simple_rag
+Oslo,,low_trust_warning_rate,Oslo,poisoning-low-trust-07-warning,0.0,simple_rag
+Prague,Prague,current_truth_accuracy,Prague,poisoning-low-trust-08-current,1.0,simple_rag
+Prague,,low_trust_warning_rate,Prague,poisoning-low-trust-08-warning,0.0,simple_rag
+Vienna,Vienna,current_truth_accuracy,Vienna,poisoning-low-trust-09-current,1.0,simple_rag
+Vienna,,low_trust_warning_rate,Vienna,poisoning-low-trust-09-warning,0.0,simple_rag
+Lisbon,,branch_isolation_score,Lisbon,branch-leakage-00-main-isolation,0.0,simple_rag
+Lisbon,Lisbon,branch_isolation_score,Lisbon,branch-leakage-00-branch-visible,1.0,simple_rag
+Lisbon,Lisbon,provenance_accuracy,Lisbon,branch-leakage-00-branch-source,1.0,simple_rag
+Dublin,,branch_isolation_score,Dublin,branch-leakage-01-main-isolation,0.0,simple_rag
+Dublin,Dublin,branch_isolation_score,Dublin,branch-leakage-01-branch-visible,1.0,simple_rag
+Dublin,Dublin,provenance_accuracy,Dublin,branch-leakage-01-branch-source,1.0,simple_rag
+Oslo,,branch_isolation_score,Oslo,branch-leakage-02-main-isolation,0.0,simple_rag
+Oslo,Oslo,branch_isolation_score,Oslo,branch-leakage-02-branch-visible,1.0,simple_rag
+Oslo,Oslo,provenance_accuracy,Oslo,branch-leakage-02-branch-source,1.0,simple_rag
+Prague,,branch_isolation_score,Prague,branch-leakage-03-main-isolation,0.0,simple_rag
+Prague,Prague,branch_isolation_score,Prague,branch-leakage-03-branch-visible,1.0,simple_rag
+Prague,Prague,provenance_accuracy,Prague,branch-leakage-03-branch-source,1.0,simple_rag
+Vienna,,branch_isolation_score,Vienna,branch-leakage-04-main-isolation,0.0,simple_rag
+Vienna,Vienna,branch_isolation_score,Vienna,branch-leakage-04-branch-visible,1.0,simple_rag
+Vienna,Vienna,provenance_accuracy,Vienna,branch-leakage-04-branch-source,1.0,simple_rag
+Lima,,branch_isolation_score,Lima,branch-leakage-05-main-isolation,0.0,simple_rag
+Lima,Lima,branch_isolation_score,Lima,branch-leakage-05-branch-visible,1.0,simple_rag
+Lima,Lima,provenance_accuracy,Lima,branch-leakage-05-branch-source,1.0,simple_rag
+Quito,,branch_isolation_score,Quito,branch-leakage-06-main-isolation,0.0,simple_rag
+Quito,Quito,branch_isolation_score,Quito,branch-leakage-06-branch-visible,1.0,simple_rag
+Quito,Quito,provenance_accuracy,Quito,branch-leakage-06-branch-source,1.0,simple_rag
+Hanoi,,branch_isolation_score,Hanoi,branch-leakage-07-main-isolation,0.0,simple_rag
+Hanoi,Hanoi,branch_isolation_score,Hanoi,branch-leakage-07-branch-visible,1.0,simple_rag
+Hanoi,Hanoi,provenance_accuracy,Hanoi,branch-leakage-07-branch-source,1.0,simple_rag
+Seoul,,branch_isolation_score,Seoul,branch-leakage-08-main-isolation,0.0,simple_rag
+Seoul,Seoul,branch_isolation_score,Seoul,branch-leakage-08-branch-visible,1.0,simple_rag
+Seoul,Seoul,provenance_accuracy,Seoul,branch-leakage-08-branch-source,1.0,simple_rag
+Busan,,branch_isolation_score,Busan,branch-leakage-09-main-isolation,0.0,simple_rag
+Busan,Busan,branch_isolation_score,Busan,branch-leakage-09-branch-visible,1.0,simple_rag
+Busan,Busan,provenance_accuracy,Busan,branch-leakage-09-branch-source,1.0,simple_rag
+Prague,Madrid,rollback_recovery_rate,Prague,rollback-bad-commit-00-recovery,0.0,simple_rag
+Prague,Madrid,historical_truth_accuracy,Madrid -> Prague,rollback-bad-commit-00-history-after-rollback,0.0,simple_rag
+Vienna,Rome,rollback_recovery_rate,Vienna,rollback-bad-commit-01-recovery,0.0,simple_rag
+Vienna,Rome,historical_truth_accuracy,Rome -> Vienna,rollback-bad-commit-01-history-after-rollback,0.0,simple_rag
+Lima,Berlin,rollback_recovery_rate,Lima,rollback-bad-commit-02-recovery,0.0,simple_rag
+Lima,Berlin,historical_truth_accuracy,Berlin -> Lima,rollback-bad-commit-02-history-after-rollback,0.0,simple_rag
+Quito,Paris,rollback_recovery_rate,Quito,rollback-bad-commit-03-recovery,0.0,simple_rag
+Quito,Paris,historical_truth_accuracy,Paris -> Quito,rollback-bad-commit-03-history-after-rollback,0.0,simple_rag
+Hanoi,Lisbon,rollback_recovery_rate,Hanoi,rollback-bad-commit-04-recovery,0.0,simple_rag
+Seoul,Dublin,rollback_recovery_rate,Seoul,rollback-bad-commit-05-recovery,0.0,simple_rag
+Busan,Oslo,rollback_recovery_rate,Busan,rollback-bad-commit-06-recovery,0.0,simple_rag
+Tokyo,Prague,rollback_recovery_rate,Tokyo,rollback-bad-commit-07-recovery,0.0,simple_rag
+Lab C,Lab C,merge_conflict_resolution_score,Lab C,merge-conflict-00-merged-current,1.0,simple_rag
+Lab D,Lab D,merge_conflict_resolution_score,Lab D,merge-conflict-01-merged-current,1.0,simple_rag
+Lab E,Lab E,merge_conflict_resolution_score,Lab E,merge-conflict-02-merged-current,1.0,simple_rag
+Lab F,Lab F,merge_conflict_resolution_score,Lab F,merge-conflict-03-merged-current,1.0,simple_rag
+Lab A,Lab A,merge_conflict_resolution_score,Lab A,merge-conflict-04-merged-current,1.0,simple_rag
+Berlin,Berlin,provenance_accuracy,Berlin,exact-provenance-00-source,1.0,simple_rag
+Paris,Paris,provenance_accuracy,Paris,exact-provenance-01-source,1.0,simple_rag
+Lisbon,Lisbon,provenance_accuracy,Lisbon,exact-provenance-02-source,1.0,simple_rag
+Dublin,Dublin,provenance_accuracy,Dublin,exact-provenance-03-source,1.0,simple_rag
+Oslo,Oslo,provenance_accuracy,Oslo,exact-provenance-04-source,1.0,simple_rag
+Dublin,Dublin,current_truth_accuracy,Dublin,temporal-supersession-00-current,1.0,embedding_rag
+Dublin,Seoul -> Rome -> Dublin,historical_truth_accuracy,Seoul -> Rome -> Dublin,temporal-supersession-00-history,1.0,embedding_rag
+Dublin,Dublin,provenance_accuracy,Dublin,temporal-supersession-00-provenance,1.0,embedding_rag
+Dublin,Rome,historical_truth_accuracy,Dublin,temporal-supersession-00-slice-middle,0.0,embedding_rag
+Oslo,Oslo,current_truth_accuracy,Oslo,temporal-supersession-01-current,1.0,embedding_rag
+Oslo,Busan -> Berlin -> Oslo,historical_truth_accuracy,Busan -> Berlin -> Oslo,temporal-supersession-01-history,1.0,embedding_rag
+Oslo,Oslo,provenance_accuracy,Oslo,temporal-supersession-01-provenance,1.0,embedding_rag
+Oslo,Berlin,historical_truth_accuracy,Oslo,temporal-supersession-01-slice-middle,0.0,embedding_rag
+Prague,Prague,current_truth_accuracy,Prague,temporal-supersession-02-current,1.0,embedding_rag
+Prague,Tokyo -> Paris -> Prague,historical_truth_accuracy,Paris -> Prague -> Tokyo,temporal-supersession-02-history,0.0,embedding_rag
+Prague,Prague,provenance_accuracy,Prague,temporal-supersession-02-provenance,1.0,embedding_rag
+Prague,Paris,historical_truth_accuracy,Prague,temporal-supersession-02-slice-middle,0.0,embedding_rag
+Vienna,Vienna,current_truth_accuracy,Vienna,temporal-supersession-03-current,1.0,embedding_rag
+Vienna,Madrid -> Lisbon -> Vienna,historical_truth_accuracy,Madrid -> Lisbon -> Vienna,temporal-supersession-03-history,1.0,embedding_rag
+Vienna,Vienna,provenance_accuracy,Vienna,temporal-supersession-03-provenance,1.0,embedding_rag
+Vienna,Lisbon,historical_truth_accuracy,Vienna,temporal-supersession-03-slice-middle,0.0,embedding_rag
+Lima,Lima,current_truth_accuracy,Lima,temporal-supersession-04-current,1.0,embedding_rag
+Lima,Rome -> Dublin -> Lima,historical_truth_accuracy,Dublin -> Rome -> Lima,temporal-supersession-04-history,0.0,embedding_rag
+Lima,Lima,provenance_accuracy,Lima,temporal-supersession-04-provenance,1.0,embedding_rag
+Lima,Dublin,historical_truth_accuracy,Lima,temporal-supersession-04-slice-middle,0.0,embedding_rag
+Quito,Quito,current_truth_accuracy,Quito,temporal-supersession-05-current,1.0,embedding_rag
+Quito,Berlin -> Oslo -> Quito,historical_truth_accuracy,Oslo -> Berlin -> Quito,temporal-supersession-05-history,0.0,embedding_rag
+Quito,Quito,provenance_accuracy,Quito,temporal-supersession-05-provenance,1.0,embedding_rag
+Quito,Oslo,historical_truth_accuracy,Quito,temporal-supersession-05-slice-middle,0.0,embedding_rag
+Hanoi,Hanoi,current_truth_accuracy,Hanoi,temporal-supersession-06-current,1.0,embedding_rag
+Hanoi,Paris -> Prague -> Hanoi,historical_truth_accuracy,Prague -> Paris -> Hanoi,temporal-supersession-06-history,0.0,embedding_rag
+Hanoi,Hanoi,provenance_accuracy,Hanoi,temporal-supersession-06-provenance,1.0,embedding_rag
+Seoul,Seoul,current_truth_accuracy,Seoul,temporal-supersession-07-current,1.0,embedding_rag
+Seoul,Lisbon -> Vienna -> Seoul,historical_truth_accuracy,Vienna -> Lisbon -> Seoul,temporal-supersession-07-history,0.0,embedding_rag
+Seoul,Seoul,provenance_accuracy,Seoul,temporal-supersession-07-provenance,1.0,embedding_rag
+Busan,Busan,current_truth_accuracy,Busan,temporal-supersession-08-current,1.0,embedding_rag
+Busan,Dublin -> Lima -> Busan,historical_truth_accuracy,Dublin -> Lima -> Busan,temporal-supersession-08-history,1.0,embedding_rag
+Busan,Busan,provenance_accuracy,Busan,temporal-supersession-08-provenance,1.0,embedding_rag
+Tokyo,Tokyo,current_truth_accuracy,Tokyo,temporal-supersession-09-current,1.0,embedding_rag
+Tokyo,Oslo -> Quito -> Tokyo,historical_truth_accuracy,Oslo -> Quito -> Tokyo,temporal-supersession-09-history,1.0,embedding_rag
+Tokyo,Tokyo,provenance_accuracy,Tokyo,temporal-supersession-09-provenance,1.0,embedding_rag
+Madrid,Madrid,current_truth_accuracy,Madrid,temporal-supersession-10-current,1.0,embedding_rag
+Madrid,Prague -> Hanoi -> Madrid,historical_truth_accuracy,Prague -> Hanoi -> Madrid,temporal-supersession-10-history,1.0,embedding_rag
+Madrid,Madrid,provenance_accuracy,Madrid,temporal-supersession-10-provenance,1.0,embedding_rag
+Rome,Rome,current_truth_accuracy,Rome,temporal-supersession-11-current,1.0,embedding_rag
+Rome,Vienna -> Seoul -> Rome,historical_truth_accuracy,Seoul -> Vienna -> Rome,temporal-supersession-11-history,0.0,embedding_rag
+Rome,Rome,provenance_accuracy,Rome,temporal-supersession-11-provenance,1.0,embedding_rag
+Tokyo,Tokyo,current_truth_accuracy,Tokyo,poisoning-low-trust-00-current,1.0,embedding_rag
+Tokyo,,low_trust_warning_rate,Tokyo,poisoning-low-trust-00-warning,0.0,embedding_rag
+Madrid,Madrid,current_truth_accuracy,Madrid,poisoning-low-trust-01-current,1.0,embedding_rag
+Madrid,,low_trust_warning_rate,Madrid,poisoning-low-trust-01-warning,0.0,embedding_rag
+Rome,Rome,current_truth_accuracy,Rome,poisoning-low-trust-02-current,1.0,embedding_rag
+Rome,,low_trust_warning_rate,Rome,poisoning-low-trust-02-warning,0.0,embedding_rag
+Berlin,Berlin,current_truth_accuracy,Berlin,poisoning-low-trust-03-current,1.0,embedding_rag
+Berlin,,low_trust_warning_rate,Berlin,poisoning-low-trust-03-warning,0.0,embedding_rag
+Paris,Paris,current_truth_accuracy,Paris,poisoning-low-trust-04-current,1.0,embedding_rag
+Paris,,low_trust_warning_rate,Paris,poisoning-low-trust-04-warning,0.0,embedding_rag
+Lisbon,Lisbon,current_truth_accuracy,Lisbon,poisoning-low-trust-05-current,1.0,embedding_rag
+Lisbon,,low_trust_warning_rate,Lisbon,poisoning-low-trust-05-warning,0.0,embedding_rag
+Dublin,Dublin,current_truth_accuracy,Dublin,poisoning-low-trust-06-current,1.0,embedding_rag
+Dublin,,low_trust_warning_rate,Dublin,poisoning-low-trust-06-warning,0.0,embedding_rag
+Oslo,Oslo,current_truth_accuracy,Oslo,poisoning-low-trust-07-current,1.0,embedding_rag
+Oslo,,low_trust_warning_rate,Oslo,poisoning-low-trust-07-warning,0.0,embedding_rag
+Prague,Prague,current_truth_accuracy,Prague,poisoning-low-trust-08-current,1.0,embedding_rag
+Prague,,low_trust_warning_rate,Prague,poisoning-low-trust-08-warning,0.0,embedding_rag
+Vienna,Vienna,current_truth_accuracy,Vienna,poisoning-low-trust-09-current,1.0,embedding_rag
+Vienna,,low_trust_warning_rate,Vienna,poisoning-low-trust-09-warning,0.0,embedding_rag
+Lisbon,,branch_isolation_score,Lisbon,branch-leakage-00-main-isolation,0.0,embedding_rag
+Lisbon,Lisbon,branch_isolation_score,Lisbon,branch-leakage-00-branch-visible,1.0,embedding_rag
+Lisbon,Lisbon,provenance_accuracy,Lisbon,branch-leakage-00-branch-source,1.0,embedding_rag
+Dublin,,branch_isolation_score,Dublin,branch-leakage-01-main-isolation,0.0,embedding_rag
+Dublin,Dublin,branch_isolation_score,Dublin,branch-leakage-01-branch-visible,1.0,embedding_rag
+Dublin,Dublin,provenance_accuracy,Dublin,branch-leakage-01-branch-source,1.0,embedding_rag
+Oslo,,branch_isolation_score,Oslo,branch-leakage-02-main-isolation,0.0,embedding_rag
+Oslo,Oslo,branch_isolation_score,Oslo,branch-leakage-02-branch-visible,1.0,embedding_rag
+Oslo,Oslo,provenance_accuracy,Oslo,branch-leakage-02-branch-source,1.0,embedding_rag
+Prague,,branch_isolation_score,Prague,branch-leakage-03-main-isolation,0.0,embedding_rag
+Prague,Prague,branch_isolation_score,Prague,branch-leakage-03-branch-visible,1.0,embedding_rag
+Prague,Prague,provenance_accuracy,Prague,branch-leakage-03-branch-source,1.0,embedding_rag
+Vienna,,branch_isolation_score,Vienna,branch-leakage-04-main-isolation,0.0,embedding_rag
+Vienna,Vienna,branch_isolation_score,Vienna,branch-leakage-04-branch-visible,1.0,embedding_rag
+Vienna,Vienna,provenance_accuracy,Vienna,branch-leakage-04-branch-source,1.0,embedding_rag
+Lima,,branch_isolation_score,Lima,branch-leakage-05-main-isolation,0.0,embedding_rag
+Lima,Lima,branch_isolation_score,Lima,branch-leakage-05-branch-visible,1.0,embedding_rag
+Lima,Lima,provenance_accuracy,Lima,branch-leakage-05-branch-source,1.0,embedding_rag
+Quito,,branch_isolation_score,Quito,branch-leakage-06-main-isolation,0.0,embedding_rag
+Quito,Quito,branch_isolation_score,Quito,branch-leakage-06-branch-visible,1.0,embedding_rag
+Quito,Quito,provenance_accuracy,Quito,branch-leakage-06-branch-source,1.0,embedding_rag
+Hanoi,,branch_isolation_score,Hanoi,branch-leakage-07-main-isolation,0.0,embedding_rag
+Hanoi,Hanoi,branch_isolation_score,Hanoi,branch-leakage-07-branch-visible,1.0,embedding_rag
+Hanoi,Hanoi,provenance_accuracy,Hanoi,branch-leakage-07-branch-source,1.0,embedding_rag
+Seoul,,branch_isolation_score,Seoul,branch-leakage-08-main-isolation,0.0,embedding_rag
+Seoul,Seoul,branch_isolation_score,Seoul,branch-leakage-08-branch-visible,1.0,embedding_rag
+Seoul,Seoul,provenance_accuracy,Seoul,branch-leakage-08-branch-source,1.0,embedding_rag
+Busan,,branch_isolation_score,Busan,branch-leakage-09-main-isolation,0.0,embedding_rag
+Busan,Busan,branch_isolation_score,Busan,branch-leakage-09-branch-visible,1.0,embedding_rag
+Busan,Busan,provenance_accuracy,Busan,branch-leakage-09-branch-source,1.0,embedding_rag
+Prague,Madrid,rollback_recovery_rate,Prague,rollback-bad-commit-00-recovery,0.0,embedding_rag
+Prague,Madrid,historical_truth_accuracy,Madrid -> Prague,rollback-bad-commit-00-history-after-rollback,0.0,embedding_rag
+Vienna,Rome,rollback_recovery_rate,Vienna,rollback-bad-commit-01-recovery,0.0,embedding_rag
+Vienna,Rome,historical_truth_accuracy,Rome -> Vienna,rollback-bad-commit-01-history-after-rollback,0.0,embedding_rag
+Lima,Berlin,rollback_recovery_rate,Lima,rollback-bad-commit-02-recovery,0.0,embedding_rag
+Lima,Berlin,historical_truth_accuracy,Berlin -> Lima,rollback-bad-commit-02-history-after-rollback,0.0,embedding_rag
+Quito,Paris,rollback_recovery_rate,Quito,rollback-bad-commit-03-recovery,0.0,embedding_rag
+Quito,Paris,historical_truth_accuracy,Paris -> Quito,rollback-bad-commit-03-history-after-rollback,0.0,embedding_rag
+Hanoi,Lisbon,rollback_recovery_rate,Hanoi,rollback-bad-commit-04-recovery,0.0,embedding_rag
+Seoul,Dublin,rollback_recovery_rate,Seoul,rollback-bad-commit-05-recovery,0.0,embedding_rag
+Busan,Oslo,rollback_recovery_rate,Busan,rollback-bad-commit-06-recovery,0.0,embedding_rag
+Tokyo,Prague,rollback_recovery_rate,Tokyo,rollback-bad-commit-07-recovery,0.0,embedding_rag
+Lab C,Lab C,merge_conflict_resolution_score,Lab C,merge-conflict-00-merged-current,1.0,embedding_rag
+Lab D,Lab D,merge_conflict_resolution_score,Lab D,merge-conflict-01-merged-current,1.0,embedding_rag
+Lab E,Lab E,merge_conflict_resolution_score,Lab E,merge-conflict-02-merged-current,1.0,embedding_rag
+Lab F,Lab F,merge_conflict_resolution_score,Lab F,merge-conflict-03-merged-current,1.0,embedding_rag
+Lab A,Lab A,merge_conflict_resolution_score,Lab A,merge-conflict-04-merged-current,1.0,embedding_rag
+Berlin,Berlin,provenance_accuracy,Berlin,exact-provenance-00-source,1.0,embedding_rag
+Paris,Paris,provenance_accuracy,Paris,exact-provenance-01-source,1.0,embedding_rag
+Lisbon,Lisbon,provenance_accuracy,Lisbon,exact-provenance-02-source,1.0,embedding_rag
+Dublin,Dublin,provenance_accuracy,Dublin,exact-provenance-03-source,1.0,embedding_rag
+Oslo,Oslo,provenance_accuracy,Oslo,exact-provenance-04-source,1.0,embedding_rag
+Dublin,Dublin,current_truth_accuracy,Dublin,temporal-supersession-00-current,1.0,truthgit
+Dublin,Seoul -> Rome -> Dublin,historical_truth_accuracy,Seoul -> Rome -> Dublin,temporal-supersession-00-history,1.0,truthgit
+Dublin,Dublin,provenance_accuracy,Dublin,temporal-supersession-00-provenance,1.0,truthgit
+Rome,Rome,historical_truth_accuracy,Rome,temporal-supersession-00-slice-middle,1.0,truthgit
+Oslo,Oslo,current_truth_accuracy,Oslo,temporal-supersession-01-current,1.0,truthgit
+Oslo,Busan -> Berlin -> Oslo,historical_truth_accuracy,Busan -> Berlin -> Oslo,temporal-supersession-01-history,1.0,truthgit
+Oslo,Oslo,provenance_accuracy,Oslo,temporal-supersession-01-provenance,1.0,truthgit
+Berlin,Berlin,historical_truth_accuracy,Berlin,temporal-supersession-01-slice-middle,1.0,truthgit
+Prague,Prague,current_truth_accuracy,Prague,temporal-supersession-02-current,1.0,truthgit
+Prague,Tokyo -> Paris -> Prague,historical_truth_accuracy,Tokyo -> Paris -> Prague,temporal-supersession-02-history,1.0,truthgit
+Prague,Prague,provenance_accuracy,Prague,temporal-supersession-02-provenance,1.0,truthgit
+Paris,Paris,historical_truth_accuracy,Paris,temporal-supersession-02-slice-middle,1.0,truthgit
+Vienna,Vienna,current_truth_accuracy,Vienna,temporal-supersession-03-current,1.0,truthgit
+Vienna,Madrid -> Lisbon -> Vienna,historical_truth_accuracy,Madrid -> Lisbon -> Vienna,temporal-supersession-03-history,1.0,truthgit
+Vienna,Vienna,provenance_accuracy,Vienna,temporal-supersession-03-provenance,1.0,truthgit
+Lisbon,Lisbon,historical_truth_accuracy,Lisbon,temporal-supersession-03-slice-middle,1.0,truthgit
+Lima,Lima,current_truth_accuracy,Lima,temporal-supersession-04-current,1.0,truthgit
+Lima,Rome -> Dublin -> Lima,historical_truth_accuracy,Rome -> Dublin -> Lima,temporal-supersession-04-history,1.0,truthgit
+Lima,Lima,provenance_accuracy,Lima,temporal-supersession-04-provenance,1.0,truthgit
+Dublin,Dublin,historical_truth_accuracy,Dublin,temporal-supersession-04-slice-middle,1.0,truthgit
+Quito,Quito,current_truth_accuracy,Quito,temporal-supersession-05-current,1.0,truthgit
+Quito,Berlin -> Oslo -> Quito,historical_truth_accuracy,Berlin -> Oslo -> Quito,temporal-supersession-05-history,1.0,truthgit
+Quito,Quito,provenance_accuracy,Quito,temporal-supersession-05-provenance,1.0,truthgit
+Oslo,Oslo,historical_truth_accuracy,Oslo,temporal-supersession-05-slice-middle,1.0,truthgit
+Hanoi,Hanoi,current_truth_accuracy,Hanoi,temporal-supersession-06-current,1.0,truthgit
+Hanoi,Paris -> Prague -> Hanoi,historical_truth_accuracy,Paris -> Prague -> Hanoi,temporal-supersession-06-history,1.0,truthgit
+Hanoi,Hanoi,provenance_accuracy,Hanoi,temporal-supersession-06-provenance,1.0,truthgit
+Seoul,Seoul,current_truth_accuracy,Seoul,temporal-supersession-07-current,1.0,truthgit
+Seoul,Lisbon -> Vienna -> Seoul,historical_truth_accuracy,Lisbon -> Vienna -> Seoul,temporal-supersession-07-history,1.0,truthgit
+Seoul,Seoul,provenance_accuracy,Seoul,temporal-supersession-07-provenance,1.0,truthgit
+Busan,Busan,current_truth_accuracy,Busan,temporal-supersession-08-current,1.0,truthgit
+Busan,Dublin -> Lima -> Busan,historical_truth_accuracy,Dublin -> Lima -> Busan,temporal-supersession-08-history,1.0,truthgit
+Busan,Busan,provenance_accuracy,Busan,temporal-supersession-08-provenance,1.0,truthgit
+Tokyo,Tokyo,current_truth_accuracy,Tokyo,temporal-supersession-09-current,1.0,truthgit
+Tokyo,Oslo -> Quito -> Tokyo,historical_truth_accuracy,Oslo -> Quito -> Tokyo,temporal-supersession-09-history,1.0,truthgit
+Tokyo,Tokyo,provenance_accuracy,Tokyo,temporal-supersession-09-provenance,1.0,truthgit
+Madrid,Madrid,current_truth_accuracy,Madrid,temporal-supersession-10-current,1.0,truthgit
+Madrid,Prague -> Hanoi -> Madrid,historical_truth_accuracy,Prague -> Hanoi -> Madrid,temporal-supersession-10-history,1.0,truthgit
+Madrid,Madrid,provenance_accuracy,Madrid,temporal-supersession-10-provenance,1.0,truthgit
+Rome,Rome,current_truth_accuracy,Rome,temporal-supersession-11-current,1.0,truthgit
+Rome,Vienna -> Seoul -> Rome,historical_truth_accuracy,Vienna -> Seoul -> Rome,temporal-supersession-11-history,1.0,truthgit
+Rome,Rome,provenance_accuracy,Rome,temporal-supersession-11-provenance,1.0,truthgit
+Tokyo,Tokyo,current_truth_accuracy,Tokyo,poisoning-low-trust-00-current,1.0,truthgit
+Tokyo,,low_trust_warning_rate,Tokyo,poisoning-low-trust-00-warning,1.0,truthgit
+Madrid,Madrid,current_truth_accuracy,Madrid,poisoning-low-trust-01-current,1.0,truthgit
+Madrid,,low_trust_warning_rate,Madrid,poisoning-low-trust-01-warning,1.0,truthgit
+Rome,Rome,current_truth_accuracy,Rome,poisoning-low-trust-02-current,1.0,truthgit
+Rome,,low_trust_warning_rate,Rome,poisoning-low-trust-02-warning,1.0,truthgit
+Berlin,Berlin,current_truth_accuracy,Berlin,poisoning-low-trust-03-current,1.0,truthgit
+Berlin,,low_trust_warning_rate,Berlin,poisoning-low-trust-03-warning,1.0,truthgit
+Paris,Paris,current_truth_accuracy,Paris,poisoning-low-trust-04-current,1.0,truthgit
+Paris,,low_trust_warning_rate,Paris,poisoning-low-trust-04-warning,1.0,truthgit
+Lisbon,Lisbon,current_truth_accuracy,Lisbon,poisoning-low-trust-05-current,1.0,truthgit
+Lisbon,,low_trust_warning_rate,Lisbon,poisoning-low-trust-05-warning,1.0,truthgit
+Dublin,Dublin,current_truth_accuracy,Dublin,poisoning-low-trust-06-current,1.0,truthgit
+Dublin,,low_trust_warning_rate,Dublin,poisoning-low-trust-06-warning,1.0,truthgit
+Oslo,Oslo,current_truth_accuracy,Oslo,poisoning-low-trust-07-current,1.0,truthgit
+Oslo,,low_trust_warning_rate,Oslo,poisoning-low-trust-07-warning,1.0,truthgit
+Prague,Prague,current_truth_accuracy,Prague,poisoning-low-trust-08-current,1.0,truthgit
+Prague,,low_trust_warning_rate,Prague,poisoning-low-trust-08-warning,1.0,truthgit
+Vienna,Vienna,current_truth_accuracy,Vienna,poisoning-low-trust-09-current,1.0,truthgit
+Vienna,,low_trust_warning_rate,Vienna,poisoning-low-trust-09-warning,1.0,truthgit
+unknown,,branch_isolation_score,,branch-leakage-00-main-isolation,1.0,truthgit
+Lisbon,Lisbon,branch_isolation_score,Lisbon,branch-leakage-00-branch-visible,1.0,truthgit
+Lisbon,Lisbon,provenance_accuracy,Lisbon,branch-leakage-00-branch-source,1.0,truthgit
+unknown,,branch_isolation_score,,branch-leakage-01-main-isolation,1.0,truthgit
+Dublin,Dublin,branch_isolation_score,Dublin,branch-leakage-01-branch-visible,1.0,truthgit
+Dublin,Dublin,provenance_accuracy,Dublin,branch-leakage-01-branch-source,1.0,truthgit
+unknown,,branch_isolation_score,,branch-leakage-02-main-isolation,1.0,truthgit
+Oslo,Oslo,branch_isolation_score,Oslo,branch-leakage-02-branch-visible,1.0,truthgit
+Oslo,Oslo,provenance_accuracy,Oslo,branch-leakage-02-branch-source,1.0,truthgit
+unknown,,branch_isolation_score,,branch-leakage-03-main-isolation,1.0,truthgit
+Prague,Prague,branch_isolation_score,Prague,branch-leakage-03-branch-visible,1.0,truthgit
+Prague,Prague,provenance_accuracy,Prague,branch-leakage-03-branch-source,1.0,truthgit
+unknown,,branch_isolation_score,,branch-leakage-04-main-isolation,1.0,truthgit
+Vienna,Vienna,branch_isolation_score,Vienna,branch-leakage-04-branch-visible,1.0,truthgit
+Vienna,Vienna,provenance_accuracy,Vienna,branch-leakage-04-branch-source,1.0,truthgit
+unknown,,branch_isolation_score,,branch-leakage-05-main-isolation,1.0,truthgit
+Lima,Lima,branch_isolation_score,Lima,branch-leakage-05-branch-visible,1.0,truthgit
+Lima,Lima,provenance_accuracy,Lima,branch-leakage-05-branch-source,1.0,truthgit
+unknown,,branch_isolation_score,,branch-leakage-06-main-isolation,1.0,truthgit
+Quito,Quito,branch_isolation_score,Quito,branch-leakage-06-branch-visible,1.0,truthgit
+Quito,Quito,provenance_accuracy,Quito,branch-leakage-06-branch-source,1.0,truthgit
+unknown,,branch_isolation_score,,branch-leakage-07-main-isolation,1.0,truthgit
+Hanoi,Hanoi,branch_isolation_score,Hanoi,branch-leakage-07-branch-visible,1.0,truthgit
+Hanoi,Hanoi,provenance_accuracy,Hanoi,branch-leakage-07-branch-source,1.0,truthgit
+unknown,,branch_isolation_score,,branch-leakage-08-main-isolation,1.0,truthgit
+Seoul,Seoul,branch_isolation_score,Seoul,branch-leakage-08-branch-visible,1.0,truthgit
+Seoul,Seoul,provenance_accuracy,Seoul,branch-leakage-08-branch-source,1.0,truthgit
+unknown,,branch_isolation_score,,branch-leakage-09-main-isolation,1.0,truthgit
+Busan,Busan,branch_isolation_score,Busan,branch-leakage-09-branch-visible,1.0,truthgit
+Busan,Busan,provenance_accuracy,Busan,branch-leakage-09-branch-source,1.0,truthgit
+Madrid,Madrid,rollback_recovery_rate,Madrid,rollback-bad-commit-00-recovery,1.0,truthgit
+Madrid,Madrid,historical_truth_accuracy,Madrid,rollback-bad-commit-00-history-after-rollback,1.0,truthgit
+Rome,Rome,rollback_recovery_rate,Rome,rollback-bad-commit-01-recovery,1.0,truthgit
+Rome,Rome,historical_truth_accuracy,Rome,rollback-bad-commit-01-history-after-rollback,1.0,truthgit
+Berlin,Berlin,rollback_recovery_rate,Berlin,rollback-bad-commit-02-recovery,1.0,truthgit
+Berlin,Berlin,historical_truth_accuracy,Berlin,rollback-bad-commit-02-history-after-rollback,1.0,truthgit
+Paris,Paris,rollback_recovery_rate,Paris,rollback-bad-commit-03-recovery,1.0,truthgit
+Paris,Paris,historical_truth_accuracy,Paris,rollback-bad-commit-03-history-after-rollback,1.0,truthgit
+Lisbon,Lisbon,rollback_recovery_rate,Lisbon,rollback-bad-commit-04-recovery,1.0,truthgit
+Dublin,Dublin,rollback_recovery_rate,Dublin,rollback-bad-commit-05-recovery,1.0,truthgit
+Oslo,Oslo,rollback_recovery_rate,Oslo,rollback-bad-commit-06-recovery,1.0,truthgit
+Prague,Prague,rollback_recovery_rate,Prague,rollback-bad-commit-07-recovery,1.0,truthgit
+Lab C,Lab C,merge_conflict_resolution_score,Lab C,merge-conflict-00-merged-current,1.0,truthgit
+Lab D,Lab D,merge_conflict_resolution_score,Lab D,merge-conflict-01-merged-current,1.0,truthgit
+Lab E,Lab E,merge_conflict_resolution_score,Lab E,merge-conflict-02-merged-current,1.0,truthgit
+Lab F,Lab F,merge_conflict_resolution_score,Lab F,merge-conflict-03-merged-current,1.0,truthgit
+Lab A,Lab A,merge_conflict_resolution_score,Lab A,merge-conflict-04-merged-current,1.0,truthgit
+Berlin,Berlin,provenance_accuracy,Berlin,exact-provenance-00-source,1.0,truthgit
+Paris,Paris,provenance_accuracy,Paris,exact-provenance-01-source,1.0,truthgit
+Lisbon,Lisbon,provenance_accuracy,Lisbon,exact-provenance-02-source,1.0,truthgit
+Dublin,Dublin,provenance_accuracy,Dublin,exact-provenance-03-source,1.0,truthgit
+Oslo,Oslo,provenance_accuracy,Oslo,exact-provenance-04-source,1.0,truthgit
+Dublin,Dublin,current_truth_accuracy,Dublin,temporal-supersession-00-current,1.0,truthgit_no_branches
+Dublin,Seoul -> Rome -> Dublin,historical_truth_accuracy,Seoul -> Rome -> Dublin,temporal-supersession-00-history,1.0,truthgit_no_branches
+Dublin,Dublin,provenance_accuracy,Dublin,temporal-supersession-00-provenance,1.0,truthgit_no_branches
+Rome,Rome,historical_truth_accuracy,Rome,temporal-supersession-00-slice-middle,1.0,truthgit_no_branches
+Oslo,Oslo,current_truth_accuracy,Oslo,temporal-supersession-01-current,1.0,truthgit_no_branches
+Oslo,Busan -> Berlin -> Oslo,historical_truth_accuracy,Busan -> Berlin -> Oslo,temporal-supersession-01-history,1.0,truthgit_no_branches
+Oslo,Oslo,provenance_accuracy,Oslo,temporal-supersession-01-provenance,1.0,truthgit_no_branches
+Berlin,Berlin,historical_truth_accuracy,Berlin,temporal-supersession-01-slice-middle,1.0,truthgit_no_branches
+Prague,Prague,current_truth_accuracy,Prague,temporal-supersession-02-current,1.0,truthgit_no_branches
+Prague,Tokyo -> Paris -> Prague,historical_truth_accuracy,Tokyo -> Paris -> Prague,temporal-supersession-02-history,1.0,truthgit_no_branches
+Prague,Prague,provenance_accuracy,Prague,temporal-supersession-02-provenance,1.0,truthgit_no_branches
+Paris,Paris,historical_truth_accuracy,Paris,temporal-supersession-02-slice-middle,1.0,truthgit_no_branches
+Vienna,Vienna,current_truth_accuracy,Vienna,temporal-supersession-03-current,1.0,truthgit_no_branches
+Vienna,Madrid -> Lisbon -> Vienna,historical_truth_accuracy,Madrid -> Lisbon -> Vienna,temporal-supersession-03-history,1.0,truthgit_no_branches
+Vienna,Vienna,provenance_accuracy,Vienna,temporal-supersession-03-provenance,1.0,truthgit_no_branches
+Lisbon,Lisbon,historical_truth_accuracy,Lisbon,temporal-supersession-03-slice-middle,1.0,truthgit_no_branches
+Lima,Lima,current_truth_accuracy,Lima,temporal-supersession-04-current,1.0,truthgit_no_branches
+Lima,Rome -> Dublin -> Lima,historical_truth_accuracy,Rome -> Dublin -> Lima,temporal-supersession-04-history,1.0,truthgit_no_branches
+Lima,Lima,provenance_accuracy,Lima,temporal-supersession-04-provenance,1.0,truthgit_no_branches
+Dublin,Dublin,historical_truth_accuracy,Dublin,temporal-supersession-04-slice-middle,1.0,truthgit_no_branches
+Quito,Quito,current_truth_accuracy,Quito,temporal-supersession-05-current,1.0,truthgit_no_branches
+Quito,Berlin -> Oslo -> Quito,historical_truth_accuracy,Berlin -> Oslo -> Quito,temporal-supersession-05-history,1.0,truthgit_no_branches
+Quito,Quito,provenance_accuracy,Quito,temporal-supersession-05-provenance,1.0,truthgit_no_branches
+Oslo,Oslo,historical_truth_accuracy,Oslo,temporal-supersession-05-slice-middle,1.0,truthgit_no_branches
+Hanoi,Hanoi,current_truth_accuracy,Hanoi,temporal-supersession-06-current,1.0,truthgit_no_branches
+Hanoi,Paris -> Prague -> Hanoi,historical_truth_accuracy,Paris -> Prague -> Hanoi,temporal-supersession-06-history,1.0,truthgit_no_branches
+Hanoi,Hanoi,provenance_accuracy,Hanoi,temporal-supersession-06-provenance,1.0,truthgit_no_branches
+Seoul,Seoul,current_truth_accuracy,Seoul,temporal-supersession-07-current,1.0,truthgit_no_branches
+Seoul,Lisbon -> Vienna -> Seoul,historical_truth_accuracy,Lisbon -> Vienna -> Seoul,temporal-supersession-07-history,1.0,truthgit_no_branches
+Seoul,Seoul,provenance_accuracy,Seoul,temporal-supersession-07-provenance,1.0,truthgit_no_branches
+Busan,Busan,current_truth_accuracy,Busan,temporal-supersession-08-current,1.0,truthgit_no_branches
+Busan,Dublin -> Lima -> Busan,historical_truth_accuracy,Dublin -> Lima -> Busan,temporal-supersession-08-history,1.0,truthgit_no_branches
+Busan,Busan,provenance_accuracy,Busan,temporal-supersession-08-provenance,1.0,truthgit_no_branches
+Tokyo,Tokyo,current_truth_accuracy,Tokyo,temporal-supersession-09-current,1.0,truthgit_no_branches
+Tokyo,Oslo -> Quito -> Tokyo,historical_truth_accuracy,Oslo -> Quito -> Tokyo,temporal-supersession-09-history,1.0,truthgit_no_branches
+Tokyo,Tokyo,provenance_accuracy,Tokyo,temporal-supersession-09-provenance,1.0,truthgit_no_branches
+Madrid,Madrid,current_truth_accuracy,Madrid,temporal-supersession-10-current,1.0,truthgit_no_branches
+Madrid,Prague -> Hanoi -> Madrid,historical_truth_accuracy,Prague -> Hanoi -> Madrid,temporal-supersession-10-history,1.0,truthgit_no_branches
+Madrid,Madrid,provenance_accuracy,Madrid,temporal-supersession-10-provenance,1.0,truthgit_no_branches
+Rome,Rome,current_truth_accuracy,Rome,temporal-supersession-11-current,1.0,truthgit_no_branches
+Rome,Vienna -> Seoul -> Rome,historical_truth_accuracy,Vienna -> Seoul -> Rome,temporal-supersession-11-history,1.0,truthgit_no_branches
+Rome,Rome,provenance_accuracy,Rome,temporal-supersession-11-provenance,1.0,truthgit_no_branches
+Tokyo,Tokyo,current_truth_accuracy,Tokyo,poisoning-low-trust-00-current,1.0,truthgit_no_branches
+Tokyo,,low_trust_warning_rate,Tokyo,poisoning-low-trust-00-warning,1.0,truthgit_no_branches
+Madrid,Madrid,current_truth_accuracy,Madrid,poisoning-low-trust-01-current,1.0,truthgit_no_branches
+Madrid,,low_trust_warning_rate,Madrid,poisoning-low-trust-01-warning,1.0,truthgit_no_branches
+Rome,Rome,current_truth_accuracy,Rome,poisoning-low-trust-02-current,1.0,truthgit_no_branches
+Rome,,low_trust_warning_rate,Rome,poisoning-low-trust-02-warning,1.0,truthgit_no_branches
+Berlin,Berlin,current_truth_accuracy,Berlin,poisoning-low-trust-03-current,1.0,truthgit_no_branches
+Berlin,,low_trust_warning_rate,Berlin,poisoning-low-trust-03-warning,1.0,truthgit_no_branches
+Paris,Paris,current_truth_accuracy,Paris,poisoning-low-trust-04-current,1.0,truthgit_no_branches
+Paris,,low_trust_warning_rate,Paris,poisoning-low-trust-04-warning,1.0,truthgit_no_branches
+Lisbon,Lisbon,current_truth_accuracy,Lisbon,poisoning-low-trust-05-current,1.0,truthgit_no_branches
+Lisbon,,low_trust_warning_rate,Lisbon,poisoning-low-trust-05-warning,1.0,truthgit_no_branches
+Dublin,Dublin,current_truth_accuracy,Dublin,poisoning-low-trust-06-current,1.0,truthgit_no_branches
+Dublin,,low_trust_warning_rate,Dublin,poisoning-low-trust-06-warning,1.0,truthgit_no_branches
+Oslo,Oslo,current_truth_accuracy,Oslo,poisoning-low-trust-07-current,1.0,truthgit_no_branches
+Oslo,,low_trust_warning_rate,Oslo,poisoning-low-trust-07-warning,1.0,truthgit_no_branches
+Prague,Prague,current_truth_accuracy,Prague,poisoning-low-trust-08-current,1.0,truthgit_no_branches
+Prague,,low_trust_warning_rate,Prague,poisoning-low-trust-08-warning,1.0,truthgit_no_branches
+Vienna,Vienna,current_truth_accuracy,Vienna,poisoning-low-trust-09-current,1.0,truthgit_no_branches
+Vienna,,low_trust_warning_rate,Vienna,poisoning-low-trust-09-warning,1.0,truthgit_no_branches
+Lisbon,,branch_isolation_score,Lisbon,branch-leakage-00-main-isolation,0.0,truthgit_no_branches
+Lisbon,Lisbon,branch_isolation_score,Lisbon,branch-leakage-00-branch-visible,1.0,truthgit_no_branches
+Lisbon,Lisbon,provenance_accuracy,Lisbon,branch-leakage-00-branch-source,1.0,truthgit_no_branches
+Dublin,,branch_isolation_score,Dublin,branch-leakage-01-main-isolation,0.0,truthgit_no_branches
+Dublin,Dublin,branch_isolation_score,Dublin,branch-leakage-01-branch-visible,1.0,truthgit_no_branches
+Dublin,Dublin,provenance_accuracy,Dublin,branch-leakage-01-branch-source,1.0,truthgit_no_branches
+Oslo,,branch_isolation_score,Oslo,branch-leakage-02-main-isolation,0.0,truthgit_no_branches
+Oslo,Oslo,branch_isolation_score,Oslo,branch-leakage-02-branch-visible,1.0,truthgit_no_branches
+Oslo,Oslo,provenance_accuracy,Oslo,branch-leakage-02-branch-source,1.0,truthgit_no_branches
+Prague,,branch_isolation_score,Prague,branch-leakage-03-main-isolation,0.0,truthgit_no_branches
+Prague,Prague,branch_isolation_score,Prague,branch-leakage-03-branch-visible,1.0,truthgit_no_branches
+Prague,Prague,provenance_accuracy,Prague,branch-leakage-03-branch-source,1.0,truthgit_no_branches
+Vienna,,branch_isolation_score,Vienna,branch-leakage-04-main-isolation,0.0,truthgit_no_branches
+Vienna,Vienna,branch_isolation_score,Vienna,branch-leakage-04-branch-visible,1.0,truthgit_no_branches
+Vienna,Vienna,provenance_accuracy,Vienna,branch-leakage-04-branch-source,1.0,truthgit_no_branches
+Lima,,branch_isolation_score,Lima,branch-leakage-05-main-isolation,0.0,truthgit_no_branches
+Lima,Lima,branch_isolation_score,Lima,branch-leakage-05-branch-visible,1.0,truthgit_no_branches
+Lima,Lima,provenance_accuracy,Lima,branch-leakage-05-branch-source,1.0,truthgit_no_branches
+Quito,,branch_isolation_score,Quito,branch-leakage-06-main-isolation,0.0,truthgit_no_branches
+Quito,Quito,branch_isolation_score,Quito,branch-leakage-06-branch-visible,1.0,truthgit_no_branches
+Quito,Quito,provenance_accuracy,Quito,branch-leakage-06-branch-source,1.0,truthgit_no_branches
+Hanoi,,branch_isolation_score,Hanoi,branch-leakage-07-main-isolation,0.0,truthgit_no_branches
+Hanoi,Hanoi,branch_isolation_score,Hanoi,branch-leakage-07-branch-visible,1.0,truthgit_no_branches
+Hanoi,Hanoi,provenance_accuracy,Hanoi,branch-leakage-07-branch-source,1.0,truthgit_no_branches
+Seoul,,branch_isolation_score,Seoul,branch-leakage-08-main-isolation,0.0,truthgit_no_branches
+Seoul,Seoul,branch_isolation_score,Seoul,branch-leakage-08-branch-visible,1.0,truthgit_no_branches
+Seoul,Seoul,provenance_accuracy,Seoul,branch-leakage-08-branch-source,1.0,truthgit_no_branches
+Busan,,branch_isolation_score,Busan,branch-leakage-09-main-isolation,0.0,truthgit_no_branches
+Busan,Busan,branch_isolation_score,Busan,branch-leakage-09-branch-visible,1.0,truthgit_no_branches
+Busan,Busan,provenance_accuracy,Busan,branch-leakage-09-branch-source,1.0,truthgit_no_branches
+Madrid,Madrid,rollback_recovery_rate,Madrid,rollback-bad-commit-00-recovery,1.0,truthgit_no_branches
+Madrid,Madrid,historical_truth_accuracy,Madrid,rollback-bad-commit-00-history-after-rollback,1.0,truthgit_no_branches
+Rome,Rome,rollback_recovery_rate,Rome,rollback-bad-commit-01-recovery,1.0,truthgit_no_branches
+Rome,Rome,historical_truth_accuracy,Rome,rollback-bad-commit-01-history-after-rollback,1.0,truthgit_no_branches
+Berlin,Berlin,rollback_recovery_rate,Berlin,rollback-bad-commit-02-recovery,1.0,truthgit_no_branches
+Berlin,Berlin,historical_truth_accuracy,Berlin,rollback-bad-commit-02-history-after-rollback,1.0,truthgit_no_branches
+Paris,Paris,rollback_recovery_rate,Paris,rollback-bad-commit-03-recovery,1.0,truthgit_no_branches
+Paris,Paris,historical_truth_accuracy,Paris,rollback-bad-commit-03-history-after-rollback,1.0,truthgit_no_branches
+Lisbon,Lisbon,rollback_recovery_rate,Lisbon,rollback-bad-commit-04-recovery,1.0,truthgit_no_branches
+Dublin,Dublin,rollback_recovery_rate,Dublin,rollback-bad-commit-05-recovery,1.0,truthgit_no_branches
+Oslo,Oslo,rollback_recovery_rate,Oslo,rollback-bad-commit-06-recovery,1.0,truthgit_no_branches
+Prague,Prague,rollback_recovery_rate,Prague,rollback-bad-commit-07-recovery,1.0,truthgit_no_branches
+Lab C,Lab C,merge_conflict_resolution_score,Lab C,merge-conflict-00-merged-current,1.0,truthgit_no_branches
+Lab D,Lab D,merge_conflict_resolution_score,Lab D,merge-conflict-01-merged-current,1.0,truthgit_no_branches
+Lab E,Lab E,merge_conflict_resolution_score,Lab E,merge-conflict-02-merged-current,1.0,truthgit_no_branches
+Lab F,Lab F,merge_conflict_resolution_score,Lab F,merge-conflict-03-merged-current,1.0,truthgit_no_branches
+Lab A,Lab A,merge_conflict_resolution_score,Lab A,merge-conflict-04-merged-current,1.0,truthgit_no_branches
+Berlin,Berlin,provenance_accuracy,Berlin,exact-provenance-00-source,1.0,truthgit_no_branches
+Paris,Paris,provenance_accuracy,Paris,exact-provenance-01-source,1.0,truthgit_no_branches
+Lisbon,Lisbon,provenance_accuracy,Lisbon,exact-provenance-02-source,1.0,truthgit_no_branches
+Dublin,Dublin,provenance_accuracy,Dublin,exact-provenance-03-source,1.0,truthgit_no_branches
+Oslo,Oslo,provenance_accuracy,Oslo,exact-provenance-04-source,1.0,truthgit_no_branches
+Dublin,Dublin,current_truth_accuracy,Dublin,temporal-supersession-00-current,1.0,truthgit_no_rollback
+Dublin,Seoul -> Rome -> Dublin,historical_truth_accuracy,Seoul -> Rome -> Dublin,temporal-supersession-00-history,1.0,truthgit_no_rollback
+Dublin,Dublin,provenance_accuracy,Dublin,temporal-supersession-00-provenance,1.0,truthgit_no_rollback
+Rome,Rome,historical_truth_accuracy,Rome,temporal-supersession-00-slice-middle,1.0,truthgit_no_rollback
+Oslo,Oslo,current_truth_accuracy,Oslo,temporal-supersession-01-current,1.0,truthgit_no_rollback
+Oslo,Busan -> Berlin -> Oslo,historical_truth_accuracy,Busan -> Berlin -> Oslo,temporal-supersession-01-history,1.0,truthgit_no_rollback
+Oslo,Oslo,provenance_accuracy,Oslo,temporal-supersession-01-provenance,1.0,truthgit_no_rollback
+Berlin,Berlin,historical_truth_accuracy,Berlin,temporal-supersession-01-slice-middle,1.0,truthgit_no_rollback
+Prague,Prague,current_truth_accuracy,Prague,temporal-supersession-02-current,1.0,truthgit_no_rollback
+Prague,Tokyo -> Paris -> Prague,historical_truth_accuracy,Tokyo -> Paris -> Prague,temporal-supersession-02-history,1.0,truthgit_no_rollback
+Prague,Prague,provenance_accuracy,Prague,temporal-supersession-02-provenance,1.0,truthgit_no_rollback
+Paris,Paris,historical_truth_accuracy,Paris,temporal-supersession-02-slice-middle,1.0,truthgit_no_rollback
+Vienna,Vienna,current_truth_accuracy,Vienna,temporal-supersession-03-current,1.0,truthgit_no_rollback
+Vienna,Madrid -> Lisbon -> Vienna,historical_truth_accuracy,Madrid -> Lisbon -> Vienna,temporal-supersession-03-history,1.0,truthgit_no_rollback
+Vienna,Vienna,provenance_accuracy,Vienna,temporal-supersession-03-provenance,1.0,truthgit_no_rollback
+Lisbon,Lisbon,historical_truth_accuracy,Lisbon,temporal-supersession-03-slice-middle,1.0,truthgit_no_rollback
+Lima,Lima,current_truth_accuracy,Lima,temporal-supersession-04-current,1.0,truthgit_no_rollback
+Lima,Rome -> Dublin -> Lima,historical_truth_accuracy,Rome -> Dublin -> Lima,temporal-supersession-04-history,1.0,truthgit_no_rollback
+Lima,Lima,provenance_accuracy,Lima,temporal-supersession-04-provenance,1.0,truthgit_no_rollback
+Dublin,Dublin,historical_truth_accuracy,Dublin,temporal-supersession-04-slice-middle,1.0,truthgit_no_rollback
+Quito,Quito,current_truth_accuracy,Quito,temporal-supersession-05-current,1.0,truthgit_no_rollback
+Quito,Berlin -> Oslo -> Quito,historical_truth_accuracy,Berlin -> Oslo -> Quito,temporal-supersession-05-history,1.0,truthgit_no_rollback
+Quito,Quito,provenance_accuracy,Quito,temporal-supersession-05-provenance,1.0,truthgit_no_rollback
+Oslo,Oslo,historical_truth_accuracy,Oslo,temporal-supersession-05-slice-middle,1.0,truthgit_no_rollback
+Hanoi,Hanoi,current_truth_accuracy,Hanoi,temporal-supersession-06-current,1.0,truthgit_no_rollback
+Hanoi,Paris -> Prague -> Hanoi,historical_truth_accuracy,Paris -> Prague -> Hanoi,temporal-supersession-06-history,1.0,truthgit_no_rollback
+Hanoi,Hanoi,provenance_accuracy,Hanoi,temporal-supersession-06-provenance,1.0,truthgit_no_rollback
+Seoul,Seoul,current_truth_accuracy,Seoul,temporal-supersession-07-current,1.0,truthgit_no_rollback
+Seoul,Lisbon -> Vienna -> Seoul,historical_truth_accuracy,Lisbon -> Vienna -> Seoul,temporal-supersession-07-history,1.0,truthgit_no_rollback
+Seoul,Seoul,provenance_accuracy,Seoul,temporal-supersession-07-provenance,1.0,truthgit_no_rollback
+Busan,Busan,current_truth_accuracy,Busan,temporal-supersession-08-current,1.0,truthgit_no_rollback
+Busan,Dublin -> Lima -> Busan,historical_truth_accuracy,Dublin -> Lima -> Busan,temporal-supersession-08-history,1.0,truthgit_no_rollback
+Busan,Busan,provenance_accuracy,Busan,temporal-supersession-08-provenance,1.0,truthgit_no_rollback
+Tokyo,Tokyo,current_truth_accuracy,Tokyo,temporal-supersession-09-current,1.0,truthgit_no_rollback
+Tokyo,Oslo -> Quito -> Tokyo,historical_truth_accuracy,Oslo -> Quito -> Tokyo,temporal-supersession-09-history,1.0,truthgit_no_rollback
+Tokyo,Tokyo,provenance_accuracy,Tokyo,temporal-supersession-09-provenance,1.0,truthgit_no_rollback
+Madrid,Madrid,current_truth_accuracy,Madrid,temporal-supersession-10-current,1.0,truthgit_no_rollback
+Madrid,Prague -> Hanoi -> Madrid,historical_truth_accuracy,Prague -> Hanoi -> Madrid,temporal-supersession-10-history,1.0,truthgit_no_rollback
+Madrid,Madrid,provenance_accuracy,Madrid,temporal-supersession-10-provenance,1.0,truthgit_no_rollback
+Rome,Rome,current_truth_accuracy,Rome,temporal-supersession-11-current,1.0,truthgit_no_rollback
+Rome,Vienna -> Seoul -> Rome,historical_truth_accuracy,Vienna -> Seoul -> Rome,temporal-supersession-11-history,1.0,truthgit_no_rollback
+Rome,Rome,provenance_accuracy,Rome,temporal-supersession-11-provenance,1.0,truthgit_no_rollback
+Tokyo,Tokyo,current_truth_accuracy,Tokyo,poisoning-low-trust-00-current,1.0,truthgit_no_rollback
+Tokyo,,low_trust_warning_rate,Tokyo,poisoning-low-trust-00-warning,1.0,truthgit_no_rollback
+Madrid,Madrid,current_truth_accuracy,Madrid,poisoning-low-trust-01-current,1.0,truthgit_no_rollback
+Madrid,,low_trust_warning_rate,Madrid,poisoning-low-trust-01-warning,1.0,truthgit_no_rollback
+Rome,Rome,current_truth_accuracy,Rome,poisoning-low-trust-02-current,1.0,truthgit_no_rollback
+Rome,,low_trust_warning_rate,Rome,poisoning-low-trust-02-warning,1.0,truthgit_no_rollback
+Berlin,Berlin,current_truth_accuracy,Berlin,poisoning-low-trust-03-current,1.0,truthgit_no_rollback
+Berlin,,low_trust_warning_rate,Berlin,poisoning-low-trust-03-warning,1.0,truthgit_no_rollback
+Paris,Paris,current_truth_accuracy,Paris,poisoning-low-trust-04-current,1.0,truthgit_no_rollback
+Paris,,low_trust_warning_rate,Paris,poisoning-low-trust-04-warning,1.0,truthgit_no_rollback
+Lisbon,Lisbon,current_truth_accuracy,Lisbon,poisoning-low-trust-05-current,1.0,truthgit_no_rollback
+Lisbon,,low_trust_warning_rate,Lisbon,poisoning-low-trust-05-warning,1.0,truthgit_no_rollback
+Dublin,Dublin,current_truth_accuracy,Dublin,poisoning-low-trust-06-current,1.0,truthgit_no_rollback
+Dublin,,low_trust_warning_rate,Dublin,poisoning-low-trust-06-warning,1.0,truthgit_no_rollback
+Oslo,Oslo,current_truth_accuracy,Oslo,poisoning-low-trust-07-current,1.0,truthgit_no_rollback
+Oslo,,low_trust_warning_rate,Oslo,poisoning-low-trust-07-warning,1.0,truthgit_no_rollback
+Prague,Prague,current_truth_accuracy,Prague,poisoning-low-trust-08-current,1.0,truthgit_no_rollback
+Prague,,low_trust_warning_rate,Prague,poisoning-low-trust-08-warning,1.0,truthgit_no_rollback
+Vienna,Vienna,current_truth_accuracy,Vienna,poisoning-low-trust-09-current,1.0,truthgit_no_rollback
+Vienna,,low_trust_warning_rate,Vienna,poisoning-low-trust-09-warning,1.0,truthgit_no_rollback
+unknown,,branch_isolation_score,,branch-leakage-00-main-isolation,1.0,truthgit_no_rollback
+Lisbon,Lisbon,branch_isolation_score,Lisbon,branch-leakage-00-branch-visible,1.0,truthgit_no_rollback
+Lisbon,Lisbon,provenance_accuracy,Lisbon,branch-leakage-00-branch-source,1.0,truthgit_no_rollback
+unknown,,branch_isolation_score,,branch-leakage-01-main-isolation,1.0,truthgit_no_rollback
+Dublin,Dublin,branch_isolation_score,Dublin,branch-leakage-01-branch-visible,1.0,truthgit_no_rollback
+Dublin,Dublin,provenance_accuracy,Dublin,branch-leakage-01-branch-source,1.0,truthgit_no_rollback
+unknown,,branch_isolation_score,,branch-leakage-02-main-isolation,1.0,truthgit_no_rollback
+Oslo,Oslo,branch_isolation_score,Oslo,branch-leakage-02-branch-visible,1.0,truthgit_no_rollback
+Oslo,Oslo,provenance_accuracy,Oslo,branch-leakage-02-branch-source,1.0,truthgit_no_rollback
+unknown,,branch_isolation_score,,branch-leakage-03-main-isolation,1.0,truthgit_no_rollback
+Prague,Prague,branch_isolation_score,Prague,branch-leakage-03-branch-visible,1.0,truthgit_no_rollback
+Prague,Prague,provenance_accuracy,Prague,branch-leakage-03-branch-source,1.0,truthgit_no_rollback
+unknown,,branch_isolation_score,,branch-leakage-04-main-isolation,1.0,truthgit_no_rollback
+Vienna,Vienna,branch_isolation_score,Vienna,branch-leakage-04-branch-visible,1.0,truthgit_no_rollback
+Vienna,Vienna,provenance_accuracy,Vienna,branch-leakage-04-branch-source,1.0,truthgit_no_rollback
+unknown,,branch_isolation_score,,branch-leakage-05-main-isolation,1.0,truthgit_no_rollback
+Lima,Lima,branch_isolation_score,Lima,branch-leakage-05-branch-visible,1.0,truthgit_no_rollback
+Lima,Lima,provenance_accuracy,Lima,branch-leakage-05-branch-source,1.0,truthgit_no_rollback
+unknown,,branch_isolation_score,,branch-leakage-06-main-isolation,1.0,truthgit_no_rollback
+Quito,Quito,branch_isolation_score,Quito,branch-leakage-06-branch-visible,1.0,truthgit_no_rollback
+Quito,Quito,provenance_accuracy,Quito,branch-leakage-06-branch-source,1.0,truthgit_no_rollback
+unknown,,branch_isolation_score,,branch-leakage-07-main-isolation,1.0,truthgit_no_rollback
+Hanoi,Hanoi,branch_isolation_score,Hanoi,branch-leakage-07-branch-visible,1.0,truthgit_no_rollback
+Hanoi,Hanoi,provenance_accuracy,Hanoi,branch-leakage-07-branch-source,1.0,truthgit_no_rollback
+unknown,,branch_isolation_score,,branch-leakage-08-main-isolation,1.0,truthgit_no_rollback
+Seoul,Seoul,branch_isolation_score,Seoul,branch-leakage-08-branch-visible,1.0,truthgit_no_rollback
+Seoul,Seoul,provenance_accuracy,Seoul,branch-leakage-08-branch-source,1.0,truthgit_no_rollback
+unknown,,branch_isolation_score,,branch-leakage-09-main-isolation,1.0,truthgit_no_rollback
+Busan,Busan,branch_isolation_score,Busan,branch-leakage-09-branch-visible,1.0,truthgit_no_rollback
+Busan,Busan,provenance_accuracy,Busan,branch-leakage-09-branch-source,1.0,truthgit_no_rollback
+Prague,Madrid,rollback_recovery_rate,Prague,rollback-bad-commit-00-recovery,0.0,truthgit_no_rollback
+Prague,Madrid,historical_truth_accuracy,Madrid -> Prague,rollback-bad-commit-00-history-after-rollback,0.0,truthgit_no_rollback
+Vienna,Rome,rollback_recovery_rate,Vienna,rollback-bad-commit-01-recovery,0.0,truthgit_no_rollback
+Vienna,Rome,historical_truth_accuracy,Rome -> Vienna,rollback-bad-commit-01-history-after-rollback,0.0,truthgit_no_rollback
+Lima,Berlin,rollback_recovery_rate,Lima,rollback-bad-commit-02-recovery,0.0,truthgit_no_rollback
+Lima,Berlin,historical_truth_accuracy,Berlin -> Lima,rollback-bad-commit-02-history-after-rollback,0.0,truthgit_no_rollback
+Quito,Paris,rollback_recovery_rate,Quito,rollback-bad-commit-03-recovery,0.0,truthgit_no_rollback
+Quito,Paris,historical_truth_accuracy,Paris -> Quito,rollback-bad-commit-03-history-after-rollback,0.0,truthgit_no_rollback
+Hanoi,Lisbon,rollback_recovery_rate,Hanoi,rollback-bad-commit-04-recovery,0.0,truthgit_no_rollback
+Seoul,Dublin,rollback_recovery_rate,Seoul,rollback-bad-commit-05-recovery,0.0,truthgit_no_rollback
+Busan,Oslo,rollback_recovery_rate,Busan,rollback-bad-commit-06-recovery,0.0,truthgit_no_rollback
+Tokyo,Prague,rollback_recovery_rate,Tokyo,rollback-bad-commit-07-recovery,0.0,truthgit_no_rollback
+Lab C,Lab C,merge_conflict_resolution_score,Lab C,merge-conflict-00-merged-current,1.0,truthgit_no_rollback
+Lab D,Lab D,merge_conflict_resolution_score,Lab D,merge-conflict-01-merged-current,1.0,truthgit_no_rollback
+Lab E,Lab E,merge_conflict_resolution_score,Lab E,merge-conflict-02-merged-current,1.0,truthgit_no_rollback
+Lab F,Lab F,merge_conflict_resolution_score,Lab F,merge-conflict-03-merged-current,1.0,truthgit_no_rollback
+Lab A,Lab A,merge_conflict_resolution_score,Lab A,merge-conflict-04-merged-current,1.0,truthgit_no_rollback
+Berlin,Berlin,provenance_accuracy,Berlin,exact-provenance-00-source,1.0,truthgit_no_rollback
+Paris,Paris,provenance_accuracy,Paris,exact-provenance-01-source,1.0,truthgit_no_rollback
+Lisbon,Lisbon,provenance_accuracy,Lisbon,exact-provenance-02-source,1.0,truthgit_no_rollback
+Dublin,Dublin,provenance_accuracy,Dublin,exact-provenance-03-source,1.0,truthgit_no_rollback
+Oslo,Oslo,provenance_accuracy,Oslo,exact-provenance-04-source,1.0,truthgit_no_rollback
+Dublin,Dublin,current_truth_accuracy,Dublin,temporal-supersession-00-current,1.0,truthgit_no_review_gate
+Dublin,Seoul -> Rome -> Dublin,historical_truth_accuracy,Seoul -> Rome -> Dublin,temporal-supersession-00-history,1.0,truthgit_no_review_gate
+Dublin,Dublin,provenance_accuracy,Dublin,temporal-supersession-00-provenance,1.0,truthgit_no_review_gate
+Rome,Rome,historical_truth_accuracy,Rome,temporal-supersession-00-slice-middle,1.0,truthgit_no_review_gate
+Oslo,Oslo,current_truth_accuracy,Oslo,temporal-supersession-01-current,1.0,truthgit_no_review_gate
+Oslo,Busan -> Berlin -> Oslo,historical_truth_accuracy,Busan -> Berlin -> Oslo,temporal-supersession-01-history,1.0,truthgit_no_review_gate
+Oslo,Oslo,provenance_accuracy,Oslo,temporal-supersession-01-provenance,1.0,truthgit_no_review_gate
+Berlin,Berlin,historical_truth_accuracy,Berlin,temporal-supersession-01-slice-middle,1.0,truthgit_no_review_gate
+Prague,Prague,current_truth_accuracy,Prague,temporal-supersession-02-current,1.0,truthgit_no_review_gate
+Prague,Tokyo -> Paris -> Prague,historical_truth_accuracy,Tokyo -> Paris -> Prague,temporal-supersession-02-history,1.0,truthgit_no_review_gate
+Prague,Prague,provenance_accuracy,Prague,temporal-supersession-02-provenance,1.0,truthgit_no_review_gate
+Paris,Paris,historical_truth_accuracy,Paris,temporal-supersession-02-slice-middle,1.0,truthgit_no_review_gate
+Vienna,Vienna,current_truth_accuracy,Vienna,temporal-supersession-03-current,1.0,truthgit_no_review_gate
+Vienna,Madrid -> Lisbon -> Vienna,historical_truth_accuracy,Madrid -> Lisbon -> Vienna,temporal-supersession-03-history,1.0,truthgit_no_review_gate
+Vienna,Vienna,provenance_accuracy,Vienna,temporal-supersession-03-provenance,1.0,truthgit_no_review_gate
+Lisbon,Lisbon,historical_truth_accuracy,Lisbon,temporal-supersession-03-slice-middle,1.0,truthgit_no_review_gate
+Lima,Lima,current_truth_accuracy,Lima,temporal-supersession-04-current,1.0,truthgit_no_review_gate
+Lima,Rome -> Dublin -> Lima,historical_truth_accuracy,Rome -> Dublin -> Lima,temporal-supersession-04-history,1.0,truthgit_no_review_gate
+Lima,Lima,provenance_accuracy,Lima,temporal-supersession-04-provenance,1.0,truthgit_no_review_gate
+Dublin,Dublin,historical_truth_accuracy,Dublin,temporal-supersession-04-slice-middle,1.0,truthgit_no_review_gate
+Quito,Quito,current_truth_accuracy,Quito,temporal-supersession-05-current,1.0,truthgit_no_review_gate
+Quito,Berlin -> Oslo -> Quito,historical_truth_accuracy,Berlin -> Oslo -> Quito,temporal-supersession-05-history,1.0,truthgit_no_review_gate
+Quito,Quito,provenance_accuracy,Quito,temporal-supersession-05-provenance,1.0,truthgit_no_review_gate
+Oslo,Oslo,historical_truth_accuracy,Oslo,temporal-supersession-05-slice-middle,1.0,truthgit_no_review_gate
+Hanoi,Hanoi,current_truth_accuracy,Hanoi,temporal-supersession-06-current,1.0,truthgit_no_review_gate
+Hanoi,Paris -> Prague -> Hanoi,historical_truth_accuracy,Paris -> Prague -> Hanoi,temporal-supersession-06-history,1.0,truthgit_no_review_gate
+Hanoi,Hanoi,provenance_accuracy,Hanoi,temporal-supersession-06-provenance,1.0,truthgit_no_review_gate
+Seoul,Seoul,current_truth_accuracy,Seoul,temporal-supersession-07-current,1.0,truthgit_no_review_gate
+Seoul,Lisbon -> Vienna -> Seoul,historical_truth_accuracy,Lisbon -> Vienna -> Seoul,temporal-supersession-07-history,1.0,truthgit_no_review_gate
+Seoul,Seoul,provenance_accuracy,Seoul,temporal-supersession-07-provenance,1.0,truthgit_no_review_gate
+Busan,Busan,current_truth_accuracy,Busan,temporal-supersession-08-current,1.0,truthgit_no_review_gate
+Busan,Dublin -> Lima -> Busan,historical_truth_accuracy,Dublin -> Lima -> Busan,temporal-supersession-08-history,1.0,truthgit_no_review_gate
+Busan,Busan,provenance_accuracy,Busan,temporal-supersession-08-provenance,1.0,truthgit_no_review_gate
+Tokyo,Tokyo,current_truth_accuracy,Tokyo,temporal-supersession-09-current,1.0,truthgit_no_review_gate
+Tokyo,Oslo -> Quito -> Tokyo,historical_truth_accuracy,Oslo -> Quito -> Tokyo,temporal-supersession-09-history,1.0,truthgit_no_review_gate
+Tokyo,Tokyo,provenance_accuracy,Tokyo,temporal-supersession-09-provenance,1.0,truthgit_no_review_gate
+Madrid,Madrid,current_truth_accuracy,Madrid,temporal-supersession-10-current,1.0,truthgit_no_review_gate
+Madrid,Prague -> Hanoi -> Madrid,historical_truth_accuracy,Prague -> Hanoi -> Madrid,temporal-supersession-10-history,1.0,truthgit_no_review_gate
+Madrid,Madrid,provenance_accuracy,Madrid,temporal-supersession-10-provenance,1.0,truthgit_no_review_gate
+Rome,Rome,current_truth_accuracy,Rome,temporal-supersession-11-current,1.0,truthgit_no_review_gate
+Rome,Vienna -> Seoul -> Rome,historical_truth_accuracy,Vienna -> Seoul -> Rome,temporal-supersession-11-history,1.0,truthgit_no_review_gate
+Rome,Rome,provenance_accuracy,Rome,temporal-supersession-11-provenance,1.0,truthgit_no_review_gate
+Tokyo,Tokyo,current_truth_accuracy,Tokyo,poisoning-low-trust-00-current,1.0,truthgit_no_review_gate
+Tokyo,,low_trust_warning_rate,Tokyo,poisoning-low-trust-00-warning,0.0,truthgit_no_review_gate
+Madrid,Madrid,current_truth_accuracy,Madrid,poisoning-low-trust-01-current,1.0,truthgit_no_review_gate
+Madrid,,low_trust_warning_rate,Madrid,poisoning-low-trust-01-warning,0.0,truthgit_no_review_gate
+Rome,Rome,current_truth_accuracy,Rome,poisoning-low-trust-02-current,1.0,truthgit_no_review_gate
+Rome,,low_trust_warning_rate,Rome,poisoning-low-trust-02-warning,0.0,truthgit_no_review_gate
+Berlin,Berlin,current_truth_accuracy,Berlin,poisoning-low-trust-03-current,1.0,truthgit_no_review_gate
+Berlin,,low_trust_warning_rate,Berlin,poisoning-low-trust-03-warning,0.0,truthgit_no_review_gate
+Paris,Paris,current_truth_accuracy,Paris,poisoning-low-trust-04-current,1.0,truthgit_no_review_gate
+Paris,,low_trust_warning_rate,Paris,poisoning-low-trust-04-warning,0.0,truthgit_no_review_gate
+Lisbon,Lisbon,current_truth_accuracy,Lisbon,poisoning-low-trust-05-current,1.0,truthgit_no_review_gate
+Lisbon,,low_trust_warning_rate,Lisbon,poisoning-low-trust-05-warning,0.0,truthgit_no_review_gate
+Dublin,Dublin,current_truth_accuracy,Dublin,poisoning-low-trust-06-current,1.0,truthgit_no_review_gate
+Dublin,,low_trust_warning_rate,Dublin,poisoning-low-trust-06-warning,0.0,truthgit_no_review_gate
+Oslo,Oslo,current_truth_accuracy,Oslo,poisoning-low-trust-07-current,1.0,truthgit_no_review_gate
+Oslo,,low_trust_warning_rate,Oslo,poisoning-low-trust-07-warning,0.0,truthgit_no_review_gate
+Prague,Prague,current_truth_accuracy,Prague,poisoning-low-trust-08-current,1.0,truthgit_no_review_gate
+Prague,,low_trust_warning_rate,Prague,poisoning-low-trust-08-warning,0.0,truthgit_no_review_gate
+Vienna,Vienna,current_truth_accuracy,Vienna,poisoning-low-trust-09-current,1.0,truthgit_no_review_gate
+Vienna,,low_trust_warning_rate,Vienna,poisoning-low-trust-09-warning,0.0,truthgit_no_review_gate
+unknown,,branch_isolation_score,,branch-leakage-00-main-isolation,1.0,truthgit_no_review_gate
+Lisbon,Lisbon,branch_isolation_score,Lisbon,branch-leakage-00-branch-visible,1.0,truthgit_no_review_gate
+Lisbon,Lisbon,provenance_accuracy,Lisbon,branch-leakage-00-branch-source,1.0,truthgit_no_review_gate
+unknown,,branch_isolation_score,,branch-leakage-01-main-isolation,1.0,truthgit_no_review_gate
+Dublin,Dublin,branch_isolation_score,Dublin,branch-leakage-01-branch-visible,1.0,truthgit_no_review_gate
+Dublin,Dublin,provenance_accuracy,Dublin,branch-leakage-01-branch-source,1.0,truthgit_no_review_gate
+unknown,,branch_isolation_score,,branch-leakage-02-main-isolation,1.0,truthgit_no_review_gate
+Oslo,Oslo,branch_isolation_score,Oslo,branch-leakage-02-branch-visible,1.0,truthgit_no_review_gate
+Oslo,Oslo,provenance_accuracy,Oslo,branch-leakage-02-branch-source,1.0,truthgit_no_review_gate
+unknown,,branch_isolation_score,,branch-leakage-03-main-isolation,1.0,truthgit_no_review_gate
+Prague,Prague,branch_isolation_score,Prague,branch-leakage-03-branch-visible,1.0,truthgit_no_review_gate
+Prague,Prague,provenance_accuracy,Prague,branch-leakage-03-branch-source,1.0,truthgit_no_review_gate
+unknown,,branch_isolation_score,,branch-leakage-04-main-isolation,1.0,truthgit_no_review_gate
+Vienna,Vienna,branch_isolation_score,Vienna,branch-leakage-04-branch-visible,1.0,truthgit_no_review_gate
+Vienna,Vienna,provenance_accuracy,Vienna,branch-leakage-04-branch-source,1.0,truthgit_no_review_gate
+unknown,,branch_isolation_score,,branch-leakage-05-main-isolation,1.0,truthgit_no_review_gate
+Lima,Lima,branch_isolation_score,Lima,branch-leakage-05-branch-visible,1.0,truthgit_no_review_gate
+Lima,Lima,provenance_accuracy,Lima,branch-leakage-05-branch-source,1.0,truthgit_no_review_gate
+unknown,,branch_isolation_score,,branch-leakage-06-main-isolation,1.0,truthgit_no_review_gate
+Quito,Quito,branch_isolation_score,Quito,branch-leakage-06-branch-visible,1.0,truthgit_no_review_gate
+Quito,Quito,provenance_accuracy,Quito,branch-leakage-06-branch-source,1.0,truthgit_no_review_gate
+unknown,,branch_isolation_score,,branch-leakage-07-main-isolation,1.0,truthgit_no_review_gate
+Hanoi,Hanoi,branch_isolation_score,Hanoi,branch-leakage-07-branch-visible,1.0,truthgit_no_review_gate
+Hanoi,Hanoi,provenance_accuracy,Hanoi,branch-leakage-07-branch-source,1.0,truthgit_no_review_gate
+unknown,,branch_isolation_score,,branch-leakage-08-main-isolation,1.0,truthgit_no_review_gate
+Seoul,Seoul,branch_isolation_score,Seoul,branch-leakage-08-branch-visible,1.0,truthgit_no_review_gate
+Seoul,Seoul,provenance_accuracy,Seoul,branch-leakage-08-branch-source,1.0,truthgit_no_review_gate
+unknown,,branch_isolation_score,,branch-leakage-09-main-isolation,1.0,truthgit_no_review_gate
+Busan,Busan,branch_isolation_score,Busan,branch-leakage-09-branch-visible,1.0,truthgit_no_review_gate
+Busan,Busan,provenance_accuracy,Busan,branch-leakage-09-branch-source,1.0,truthgit_no_review_gate
+Madrid,Madrid,rollback_recovery_rate,Madrid,rollback-bad-commit-00-recovery,1.0,truthgit_no_review_gate
+Madrid,Madrid,historical_truth_accuracy,Madrid,rollback-bad-commit-00-history-after-rollback,1.0,truthgit_no_review_gate
+Rome,Rome,rollback_recovery_rate,Rome,rollback-bad-commit-01-recovery,1.0,truthgit_no_review_gate
+Rome,Rome,historical_truth_accuracy,Rome,rollback-bad-commit-01-history-after-rollback,1.0,truthgit_no_review_gate
+Berlin,Berlin,rollback_recovery_rate,Berlin,rollback-bad-commit-02-recovery,1.0,truthgit_no_review_gate
+Berlin,Berlin,historical_truth_accuracy,Berlin,rollback-bad-commit-02-history-after-rollback,1.0,truthgit_no_review_gate
+Paris,Paris,rollback_recovery_rate,Paris,rollback-bad-commit-03-recovery,1.0,truthgit_no_review_gate
+Paris,Paris,historical_truth_accuracy,Paris,rollback-bad-commit-03-history-after-rollback,1.0,truthgit_no_review_gate
+Lisbon,Lisbon,rollback_recovery_rate,Lisbon,rollback-bad-commit-04-recovery,1.0,truthgit_no_review_gate
+Dublin,Dublin,rollback_recovery_rate,Dublin,rollback-bad-commit-05-recovery,1.0,truthgit_no_review_gate
+Oslo,Oslo,rollback_recovery_rate,Oslo,rollback-bad-commit-06-recovery,1.0,truthgit_no_review_gate
+Prague,Prague,rollback_recovery_rate,Prague,rollback-bad-commit-07-recovery,1.0,truthgit_no_review_gate
+Lab C,Lab C,merge_conflict_resolution_score,Lab C,merge-conflict-00-merged-current,1.0,truthgit_no_review_gate
+Lab D,Lab D,merge_conflict_resolution_score,Lab D,merge-conflict-01-merged-current,1.0,truthgit_no_review_gate
+Lab E,Lab E,merge_conflict_resolution_score,Lab E,merge-conflict-02-merged-current,1.0,truthgit_no_review_gate
+Lab F,Lab F,merge_conflict_resolution_score,Lab F,merge-conflict-03-merged-current,1.0,truthgit_no_review_gate
+Lab A,Lab A,merge_conflict_resolution_score,Lab A,merge-conflict-04-merged-current,1.0,truthgit_no_review_gate
+Berlin,Berlin,provenance_accuracy,Berlin,exact-provenance-00-source,1.0,truthgit_no_review_gate
+Paris,Paris,provenance_accuracy,Paris,exact-provenance-01-source,1.0,truthgit_no_review_gate
+Lisbon,Lisbon,provenance_accuracy,Lisbon,exact-provenance-02-source,1.0,truthgit_no_review_gate
+Dublin,Dublin,provenance_accuracy,Dublin,exact-provenance-03-source,1.0,truthgit_no_review_gate
+Oslo,Oslo,provenance_accuracy,Oslo,exact-provenance-04-source,1.0,truthgit_no_review_gate
+Dublin,Dublin,current_truth_accuracy,Dublin,temporal-supersession-00-current,1.0,truthgit_no_trust_scoring
+Dublin,Seoul -> Rome -> Dublin,historical_truth_accuracy,Seoul -> Rome -> Dublin,temporal-supersession-00-history,1.0,truthgit_no_trust_scoring
+Dublin,Dublin,provenance_accuracy,Dublin,temporal-supersession-00-provenance,1.0,truthgit_no_trust_scoring
+Rome,Rome,historical_truth_accuracy,Rome,temporal-supersession-00-slice-middle,1.0,truthgit_no_trust_scoring
+Oslo,Oslo,current_truth_accuracy,Oslo,temporal-supersession-01-current,1.0,truthgit_no_trust_scoring
+Oslo,Busan -> Berlin -> Oslo,historical_truth_accuracy,Busan -> Berlin -> Oslo,temporal-supersession-01-history,1.0,truthgit_no_trust_scoring
+Oslo,Oslo,provenance_accuracy,Oslo,temporal-supersession-01-provenance,1.0,truthgit_no_trust_scoring
+Berlin,Berlin,historical_truth_accuracy,Berlin,temporal-supersession-01-slice-middle,1.0,truthgit_no_trust_scoring
+Prague,Prague,current_truth_accuracy,Prague,temporal-supersession-02-current,1.0,truthgit_no_trust_scoring
+Prague,Tokyo -> Paris -> Prague,historical_truth_accuracy,Tokyo -> Paris -> Prague,temporal-supersession-02-history,1.0,truthgit_no_trust_scoring
+Prague,Prague,provenance_accuracy,Prague,temporal-supersession-02-provenance,1.0,truthgit_no_trust_scoring
+Paris,Paris,historical_truth_accuracy,Paris,temporal-supersession-02-slice-middle,1.0,truthgit_no_trust_scoring
+Vienna,Vienna,current_truth_accuracy,Vienna,temporal-supersession-03-current,1.0,truthgit_no_trust_scoring
+Vienna,Madrid -> Lisbon -> Vienna,historical_truth_accuracy,Madrid -> Lisbon -> Vienna,temporal-supersession-03-history,1.0,truthgit_no_trust_scoring
+Vienna,Vienna,provenance_accuracy,Vienna,temporal-supersession-03-provenance,1.0,truthgit_no_trust_scoring
+Lisbon,Lisbon,historical_truth_accuracy,Lisbon,temporal-supersession-03-slice-middle,1.0,truthgit_no_trust_scoring
+Lima,Lima,current_truth_accuracy,Lima,temporal-supersession-04-current,1.0,truthgit_no_trust_scoring
+Lima,Rome -> Dublin -> Lima,historical_truth_accuracy,Rome -> Dublin -> Lima,temporal-supersession-04-history,1.0,truthgit_no_trust_scoring
+Lima,Lima,provenance_accuracy,Lima,temporal-supersession-04-provenance,1.0,truthgit_no_trust_scoring
+Dublin,Dublin,historical_truth_accuracy,Dublin,temporal-supersession-04-slice-middle,1.0,truthgit_no_trust_scoring
+Quito,Quito,current_truth_accuracy,Quito,temporal-supersession-05-current,1.0,truthgit_no_trust_scoring
+Quito,Berlin -> Oslo -> Quito,historical_truth_accuracy,Berlin -> Oslo -> Quito,temporal-supersession-05-history,1.0,truthgit_no_trust_scoring
+Quito,Quito,provenance_accuracy,Quito,temporal-supersession-05-provenance,1.0,truthgit_no_trust_scoring
+Oslo,Oslo,historical_truth_accuracy,Oslo,temporal-supersession-05-slice-middle,1.0,truthgit_no_trust_scoring
+Hanoi,Hanoi,current_truth_accuracy,Hanoi,temporal-supersession-06-current,1.0,truthgit_no_trust_scoring
+Hanoi,Paris -> Prague -> Hanoi,historical_truth_accuracy,Paris -> Prague -> Hanoi,temporal-supersession-06-history,1.0,truthgit_no_trust_scoring
+Hanoi,Hanoi,provenance_accuracy,Hanoi,temporal-supersession-06-provenance,1.0,truthgit_no_trust_scoring
+Seoul,Seoul,current_truth_accuracy,Seoul,temporal-supersession-07-current,1.0,truthgit_no_trust_scoring
+Seoul,Lisbon -> Vienna -> Seoul,historical_truth_accuracy,Lisbon -> Vienna -> Seoul,temporal-supersession-07-history,1.0,truthgit_no_trust_scoring
+Seoul,Seoul,provenance_accuracy,Seoul,temporal-supersession-07-provenance,1.0,truthgit_no_trust_scoring
+Busan,Busan,current_truth_accuracy,Busan,temporal-supersession-08-current,1.0,truthgit_no_trust_scoring
+Busan,Dublin -> Lima -> Busan,historical_truth_accuracy,Dublin -> Lima -> Busan,temporal-supersession-08-history,1.0,truthgit_no_trust_scoring
+Busan,Busan,provenance_accuracy,Busan,temporal-supersession-08-provenance,1.0,truthgit_no_trust_scoring
+Tokyo,Tokyo,current_truth_accuracy,Tokyo,temporal-supersession-09-current,1.0,truthgit_no_trust_scoring
+Tokyo,Oslo -> Quito -> Tokyo,historical_truth_accuracy,Oslo -> Quito -> Tokyo,temporal-supersession-09-history,1.0,truthgit_no_trust_scoring
+Tokyo,Tokyo,provenance_accuracy,Tokyo,temporal-supersession-09-provenance,1.0,truthgit_no_trust_scoring
+Madrid,Madrid,current_truth_accuracy,Madrid,temporal-supersession-10-current,1.0,truthgit_no_trust_scoring
+Madrid,Prague -> Hanoi -> Madrid,historical_truth_accuracy,Prague -> Hanoi -> Madrid,temporal-supersession-10-history,1.0,truthgit_no_trust_scoring
+Madrid,Madrid,provenance_accuracy,Madrid,temporal-supersession-10-provenance,1.0,truthgit_no_trust_scoring
+Rome,Rome,current_truth_accuracy,Rome,temporal-supersession-11-current,1.0,truthgit_no_trust_scoring
+Rome,Vienna -> Seoul -> Rome,historical_truth_accuracy,Vienna -> Seoul -> Rome,temporal-supersession-11-history,1.0,truthgit_no_trust_scoring
+Rome,Rome,provenance_accuracy,Rome,temporal-supersession-11-provenance,1.0,truthgit_no_trust_scoring
+Atlantis,Tokyo,current_truth_accuracy,Atlantis,poisoning-low-trust-00-current,0.0,truthgit_no_trust_scoring
+Atlantis,,low_trust_warning_rate,Atlantis,poisoning-low-trust-00-warning,0.0,truthgit_no_trust_scoring
+El Dorado,Madrid,current_truth_accuracy,El Dorado,poisoning-low-trust-01-current,0.0,truthgit_no_trust_scoring
+El Dorado,,low_trust_warning_rate,El Dorado,poisoning-low-trust-01-warning,0.0,truthgit_no_trust_scoring
+Gotham,Rome,current_truth_accuracy,Gotham,poisoning-low-trust-02-current,0.0,truthgit_no_trust_scoring
+Gotham,,low_trust_warning_rate,Gotham,poisoning-low-trust-02-warning,0.0,truthgit_no_trust_scoring
+Metropolis,Berlin,current_truth_accuracy,Metropolis,poisoning-low-trust-03-current,0.0,truthgit_no_trust_scoring
+Metropolis,,low_trust_warning_rate,Metropolis,poisoning-low-trust-03-warning,0.0,truthgit_no_trust_scoring
+Narnia,Paris,current_truth_accuracy,Narnia,poisoning-low-trust-04-current,0.0,truthgit_no_trust_scoring
+Narnia,,low_trust_warning_rate,Narnia,poisoning-low-trust-04-warning,0.0,truthgit_no_trust_scoring
+Atlantis,Lisbon,current_truth_accuracy,Atlantis,poisoning-low-trust-05-current,0.0,truthgit_no_trust_scoring
+Atlantis,,low_trust_warning_rate,Atlantis,poisoning-low-trust-05-warning,0.0,truthgit_no_trust_scoring
+El Dorado,Dublin,current_truth_accuracy,El Dorado,poisoning-low-trust-06-current,0.0,truthgit_no_trust_scoring
+El Dorado,,low_trust_warning_rate,El Dorado,poisoning-low-trust-06-warning,0.0,truthgit_no_trust_scoring
+Gotham,Oslo,current_truth_accuracy,Gotham,poisoning-low-trust-07-current,0.0,truthgit_no_trust_scoring
+Gotham,,low_trust_warning_rate,Gotham,poisoning-low-trust-07-warning,0.0,truthgit_no_trust_scoring
+Metropolis,Prague,current_truth_accuracy,Metropolis,poisoning-low-trust-08-current,0.0,truthgit_no_trust_scoring
+Metropolis,,low_trust_warning_rate,Metropolis,poisoning-low-trust-08-warning,0.0,truthgit_no_trust_scoring
+Narnia,Vienna,current_truth_accuracy,Narnia,poisoning-low-trust-09-current,0.0,truthgit_no_trust_scoring
+Narnia,,low_trust_warning_rate,Narnia,poisoning-low-trust-09-warning,0.0,truthgit_no_trust_scoring
+unknown,,branch_isolation_score,,branch-leakage-00-main-isolation,1.0,truthgit_no_trust_scoring
+Lisbon,Lisbon,branch_isolation_score,Lisbon,branch-leakage-00-branch-visible,1.0,truthgit_no_trust_scoring
+Lisbon,Lisbon,provenance_accuracy,Lisbon,branch-leakage-00-branch-source,1.0,truthgit_no_trust_scoring
+unknown,,branch_isolation_score,,branch-leakage-01-main-isolation,1.0,truthgit_no_trust_scoring
+Dublin,Dublin,branch_isolation_score,Dublin,branch-leakage-01-branch-visible,1.0,truthgit_no_trust_scoring
+Dublin,Dublin,provenance_accuracy,Dublin,branch-leakage-01-branch-source,1.0,truthgit_no_trust_scoring
+unknown,,branch_isolation_score,,branch-leakage-02-main-isolation,1.0,truthgit_no_trust_scoring
+Oslo,Oslo,branch_isolation_score,Oslo,branch-leakage-02-branch-visible,1.0,truthgit_no_trust_scoring
+Oslo,Oslo,provenance_accuracy,Oslo,branch-leakage-02-branch-source,1.0,truthgit_no_trust_scoring
+unknown,,branch_isolation_score,,branch-leakage-03-main-isolation,1.0,truthgit_no_trust_scoring
+Prague,Prague,branch_isolation_score,Prague,branch-leakage-03-branch-visible,1.0,truthgit_no_trust_scoring
+Prague,Prague,provenance_accuracy,Prague,branch-leakage-03-branch-source,1.0,truthgit_no_trust_scoring
+unknown,,branch_isolation_score,,branch-leakage-04-main-isolation,1.0,truthgit_no_trust_scoring
+Vienna,Vienna,branch_isolation_score,Vienna,branch-leakage-04-branch-visible,1.0,truthgit_no_trust_scoring
+Vienna,Vienna,provenance_accuracy,Vienna,branch-leakage-04-branch-source,1.0,truthgit_no_trust_scoring
+unknown,,branch_isolation_score,,branch-leakage-05-main-isolation,1.0,truthgit_no_trust_scoring
+Lima,Lima,branch_isolation_score,Lima,branch-leakage-05-branch-visible,1.0,truthgit_no_trust_scoring
+Lima,Lima,provenance_accuracy,Lima,branch-leakage-05-branch-source,1.0,truthgit_no_trust_scoring
+unknown,,branch_isolation_score,,branch-leakage-06-main-isolation,1.0,truthgit_no_trust_scoring
+Quito,Quito,branch_isolation_score,Quito,branch-leakage-06-branch-visible,1.0,truthgit_no_trust_scoring
+Quito,Quito,provenance_accuracy,Quito,branch-leakage-06-branch-source,1.0,truthgit_no_trust_scoring
+unknown,,branch_isolation_score,,branch-leakage-07-main-isolation,1.0,truthgit_no_trust_scoring
+Hanoi,Hanoi,branch_isolation_score,Hanoi,branch-leakage-07-branch-visible,1.0,truthgit_no_trust_scoring
+Hanoi,Hanoi,provenance_accuracy,Hanoi,branch-leakage-07-branch-source,1.0,truthgit_no_trust_scoring
+unknown,,branch_isolation_score,,branch-leakage-08-main-isolation,1.0,truthgit_no_trust_scoring
+Seoul,Seoul,branch_isolation_score,Seoul,branch-leakage-08-branch-visible,1.0,truthgit_no_trust_scoring
+Seoul,Seoul,provenance_accuracy,Seoul,branch-leakage-08-branch-source,1.0,truthgit_no_trust_scoring
+unknown,,branch_isolation_score,,branch-leakage-09-main-isolation,1.0,truthgit_no_trust_scoring
+Busan,Busan,branch_isolation_score,Busan,branch-leakage-09-branch-visible,1.0,truthgit_no_trust_scoring
+Busan,Busan,provenance_accuracy,Busan,branch-leakage-09-branch-source,1.0,truthgit_no_trust_scoring
+Madrid,Madrid,rollback_recovery_rate,Madrid,rollback-bad-commit-00-recovery,1.0,truthgit_no_trust_scoring
+Madrid,Madrid,historical_truth_accuracy,Madrid,rollback-bad-commit-00-history-after-rollback,1.0,truthgit_no_trust_scoring
+Rome,Rome,rollback_recovery_rate,Rome,rollback-bad-commit-01-recovery,1.0,truthgit_no_trust_scoring
+Rome,Rome,historical_truth_accuracy,Rome,rollback-bad-commit-01-history-after-rollback,1.0,truthgit_no_trust_scoring
+Berlin,Berlin,rollback_recovery_rate,Berlin,rollback-bad-commit-02-recovery,1.0,truthgit_no_trust_scoring
+Berlin,Berlin,historical_truth_accuracy,Berlin,rollback-bad-commit-02-history-after-rollback,1.0,truthgit_no_trust_scoring
+Paris,Paris,rollback_recovery_rate,Paris,rollback-bad-commit-03-recovery,1.0,truthgit_no_trust_scoring
+Paris,Paris,historical_truth_accuracy,Paris,rollback-bad-commit-03-history-after-rollback,1.0,truthgit_no_trust_scoring
+Lisbon,Lisbon,rollback_recovery_rate,Lisbon,rollback-bad-commit-04-recovery,1.0,truthgit_no_trust_scoring
+Dublin,Dublin,rollback_recovery_rate,Dublin,rollback-bad-commit-05-recovery,1.0,truthgit_no_trust_scoring
+Oslo,Oslo,rollback_recovery_rate,Oslo,rollback-bad-commit-06-recovery,1.0,truthgit_no_trust_scoring
+Prague,Prague,rollback_recovery_rate,Prague,rollback-bad-commit-07-recovery,1.0,truthgit_no_trust_scoring
+Lab C,Lab C,merge_conflict_resolution_score,Lab C,merge-conflict-00-merged-current,1.0,truthgit_no_trust_scoring
+Lab D,Lab D,merge_conflict_resolution_score,Lab D,merge-conflict-01-merged-current,1.0,truthgit_no_trust_scoring
+Lab E,Lab E,merge_conflict_resolution_score,Lab E,merge-conflict-02-merged-current,1.0,truthgit_no_trust_scoring
+Lab F,Lab F,merge_conflict_resolution_score,Lab F,merge-conflict-03-merged-current,1.0,truthgit_no_trust_scoring
+Lab A,Lab A,merge_conflict_resolution_score,Lab A,merge-conflict-04-merged-current,1.0,truthgit_no_trust_scoring
+Berlin,Berlin,provenance_accuracy,Berlin,exact-provenance-00-source,1.0,truthgit_no_trust_scoring
+Paris,Paris,provenance_accuracy,Paris,exact-provenance-01-source,1.0,truthgit_no_trust_scoring
+Lisbon,Lisbon,provenance_accuracy,Lisbon,exact-provenance-02-source,1.0,truthgit_no_trust_scoring
+Dublin,Dublin,provenance_accuracy,Dublin,exact-provenance-03-source,1.0,truthgit_no_trust_scoring
+Oslo,Oslo,provenance_accuracy,Oslo,exact-provenance-04-source,1.0,truthgit_no_trust_scoring
