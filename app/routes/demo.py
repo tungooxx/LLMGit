@@ -215,7 +215,7 @@ def _demo_snapshot(db: Session) -> dict[str, Any]:
             "branches": len(branches),
             "commits": len(commits),
             "versions": len(versions),
-            "staged": len(staged),
+            "staged": sum(1 for item in staged if item.status == "pending"),
             "audit_events": len(audit),
         },
         "branches": [_branch_payload(branch) for branch in branches],
@@ -331,6 +331,7 @@ _HTML = """
       background: var(--page);
       color: var(--ink);
       font-family: Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+      min-height: 100vh;
     }
     header {
       padding: 24px clamp(18px, 4vw, 48px);
@@ -347,6 +348,7 @@ _HTML = """
       grid-template-columns: minmax(360px, 0.9fr) minmax(0, 1.1fr);
       gap: 18px;
       min-height: calc(100vh - 112px);
+      align-items: start;
     }
     .panel {
       background: var(--panel);
@@ -364,8 +366,10 @@ _HTML = """
     }
     .chat-panel {
       display: grid;
-      grid-template-rows: auto 1fr auto;
-      min-height: 720px;
+      grid-template-rows: auto auto minmax(270px, 1fr) auto;
+      height: calc(100vh - 156px);
+      min-height: 640px;
+      max-height: 780px;
     }
     .settings {
       padding: 12px 14px;
@@ -375,11 +379,23 @@ _HTML = """
     }
     .grid3 {
       display: grid;
-      grid-template-columns: 1fr 110px 150px;
+      grid-template-columns: minmax(150px, 1fr) 112px 180px;
       gap: 10px;
       align-items: end;
     }
     label { color: var(--muted); font-size: 13px; display: grid; gap: 4px; }
+    label.check {
+      min-height: 37px;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      padding: 8px 10px;
+      border: 1px solid #b8c2cc;
+      border-radius: 6px;
+      background: #fff;
+      color: var(--ink);
+      white-space: nowrap;
+    }
     input, textarea, button {
       font: inherit;
       border: 1px solid #b8c2cc;
@@ -388,6 +404,13 @@ _HTML = """
       color: var(--ink);
     }
     input { padding: 8px 10px; min-width: 0; }
+    input[type="checkbox"] {
+      width: 16px;
+      height: 16px;
+      min-width: 16px;
+      padding: 0;
+      accent-color: var(--green);
+    }
     button {
       cursor: pointer;
       font-weight: 700;
@@ -400,12 +423,14 @@ _HTML = """
       display: flex;
       flex-wrap: wrap;
       gap: 8px;
+      align-items: center;
     }
     .quick button {
       min-width: auto;
       font-size: 12px;
       padding: 7px 9px;
       background: #edf2f7;
+      min-height: 34px;
     }
     .messages {
       padding: 16px;
@@ -414,6 +439,7 @@ _HTML = """
       align-content: start;
       gap: 12px;
       background: #f9fbfc;
+      min-height: 260px;
     }
     .msg {
       max-width: 88%;
@@ -461,8 +487,10 @@ _HTML = """
     }
     .graph-shell {
       display: grid;
-      grid-template-rows: auto minmax(280px, 0.72fr) minmax(260px, 1fr);
-      min-height: 720px;
+      grid-template-rows: auto auto minmax(260px, 0.9fr) minmax(280px, 1fr);
+      height: calc(100vh - 156px);
+      min-height: 640px;
+      max-height: 780px;
     }
     .stats {
       padding: 12px 14px;
@@ -475,7 +503,7 @@ _HTML = """
       border: 1px solid var(--line);
       border-radius: 8px;
       padding: 10px;
-      min-height: 68px;
+      min-height: 66px;
       background: #fff;
     }
     .stat span { display: block; color: var(--muted); font-size: 12px; }
@@ -484,18 +512,22 @@ _HTML = """
       overflow: auto;
       border-bottom: 1px solid var(--line);
       background: #ffffff;
+      min-height: 0;
     }
     svg { display: block; min-width: 760px; }
     .tables {
       display: grid;
-      grid-template-columns: 1fr 0.76fr;
+      grid-template-columns: 1fr;
+      grid-template-rows: minmax(150px, 1fr) minmax(140px, 0.78fr);
       min-height: 0;
+      overflow: hidden;
     }
     .table-wrap {
       overflow: auto;
-      border-right: 1px solid var(--line);
+      border-bottom: 1px solid var(--line);
+      min-height: 0;
     }
-    .table-wrap:last-child { border-right: 0; }
+    .table-wrap:last-child { border-bottom: 0; }
     table { width: 100%; border-collapse: collapse; font-size: 13px; }
     th, td {
       padding: 9px 10px;
@@ -531,7 +563,7 @@ _HTML = """
     .muted { color: var(--muted); }
     @media (max-width: 1120px) {
       main { grid-template-columns: 1fr; }
-      .chat-panel, .graph-shell { min-height: 640px; }
+      .chat-panel, .graph-shell { height: 720px; max-height: none; }
     }
     @media (max-width: 720px) {
       .grid3, .tables, .stats { grid-template-columns: 1fr; }
@@ -552,7 +584,7 @@ _HTML = """
         <div class="grid3">
           <label>Branch <input id="manualBranch" value="main"></label>
           <label>Trust <input id="manualTrust" type="number" min="0" max="1" step="0.01" value="0.8"></label>
-          <label><input id="autoApprove" type="checkbox" checked> approve after staging</label>
+          <label class="check"><input id="autoApprove" type="checkbox" checked> approve after staging</label>
         </div>
         <div class="quick">
           <button data-example="Alice lives in Seoul." data-branch="main" data-trust="0.8">initial fact</button>
@@ -696,12 +728,16 @@ _HTML = """
       const response = await fetch("/viz/data", {headers: {"Accept": "application/json"}});
       if (!response.ok) throw new Error(await response.text());
       const data = await response.json();
+      const staged = data.staged_commits || [];
       return {
-        counts: data.counts,
+        counts: {
+          ...(data.counts || {}),
+          staged: staged.filter(row => row.status === "pending").length
+        },
         branches: data.branches,
         commits: data.commits,
         versions: data.belief_versions,
-        staged_commits: data.staged_commits,
+        staged_commits: staged,
         audit: data.audit_events
       };
     }
@@ -752,7 +788,7 @@ _HTML = """
         ["branches", "Branches"],
         ["commits", "Commits"],
         ["versions", "Versions"],
-        ["staged", "Staged"],
+        ["staged", "Pending"],
         ["audit_events", "Audit"]
       ];
       document.getElementById("stats").innerHTML = entries.map(([key, label]) => `
@@ -818,7 +854,7 @@ _HTML = """
       const stagedRows = staged.map(row => `
         <tr>
           <td><b>staged</b><br><span class="muted">${escapeHtml(row.id)}</span></td>
-          <td><span class="pill ${escapeHtml(row.status)}">${escapeHtml(row.status)}</span><br>${row.review_required ? "review required" : "review clear"}</td>
+          <td><span class="pill ${escapeHtml(row.status)}">${escapeHtml(row.status)}</span><br>${stagedDetail(row)}</td>
         </tr>
       `);
       const auditRows = audit.slice(0, 12).map(row => `
@@ -828,6 +864,12 @@ _HTML = """
         </tr>
       `);
       document.getElementById("auditRows").innerHTML = stagedRows.concat(auditRows).join("") || `<tr><td colspan="2" class="muted">No staged writes or audit events yet.</td></tr>`;
+    }
+
+    function stagedDetail(row) {
+      if (row.status === "pending") return row.review_required ? "review required" : "review clear";
+      if (row.applied_commit_id) return `commit #${row.applied_commit_id}`;
+      return "reviewed";
     }
 
     function shorten(value, maxLength) {
