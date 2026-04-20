@@ -11,9 +11,11 @@ from experiments.public_benchmarks.longmemeval_truthgit import (
     _focused_excerpt,
     _focused_session_excerpt,
     _truthgit_answer_system_prompt,
+    _truthgit_extraction_payload,
     _truthgit_extraction_system_prompt,
     generate_truthgit_hypotheses,
     run_truthgit_record,
+    session_payload,
     select_session_indexes,
 )
 
@@ -181,6 +183,19 @@ def test_truthgit_prompts_push_exact_memory_not_generic_advice() -> None:
     assert "not a closed predicate list" in extraction_prompt
     assert "not advice" in answer_prompt
     assert "exact personal-memory answer" in answer_prompt
+
+
+def test_truthgit_extraction_payload_is_question_blind(tmp_path: Path) -> None:
+    record = _sample_records(tmp_path)[0]
+    payload = _truthgit_extraction_payload([session_payload(record, 1)])
+    encoded = json.dumps(payload)
+
+    assert "Where does Alice live now?" not in encoded
+    assert "knowledge-update" not in encoded
+    assert "2026-04-20" not in encoded
+    assert "answer_session_ids" not in encoded
+    assert "has_answer" not in encoded
+    assert "Busan" in encoded
 
 
 def test_focused_excerpt_keeps_question_relevant_later_session() -> None:

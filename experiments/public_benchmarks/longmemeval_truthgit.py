@@ -104,7 +104,7 @@ class Answerer(Protocol):
 
 
 class OpenAITruthGitClaimExtractor:
-    """Question-aware OpenAI claim extractor for TruthGit LongMemEval ingestion."""
+    """Question-blind OpenAI claim extractor for TruthGit LongMemEval ingestion."""
 
     def __init__(
         self,
@@ -127,12 +127,8 @@ class OpenAITruthGitClaimExtractor:
         record: LongMemEvalRecord,
         session_payloads: list[dict[str, Any]],
     ) -> list[ExtractedClaim]:
-        prompt = {
-            "question": record.question,
-            "question_type": record.question_type,
-            "question_date": record.question_date,
-            "sessions": session_payloads,
-        }
+        del record
+        prompt = _truthgit_extraction_payload(session_payloads)
         response = _with_retries(
             lambda: self.client.responses.create(
                 model=self.model,
@@ -465,7 +461,7 @@ def _truthgit_extraction_system_prompt() -> str:
     return (
         "Extract durable atomic memory claims from chat history for TruthGit. "
         "Use only explicit information in the sessions. Extract facts, preferences, "
-        "plans, updates, and user-specific state that could help answer the question. "
+        "plans, updates, and user-specific state that could be durable long-term memory. "
         "Preserve exact answer-bearing details: names, titles, store names, venue names, "
         "studio names, playlist names, dates, durations, locations, product names, and "
         "relationship labels. Choose concise model-generated snake_case predicates that "
@@ -476,6 +472,20 @@ def _truthgit_extraction_system_prompt() -> str:
         "and set valid_from to the session date when possible. Return claims in chronological "
         "order. Return no claims for unsupported guesses."
     )
+
+
+def _truthgit_extraction_payload(session_payloads: list[dict[str, Any]]) -> dict[str, Any]:
+    """Build the question-blind extraction payload.
+
+    Gold answers, answer-session ids, evidence labels, and the future question are
+    intentionally excluded. Query-aware retrieval/answering happens after memory
+    has been written.
+    """
+
+    return {
+        "task": "extract durable memory claims from these timestamped chat sessions",
+        "sessions": session_payloads,
+    }
 
 
 def _truthgit_answer_system_prompt() -> str:
