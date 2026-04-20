@@ -82,13 +82,19 @@ def select_records(
     limit: int | None = None,
     sample_size: int | None = None,
     sample_seed: int = 0,
+    start_index: int = 0,
 ) -> list[LongMemEvalRecord]:
     """Select a deterministic prefix or random sample for benchmark runs."""
 
     if limit is not None and sample_size is not None:
         raise ValueError("Use either limit or sample_size, not both.")
+    if start_index < 0:
+        raise ValueError("start_index must be non-negative.")
+    if start_index and sample_size is not None:
+        raise ValueError("Use start_index only with deterministic limit shards, not random samples.")
     if sample_size is None:
-        return records[:limit] if limit is not None else records
+        sliced = records[start_index:]
+        return sliced[:limit] if limit is not None else sliced
     if sample_size < 0:
         raise ValueError("sample_size must be non-negative.")
     if sample_size >= len(records):
@@ -474,6 +480,65 @@ def summarize_eval_log(*, eval_log: Path, records: list[LongMemEvalRecord]) -> E
     )
 
 
+def aggregate_eval_logs(
+    *,
+    eval_logs: list[Path],
+    records: list[LongMemEvalRecord],
+    output_log: Path,
+    output_json: Path | None = None,
+    allow_incomplete: bool = False,
+) -> dict[str, Any]:
+    """Combine shard eval logs and summarize them with coverage validation."""
+
+    expected_ids = [record.question_id for record in records]
+    expected_set = set(expected_ids)
+    rows_by_id: dict[str, dict[str, Any]] = {}
+    duplicate_ids: list[str] = []
+    unexpected_ids: list[str] = []
+    for path in eval_logs:
+        for row in _load_hypotheses(path):
+            question_id = str(row.get("question_id", ""))
+            if question_id not in expected_set:
+                unexpected_ids.append(question_id)
+                continue
+            if question_id in rows_by_id:
+                duplicate_ids.append(question_id)
+                continue
+            rows_by_id[question_id] = row
+
+    missing_ids = [question_id for question_id in expected_ids if question_id not in rows_by_id]
+    if not allow_incomplete and (missing_ids or duplicate_ids or unexpected_ids):
+        raise ValueError(
+            "Shard aggregate is not complete: "
+            f"missing={len(missing_ids)}, duplicates={len(duplicate_ids)}, unexpected={len(unexpected_ids)}"
+        )
+
+    output_log.parent.mkdir(parents=True, exist_ok=True)
+    with output_log.open("w", encoding="utf-8") as handle:
+        for question_id in expected_ids:
+            row = rows_by_id.get(question_id)
+            if row is not None:
+                handle.write(json.dumps(row, ensure_ascii=False) + "\n")
+
+    stats = summarize_eval_log(eval_log=output_log, records=records)
+    payload = asdict(stats)
+    payload["coverage"] = {
+        "expected_count": len(expected_ids),
+        "observed_count": len(rows_by_id),
+        "missing_count": len(missing_ids),
+        "duplicate_count": len(duplicate_ids),
+        "unexpected_count": len(unexpected_ids),
+        "missing_ids": missing_ids[:50],
+        "duplicate_ids": duplicate_ids[:50],
+        "unexpected_ids": unexpected_ids[:50],
+        "eval_logs": [str(path) for path in eval_logs],
+    }
+    if output_json is not None:
+        output_json.parent.mkdir(parents=True, exist_ok=True)
+        output_json.write_text(json.dumps(payload, indent=2), encoding="utf-8")
+    return payload
+
+
 def build_answer_check_prompt(record: LongMemEvalRecord, hypothesis: str) -> str:
     """Build the official LongMemEval answer-check prompt."""
 
@@ -676,6 +741,7 @@ def main() -> None:
     inspect_parser.add_argument("--output-dir", default=Path("experiments/public_results/longmemeval"), type=Path)
     inspect_parser.add_argument("--split-label", default="longmemeval_s_cleaned")
     inspect_parser.add_argument("--limit", type=int, default=None)
+    inspect_parser.add_argument("--start-index", type=int, default=0)
     inspect_parser.add_argument("--sample-size", type=int, default=None)
     inspect_parser.add_argument("--sample-seed", type=int, default=0)
 
@@ -687,6 +753,7 @@ def main() -> None:
     prompt_parser.add_argument("--reader-mode", choices=["direct", "con"], default="con")
     prompt_parser.add_argument("--include-evidence-markers", action="store_true")
     prompt_parser.add_argument("--limit", type=int, default=None)
+    prompt_parser.add_argument("--start-index", type=int, default=0)
     prompt_parser.add_argument("--sample-size", type=int, default=None)
     prompt_parser.add_argument("--sample-seed", type=int, default=0)
 
@@ -698,6 +765,7 @@ def main() -> None:
     generate_parser.add_argument("--history-format", choices=["json", "nl"], default="json")
     generate_parser.add_argument("--reader-mode", choices=["direct", "con"], default="con")
     generate_parser.add_argument("--limit", type=int, default=None)
+    generate_parser.add_argument("--start-index", type=int, default=0)
     generate_parser.add_argument("--sample-size", type=int, default=None)
     generate_parser.add_argument("--sample-seed", type=int, default=0)
     generate_parser.add_argument("--no-resume", action="store_true")
@@ -710,6 +778,7 @@ def main() -> None:
     evaluate_parser.add_argument("--output-log", default=Path("experiments/public_results/longmemeval/hypotheses.eval-results-gpt-4o"), type=Path)
     evaluate_parser.add_argument("--judge-model", default="gpt-4o")
     evaluate_parser.add_argument("--limit", type=int, default=None)
+    evaluate_parser.add_argument("--start-index", type=int, default=0)
     evaluate_parser.add_argument("--sample-size", type=int, default=None)
     evaluate_parser.add_argument("--sample-seed", type=int, default=0)
 
@@ -718,8 +787,16 @@ def main() -> None:
     summarize_parser.add_argument("--eval-log", required=True, type=Path)
     summarize_parser.add_argument("--output-json", default=None, type=Path)
     summarize_parser.add_argument("--limit", type=int, default=None)
+    summarize_parser.add_argument("--start-index", type=int, default=0)
     summarize_parser.add_argument("--sample-size", type=int, default=None)
     summarize_parser.add_argument("--sample-seed", type=int, default=0)
+
+    aggregate_parser = subparsers.add_parser("aggregate")
+    aggregate_parser.add_argument("--data", required=True, type=Path)
+    aggregate_parser.add_argument("--eval-log", action="append", required=True, type=Path)
+    aggregate_parser.add_argument("--output-log", required=True, type=Path)
+    aggregate_parser.add_argument("--output-json", required=True, type=Path)
+    aggregate_parser.add_argument("--allow-incomplete", action="store_true")
 
     args = parser.parse_args()
     if args.command == "download":
@@ -732,6 +809,7 @@ def main() -> None:
         limit=getattr(args, "limit", None),
         sample_size=getattr(args, "sample_size", None),
         sample_seed=getattr(args, "sample_seed", 0),
+        start_index=getattr(args, "start_index", 0),
     )
     if args.command == "inspect":
         manifest_path = write_manifest(
@@ -784,6 +862,16 @@ def main() -> None:
         if args.output_json is not None:
             args.output_json.parent.mkdir(parents=True, exist_ok=True)
             args.output_json.write_text(json.dumps(payload, indent=2), encoding="utf-8")
+        return
+    if args.command == "aggregate":
+        payload = aggregate_eval_logs(
+            eval_logs=args.eval_log,
+            records=records,
+            output_log=args.output_log,
+            output_json=args.output_json,
+            allow_incomplete=args.allow_incomplete,
+        )
+        print(json.dumps(payload, indent=2))
         return
     raise ValueError(f"Unknown command: {args.command}")
 

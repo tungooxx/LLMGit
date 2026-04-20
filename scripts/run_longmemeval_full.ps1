@@ -10,6 +10,7 @@ param(
     [string]$HistoryFormat = "json",
     [string]$ReaderMode = "con",
     [int]$MaxOutputTokens = 256,
+    [int]$StartIndex = 0,
     [switch]$SkipEvaluation
 )
 
@@ -28,7 +29,7 @@ if (-not $env:OPENAI_API_KEY) {
 
 New-Item -ItemType Directory -Force -Path $OutputDir | Out-Null
 $SafeModel = $Model -replace '[^A-Za-z0-9_.-]', '_'
-$RunLabel = if ($SampleSize -gt 0) { "random_$SampleSize`_seed_$SampleSeed" } elseif ($Limit -gt 0) { "sample_$Limit" } else { "full" }
+$RunLabel = if ($SampleSize -gt 0) { "random_$SampleSize`_seed_$SampleSeed" } elseif ($Limit -gt 0) { "shard_$StartIndex`_limit_$Limit" } elseif ($StartIndex -gt 0) { "from_$StartIndex" } else { "full" }
 $BaseName = "$SplitLabel`_$SafeModel`_$ReaderMode`_$RunLabel"
 $PromptJsonl = Join-Path $OutputDir "$BaseName.prompts.jsonl"
 $Hypotheses = Join-Path $OutputDir "$BaseName.hypotheses.jsonl"
@@ -38,10 +39,15 @@ $LimitArgs = @()
 if ($SampleSize -gt 0 -and $Limit -gt 0) {
     throw "Use either -Limit or -SampleSize, not both."
 }
+if ($SampleSize -gt 0 -and $StartIndex -gt 0) {
+    throw "Use -StartIndex only with deterministic -Limit shards, not random samples."
+}
 if ($SampleSize -gt 0) {
     $LimitArgs = @("--sample-size", "$SampleSize", "--sample-seed", "$SampleSeed")
 } elseif ($Limit -gt 0) {
-    $LimitArgs = @("--limit", "$Limit")
+    $LimitArgs = @("--limit", "$Limit", "--start-index", "$StartIndex")
+} elseif ($StartIndex -gt 0) {
+    $LimitArgs = @("--start-index", "$StartIndex")
 }
 
 python -m experiments.public_benchmarks.longmemeval inspect `

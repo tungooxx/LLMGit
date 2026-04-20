@@ -7,6 +7,7 @@ SPLIT_LABEL="${LONGMEMEVAL_SPLIT_LABEL:-longmemeval_s_cleaned}"
 MODEL="${OPENAI_MODEL:-gpt-4o-mini}"
 JUDGE_MODEL="${LONGMEMEVAL_JUDGE_MODEL:-gpt-4o}"
 LIMIT="${LONGMEMEVAL_LIMIT:-}"
+START_INDEX="${LONGMEMEVAL_START_INDEX:-0}"
 SAMPLE_SIZE="${LONGMEMEVAL_SAMPLE_SIZE:-}"
 SAMPLE_SEED="${LONGMEMEVAL_SAMPLE_SEED:-0}"
 HISTORY_FORMAT="${LONGMEMEVAL_HISTORY_FORMAT:-json}"
@@ -40,12 +41,19 @@ if [[ -n "$LIMIT" && -n "$SAMPLE_SIZE" ]]; then
   echo "Use either LONGMEMEVAL_LIMIT or LONGMEMEVAL_SAMPLE_SIZE, not both." >&2
   exit 2
 fi
+if [[ -n "$SAMPLE_SIZE" && "$START_INDEX" != "0" ]]; then
+  echo "Use LONGMEMEVAL_START_INDEX only with deterministic LONGMEMEVAL_LIMIT shards, not random samples." >&2
+  exit 2
+fi
 if [[ -n "$SAMPLE_SIZE" ]]; then
   RUN_LABEL="random_${SAMPLE_SIZE}_seed_${SAMPLE_SEED}"
   LIMIT_ARGS=(--sample-size "$SAMPLE_SIZE" --sample-seed "$SAMPLE_SEED")
 elif [[ -n "$LIMIT" ]]; then
-  RUN_LABEL="sample_${LIMIT}"
-  LIMIT_ARGS=(--limit "$LIMIT")
+  RUN_LABEL="shard_${START_INDEX}_limit_${LIMIT}"
+  LIMIT_ARGS=(--limit "$LIMIT" --start-index "$START_INDEX")
+elif [[ "$START_INDEX" != "0" ]]; then
+  RUN_LABEL="from_${START_INDEX}"
+  LIMIT_ARGS=(--start-index "$START_INDEX")
 else
   RUN_LABEL="full"
   LIMIT_ARGS=()

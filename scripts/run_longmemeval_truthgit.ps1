@@ -9,6 +9,7 @@ param(
     [string]$ExtractionMode = "per_session",
     [int]$MaxSessions = 12,
     [int]$Limit = 0,
+    [int]$StartIndex = 0,
     [int]$SampleSize = 0,
     [int]$SampleSeed = 0,
     [switch]$SkipEvaluation,
@@ -31,7 +32,7 @@ if (-not $env:OPENAI_API_KEY) {
 
 New-Item -ItemType Directory -Force -Path $OutputDir | Out-Null
 $SafeAnswerModel = $AnswerModel -replace '[^A-Za-z0-9_.-]', '_'
-$RunLabel = if ($SampleSize -gt 0) { "random_$SampleSize`_seed_$SampleSeed" } elseif ($Limit -gt 0) { "sample_$Limit" } else { "full" }
+$RunLabel = if ($SampleSize -gt 0) { "random_$SampleSize`_seed_$SampleSeed" } elseif ($Limit -gt 0) { "shard_$StartIndex`_limit_$Limit" } elseif ($StartIndex -gt 0) { "from_$StartIndex" } else { "full" }
 $BaseName = "$SplitLabel`_truthgit`_$SafeAnswerModel`_$ExtractionMode`_$RunLabel"
 $Hypotheses = Join-Path $OutputDir "$BaseName.hypotheses.jsonl"
 $EvalLog = Join-Path $OutputDir "$BaseName.eval-results-$JudgeModel.jsonl"
@@ -41,10 +42,15 @@ $LimitArgs = @()
 if ($SampleSize -gt 0 -and $Limit -gt 0) {
     throw "Use either -Limit or -SampleSize, not both."
 }
+if ($SampleSize -gt 0 -and $StartIndex -gt 0) {
+    throw "Use -StartIndex only with deterministic -Limit shards, not random samples."
+}
 if ($SampleSize -gt 0) {
     $LimitArgs = @("--sample-size", "$SampleSize", "--sample-seed", "$SampleSeed")
 } elseif ($Limit -gt 0) {
-    $LimitArgs = @("--limit", "$Limit")
+    $LimitArgs = @("--limit", "$Limit", "--start-index", "$StartIndex")
+} elseif ($StartIndex -gt 0) {
+    $LimitArgs = @("--start-index", "$StartIndex")
 }
 $TraceArgs = @()
 if ($Trace) {

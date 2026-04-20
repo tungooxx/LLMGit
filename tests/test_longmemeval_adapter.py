@@ -4,6 +4,7 @@ import json
 from pathlib import Path
 
 from experiments.public_benchmarks.longmemeval import (
+    aggregate_eval_logs,
     build_prompt,
     build_answer_check_prompt,
     evaluate_hypotheses,
@@ -73,6 +74,17 @@ def test_longmemeval_select_records_supports_seeded_heldout_samples(tmp_path: Pa
     assert [record.question_id for record in first] != ["q0", "q1", "q2"]
 
 
+def test_longmemeval_select_records_supports_deterministic_shards(tmp_path: Path) -> None:
+    data_path = tmp_path / "longmemeval_sample.json"
+    payload = [_sample_record(question_id=f"q{i}") for i in range(8)]
+    data_path.write_text(json.dumps(payload), encoding="utf-8")
+    records = load_records(data_path)
+
+    shard = select_records(records, start_index=3, limit=2)
+
+    assert [record.question_id for record in shard] == ["q3", "q4"]
+
+
 def test_longmemeval_generate_hypotheses_with_fake_answerer(tmp_path: Path) -> None:
     data_path = tmp_path / "longmemeval_sample.json"
     output_path = tmp_path / "hypotheses.jsonl"
@@ -119,6 +131,47 @@ def test_longmemeval_evaluate_and_summarize_with_fake_judge(tmp_path: Path) -> N
     assert stats.overall_accuracy == 1.0
     assert stats.by_task["knowledge-update"]["accuracy"] == 1.0
     assert summarized.task_averaged_accuracy == 1.0
+
+
+def test_longmemeval_aggregate_shards_validates_full_coverage(tmp_path: Path) -> None:
+    data_path = tmp_path / "longmemeval_sample.json"
+    payload = [_sample_record(question_id=f"q{i}") for i in range(3)]
+    data_path.write_text(json.dumps(payload), encoding="utf-8")
+    records = load_records(data_path)
+    shard_a = tmp_path / "shard_a.eval.jsonl"
+    shard_b = tmp_path / "shard_b.eval.jsonl"
+    output_log = tmp_path / "aggregate.eval.jsonl"
+    output_json = tmp_path / "aggregate.summary.json"
+    shard_a.write_text(
+        "\n".join(
+            [
+                json.dumps({"question_id": "q0", "autoeval_label": {"label": True}}),
+                json.dumps({"question_id": "q1", "autoeval_label": {"label": False}}),
+            ]
+        )
+        + "\n",
+        encoding="utf-8",
+    )
+    shard_b.write_text(
+        json.dumps({"question_id": "q2", "autoeval_label": {"label": True}}) + "\n",
+        encoding="utf-8",
+    )
+
+    payload = aggregate_eval_logs(
+        eval_logs=[shard_b, shard_a],
+        records=records,
+        output_log=output_log,
+        output_json=output_json,
+    )
+
+    assert payload["evaluated_count"] == 3
+    assert payload["overall_accuracy"] == 0.6667
+    assert payload["coverage"]["missing_count"] == 0
+    assert [json.loads(line)["question_id"] for line in output_log.read_text(encoding="utf-8").splitlines()] == [
+        "q0",
+        "q1",
+        "q2",
+    ]
 
 
 def _sample_record(question_id: str = "q1") -> dict[str, object]:

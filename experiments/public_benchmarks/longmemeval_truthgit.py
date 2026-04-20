@@ -814,6 +814,7 @@ def main() -> None:
     generate_parser.add_argument("--max-versions", type=int, default=160)
     generate_parser.add_argument("--max-source-excerpts", type=int, default=12)
     generate_parser.add_argument("--limit", type=int, default=None)
+    generate_parser.add_argument("--start-index", type=int, default=0)
     generate_parser.add_argument("--sample-size", type=int, default=None)
     generate_parser.add_argument("--sample-seed", type=int, default=0)
     generate_parser.add_argument("--no-resume", action="store_true")
@@ -826,6 +827,7 @@ def main() -> None:
         limit=args.limit,
         sample_size=args.sample_size,
         sample_seed=args.sample_seed,
+        start_index=args.start_index,
     )
     if args.command == "generate":
         stats = generate_truthgit_hypotheses(
