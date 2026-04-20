@@ -61,6 +61,18 @@ def classify_claim_against_current(
         and windows_overlap(version.valid_from, version.valid_to, claim.valid_from, claim.valid_to)
     ]
     if same_object:
+        new_score = belief_score(claim.confidence, source_trust)
+        stronger_same_object = [
+            version.id
+            for version in same_object
+            if new_score > _version_score(db, version)
+        ]
+        if stronger_same_object:
+            return ConflictDecision(
+                action="corroborate",
+                supersede_version_ids=stronger_same_object,
+                warnings=("Stronger corroborating source now justifies the active belief.",),
+            )
         return ConflictDecision(
             action="duplicate",
             supersede_version_ids=(),

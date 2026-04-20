@@ -117,20 +117,49 @@ Paris,gpt-4o-mini,main,True,False,"['Paris', 'Paris']",Paris,provenance-current-
 Lima,gpt-4o-mini,main,False,False,"['Madrid', 'Lima']",Lima,provenance-rollback-source-01-source,bad-bulk-import-source-1,naive_chat_history,False
 Lab F,gpt-4o-mini,main,False,False,"['Lab C', 'Lab F']",Lab F,provenance-branch-context-02-main-source,branch-grant-plan-2,naive_chat_history,False
 Lab F,gpt-4o-mini,grant-branch-2,True,False,"['Lab C', 'Lab F']",Lab F,provenance-branch-context-02-branch-source,branch-grant-plan-2,naive_chat_history,False
-Oslo,gpt-4o-mini,main,True,False,"['Oslo', 'Oslo']",Oslo,provenance-current-justification-03-source,official-current-registry-3,naive_chat_history,False
-Seoul,gpt-4o-mini,main,False,False,"['Paris', 'Seoul']",Seoul,provenance-rollback-source-04-source,bad-bulk-import-source-4,naive_chat_history,False
-Lab C,gpt-4o-mini,main,False,False,"['Lab F', 'Lab C']",Lab C,provenance-branch-context-05-main-source,branch-grant-plan-5,naive_chat_history,False
-Lab C,gpt-4o-mini,grant-branch-5,True,False,"['Lab F', 'Lab C']",Lab C,provenance-branch-context-05-branch-source,branch-grant-plan-5,naive_chat_history,False
+Lima,gpt-4o-mini,main,True,False,"['Lima', 'Lima']",Lima,provenance-same-object-rollback-03-source,corrupted-mirror-3,naive_chat_history,False
+Lab F,gpt-4o-mini,main,True,False,"['Lab F', 'Lab F']",Lab F,provenance-same-object-branch-04-main-source,branch-audit-confirmation-4,naive_chat_history,False
+Lab F,gpt-4o-mini,audit-branch-4,True,False,"['Lab F', 'Lab F']",Lab F,provenance-same-object-branch-04-branch-source,branch-audit-confirmation-4,naive_chat_history,False
+Lab D,gpt-4o-mini,main,False,False,"['Lab F', 'Lab B', 'Lab D']",Lab D,provenance-merge-governing-source-05-source,rumor-reorg-source-5,naive_chat_history,False
 Lima,gpt-4o-mini,main,True,False,"['Lima', 'Lima']",Lima,provenance-current-justification-06-source,official-current-registry-6,naive_chat_history,False
 Madrid,gpt-4o-mini,main,False,False,"['Oslo', 'Madrid']",Madrid,provenance-rollback-source-07-source,bad-bulk-import-source-7,naive_chat_history,False
 Lab F,gpt-4o-mini,main,False,False,"['Lab C', 'Lab F']",Lab F,provenance-branch-context-08-main-source,branch-grant-plan-8,naive_chat_history,False
 Lab F,gpt-4o-mini,grant-branch-8,True,False,"['Lab C', 'Lab F']",Lab F,provenance-branch-context-08-branch-source,branch-grant-plan-8,naive_chat_history,False
+Madrid,gpt-4o-mini,main,True,False,"['Madrid', 'Madrid']",Madrid,provenance-same-object-rollback-09-source,corrupted-mirror-9,naive_chat_history,False
+Lab F,gpt-4o-mini,main,True,False,"['Lab F', 'Lab F']",Lab F,provenance-same-object-branch-10-main-source,branch-audit-confirmation-10,naive_chat_history,False
+Lab F,gpt-4o-mini,audit-branch-10,True,False,"['Lab F', 'Lab F']",Lab F,provenance-same-object-branch-10-branch-source,branch-audit-confirmation-10,naive_chat_history,False
+Lab D,gpt-4o-mini,main,False,False,"['Lab F', 'Lab B', 'Lab D']",Lab D,provenance-merge-governing-source-11-source,rumor-reorg-source-11,naive_chat_history,False
+Madrid,gpt-4o-mini,main,True,False,"['Madrid', 'Madrid']",Madrid,provenance-current-justification-12-source,official-current-registry-12,naive_chat_history,False
+Oslo,gpt-4o-mini,main,False,False,"['Seoul', 'Oslo']",Oslo,provenance-rollback-source-13-source,bad-bulk-import-source-13,naive_chat_history,False
+Lab F,gpt-4o-mini,main,False,False,"['Lab C', 'Lab F']",Lab F,provenance-branch-context-14-main-source,branch-grant-plan-14,naive_chat_history,False
+Lab F,gpt-4o-mini,grant-branch-14,True,False,"['Lab C', 'Lab F']",Lab F,provenance-branch-context-14-branch-source,branch-grant-plan-14,naive_chat_history,False
+Oslo,gpt-4o-mini,main,True,False,"['Oslo', 'Oslo']",Oslo,provenance-same-object-rollback-15-source,corrupted-mirror-15,naive_chat_history,False
+Lab F,gpt-4o-mini,main,True,False,"['Lab F', 'Lab F']",Lab F,provenance-same-object-branch-16-main-source,branch-audit-confirmation-16,naive_chat_history,False
+Lab F,gpt-4o-mini,audit-branch-16,True,False,"['Lab F', 'Lab F']",Lab F,provenance-same-object-branch-16-branch-source,branch-audit-confirmation-16,naive_chat_history,False
+Lab D,gpt-4o-mini,main,False,False,"['Lab F', 'Lab B', 'Lab D']",Lab D,provenance-merge-governing-source-17-source,rumor-reorg-source-17,naive_chat_history,False
+Oslo,gpt-4o-mini,main,True,False,"['Oslo', 'Oslo']",Oslo,provenance-current-justification-18-source,official-current-registry-18,naive_chat_history,False
+Seoul,gpt-4o-mini,main,False,False,"['Paris', 'Seoul']",Seoul,provenance-rollback-source-19-source,bad-bulk-import-source-19,naive_chat_history,False
+Lab F,gpt-4o-mini,main,False,False,"['Lab C', 'Lab F']",Lab F,provenance-branch-context-20-main-source,branch-grant-plan-20,naive_chat_history,False
+Lab F,gpt-4o-mini,grant-branch-20,True,False,"['Lab C', 'Lab F']",Lab F,provenance-branch-context-20-branch-source,branch-grant-plan-20,naive_chat_history,False
+Seoul,gpt-4o-mini,main,True,False,"['Seoul', 'Seoul']",Seoul,provenance-same-object-rollback-21-source,corrupted-mirror-21,naive_chat_history,False
+Lab F,gpt-4o-mini,main,True,False,"['Lab F', 'Lab F']",Lab F,provenance-same-object-branch-22-main-source,branch-audit-confirmation-22,naive_chat_history,False
+Lab F,gpt-4o-mini,audit-branch-22,True,False,"['Lab F', 'Lab F']",Lab F,provenance-same-object-branch-22-branch-source,branch-audit-confirmation-22,naive_chat_history,False
+Lab D,gpt-4o-mini,main,False,False,"['Lab F', 'Lab B', 'Lab D']",Lab D,provenance-merge-governing-source-23-source,rumor-reorg-source-23,naive_chat_history,False
 Lab B,gpt-4o-mini,main,False,False,"['Lab A', 'Lab B']",Lab B,merge-manual-review-00-unresolved,unconfirmed-reorg-draft-0,naive_chat_history,False
 Lab F,gpt-4o-mini,main,False,False,"['Lab B', 'Lab D', 'Lab F']",Lab F,merge-concurrent-update-01-unresolved,signed-main-concurrent-update-1,naive_chat_history,False
-Lab D,gpt-4o-mini,main,False,False,"['Lab C', 'Lab D']",Lab D,merge-manual-review-02-unresolved,unconfirmed-reorg-draft-2,naive_chat_history,False
-Lab B,gpt-4o-mini,main,False,False,"['Lab D', 'Lab F', 'Lab B']",Lab B,merge-concurrent-update-03-unresolved,signed-main-concurrent-update-3,naive_chat_history,False
+Lab B,gpt-4o-mini,main,False,False,"['Lab C', 'Lab E', 'Lab B']",Lab B,merge-competing-branches-02-unresolved,draft-reorg-source-2,naive_chat_history,False
+Lab B,gpt-4o-mini,main,False,False,"['Lab E', 'Lab B']",Lab B,merge-temporal-coexistence-03-before,signed-transfer-2026-3,naive_chat_history,False
+Lab B,gpt-4o-mini,main,True,False,"['Lab E', 'Lab B']",Lab B,merge-temporal-coexistence-03-after,signed-transfer-2026-3,naive_chat_history,False
 Lab F,gpt-4o-mini,main,False,False,"['Lab E', 'Lab F']",Lab F,merge-manual-review-04-unresolved,unconfirmed-reorg-draft-4,naive_chat_history,False
 Lab D,gpt-4o-mini,main,False,False,"['Lab F', 'Lab B', 'Lab D']",Lab D,merge-concurrent-update-05-unresolved,signed-main-concurrent-update-5,naive_chat_history,False
+Lab F,gpt-4o-mini,main,False,False,"['Lab A', 'Lab C', 'Lab F']",Lab F,merge-competing-branches-06-unresolved,draft-reorg-source-6,naive_chat_history,False
+Lab F,gpt-4o-mini,main,False,False,"['Lab C', 'Lab F']",Lab F,merge-temporal-coexistence-07-before,signed-transfer-2026-7,naive_chat_history,False
+Lab F,gpt-4o-mini,main,True,False,"['Lab C', 'Lab F']",Lab F,merge-temporal-coexistence-07-after,signed-transfer-2026-7,naive_chat_history,False
+Lab D,gpt-4o-mini,main,False,False,"['Lab C', 'Lab D']",Lab D,merge-manual-review-08-unresolved,unconfirmed-reorg-draft-8,naive_chat_history,False
+Lab B,gpt-4o-mini,main,False,False,"['Lab D', 'Lab F', 'Lab B']",Lab B,merge-concurrent-update-09-unresolved,signed-main-concurrent-update-9,naive_chat_history,False
+Lab D,gpt-4o-mini,main,False,False,"['Lab E', 'Lab A', 'Lab D']",Lab D,merge-competing-branches-10-unresolved,draft-reorg-source-10,naive_chat_history,False
+Lab D,gpt-4o-mini,main,False,False,"['Lab A', 'Lab D']",Lab D,merge-temporal-coexistence-11-before,signed-transfer-2026-11,naive_chat_history,False
+Lab D,gpt-4o-mini,main,True,False,"['Lab A', 'Lab D']",Lab D,merge-temporal-coexistence-11-after,signed-transfer-2026-11,naive_chat_history,False
 Dublin,gpt-4o-mini,main,True,False,"['Seoul', 'Rome', 'Dublin']",Dublin,temporal-supersession-00-current,residence-ledger-0-c,simple_rag,False
 Dublin,gpt-4o-mini,main,False,False,"['Seoul', 'Rome', 'Dublin']",Dublin,temporal-supersession-00-history,residence-ledger-0-c,simple_rag,False
 Dublin,gpt-4o-mini,main,True,False,"['Seoul', 'Rome', 'Dublin']",Dublin,temporal-supersession-00-provenance,residence-ledger-0-c,simple_rag,False
@@ -249,20 +278,49 @@ Paris,gpt-4o-mini,main,True,False,"['Paris', 'Paris']",Paris,provenance-current-
 Lima,gpt-4o-mini,main,False,False,"['Tokyo', 'Paris', 'Madrid', 'Lima']",Lima,provenance-rollback-source-01-source,bad-bulk-import-source-1,simple_rag,False
 Lab C,gpt-4o-mini,main,True,False,"['Lab C', 'Lab F']",Lab C,provenance-branch-context-02-main-source,main-employment-contract-2,simple_rag,False
 Lab C,gpt-4o-mini,grant-branch-2,False,False,"['Lab C', 'Lab F']",Lab C,provenance-branch-context-02-branch-source,main-employment-contract-2,simple_rag,False
-Oslo,gpt-4o-mini,main,True,False,"['Oslo', 'Oslo']",Oslo,provenance-current-justification-03-source,official-current-registry-3,simple_rag,False
-Seoul,gpt-4o-mini,main,False,False,"['Berlin', 'Oslo', 'Paris', 'Seoul']",Seoul,provenance-rollback-source-04-source,bad-bulk-import-source-4,simple_rag,False
-Lab F,gpt-4o-mini,main,True,False,"['Lab F', 'Lab C']",Lab F,provenance-branch-context-05-main-source,main-employment-contract-5,simple_rag,False
-Lab F,gpt-4o-mini,grant-branch-5,False,False,"['Lab F', 'Lab C']",Lab F,provenance-branch-context-05-branch-source,main-employment-contract-5,simple_rag,False
+Lima,gpt-4o-mini,main,True,False,"['Lima', 'Lima']",Lima,provenance-same-object-rollback-03-source,corrupted-mirror-3,simple_rag,False
+Lab F,gpt-4o-mini,main,True,False,"['Lab F', 'Lab F']",Lab F,provenance-same-object-branch-04-main-source,branch-audit-confirmation-4,simple_rag,False
+Lab F,gpt-4o-mini,audit-branch-4,True,False,"['Lab F', 'Lab F']",Lab F,provenance-same-object-branch-04-branch-source,branch-audit-confirmation-4,simple_rag,False
+Lab B,gpt-4o-mini,main,True,False,"['Lab F', 'Lab B', 'Lab D']",Lab B,provenance-merge-governing-source-05-source,signed-winning-reorg-source-5,simple_rag,False
 Lima,gpt-4o-mini,main,True,False,"['Lima', 'Lima']",Lima,provenance-current-justification-06-source,official-current-registry-6,simple_rag,False
 Madrid,gpt-4o-mini,main,False,False,"['Oslo', 'Madrid']",Madrid,provenance-rollback-source-07-source,bad-bulk-import-source-7,simple_rag,False
 Lab C,gpt-4o-mini,main,True,False,"['Lab C', 'Lab F']",Lab C,provenance-branch-context-08-main-source,main-employment-contract-8,simple_rag,False
 Lab C,gpt-4o-mini,grant-branch-8,False,False,"['Lab C', 'Lab F']",Lab C,provenance-branch-context-08-branch-source,main-employment-contract-8,simple_rag,False
+Madrid,gpt-4o-mini,main,True,False,"['Madrid', 'Madrid']",Madrid,provenance-same-object-rollback-09-source,corrupted-mirror-9,simple_rag,False
+Lab F,gpt-4o-mini,main,True,False,"['Lab F', 'Lab F']",Lab F,provenance-same-object-branch-10-main-source,branch-audit-confirmation-10,simple_rag,False
+Lab F,gpt-4o-mini,audit-branch-10,True,False,"['Lab F', 'Lab F']",Lab F,provenance-same-object-branch-10-branch-source,branch-audit-confirmation-10,simple_rag,False
+Lab B,gpt-4o-mini,main,True,False,"['Lab F', 'Lab B', 'Lab D']",Lab B,provenance-merge-governing-source-11-source,signed-winning-reorg-source-11,simple_rag,False
+Madrid,gpt-4o-mini,main,True,False,"['Madrid', 'Madrid']",Madrid,provenance-current-justification-12-source,official-current-registry-12,simple_rag,False
+Oslo,gpt-4o-mini,main,False,False,"['Tokyo', 'Paris', 'Madrid', 'Lima', 'Seoul', 'Oslo']",Oslo,provenance-rollback-source-13-source,bad-bulk-import-source-13,simple_rag,False
+Lab C,gpt-4o-mini,main,True,False,"['Lab C', 'Lab F']",Lab C,provenance-branch-context-14-main-source,main-employment-contract-14,simple_rag,False
+Lab C,gpt-4o-mini,grant-branch-14,False,False,"['Lab C', 'Lab F']",Lab C,provenance-branch-context-14-branch-source,main-employment-contract-14,simple_rag,False
+Oslo,gpt-4o-mini,main,True,False,"['Oslo', 'Oslo']",Oslo,provenance-same-object-rollback-15-source,corrupted-mirror-15,simple_rag,False
+Lab F,gpt-4o-mini,main,True,False,"['Lab F', 'Lab F']",Lab F,provenance-same-object-branch-16-main-source,branch-audit-confirmation-16,simple_rag,False
+Lab F,gpt-4o-mini,audit-branch-16,True,False,"['Lab F', 'Lab F']",Lab F,provenance-same-object-branch-16-branch-source,branch-audit-confirmation-16,simple_rag,False
+Lab B,gpt-4o-mini,main,True,False,"['Lab F', 'Lab B', 'Lab D']",Lab B,provenance-merge-governing-source-17-source,signed-winning-reorg-source-17,simple_rag,False
+Oslo,gpt-4o-mini,main,True,False,"['Oslo', 'Oslo']",Oslo,provenance-current-justification-18-source,official-current-registry-18,simple_rag,False
+Seoul,gpt-4o-mini,main,False,False,"['Tokyo', 'Paris', 'Madrid', 'Lima', 'Paris', 'Seoul']",Seoul,provenance-rollback-source-19-source,bad-bulk-import-source-19,simple_rag,False
+Lab C,gpt-4o-mini,main,True,False,"['Lab C', 'Lab F', 'Lab C', 'Lab F']",Lab C,provenance-branch-context-20-main-source,main-employment-contract-20,simple_rag,False
+Lab C,gpt-4o-mini,grant-branch-20,False,False,"['Lab C', 'Lab F', 'Lab C', 'Lab F']",Lab C,provenance-branch-context-20-branch-source,main-employment-contract-20,simple_rag,False
+Seoul,gpt-4o-mini,main,True,False,"['Seoul', 'Seoul']",Seoul,provenance-same-object-rollback-21-source,corrupted-mirror-21,simple_rag,False
+Lab F,gpt-4o-mini,main,True,False,"['Lab F', 'Lab F']",Lab F,provenance-same-object-branch-22-main-source,branch-audit-confirmation-22,simple_rag,False
+Lab F,gpt-4o-mini,audit-branch-22,True,False,"['Lab F', 'Lab F']",Lab F,provenance-same-object-branch-22-branch-source,branch-audit-confirmation-22,simple_rag,False
+Lab B,gpt-4o-mini,main,True,False,"['Lab F', 'Lab B', 'Lab D']",Lab B,provenance-merge-governing-source-23-source,signed-winning-reorg-source-23,simple_rag,False
 Lab C,gpt-4o-mini,main,False,False,"['Lab A', 'Lab C', 'Lab A', 'Lab B']",Lab C,merge-manual-review-00-unresolved,signed-reorg-plan-0,simple_rag,False
 Lab F,gpt-4o-mini,main,False,False,"['Lab B', 'Lab D', 'Lab B', 'Lab D', 'Lab F']",Lab F,merge-concurrent-update-01-unresolved,signed-main-concurrent-update-1,simple_rag,False
-Lab E,gpt-4o-mini,main,False,False,"['Lab C', 'Lab E', 'Lab C', 'Lab D']",Lab E,merge-manual-review-02-unresolved,signed-reorg-plan-2,simple_rag,False
-Lab B,gpt-4o-mini,main,False,False,"['Lab D', 'Lab F', 'Lab D', 'Lab F', 'Lab B']",Lab B,merge-concurrent-update-03-unresolved,signed-main-concurrent-update-3,simple_rag,False
+Lab E,gpt-4o-mini,main,False,False,"['Lab C', 'Lab E', 'Lab B']",Lab E,merge-competing-branches-02-unresolved,board-approved-source-2,simple_rag,False
+Lab F,gpt-4o-mini,main,False,False,"['Lab D', 'Lab F', 'Lab E', 'Lab B']",Lab F,merge-temporal-coexistence-03-before,signed-reorg-plan-3,simple_rag,False
+Lab F,gpt-4o-mini,main,False,False,"['Lab D', 'Lab F', 'Lab E', 'Lab B']",Lab F,merge-temporal-coexistence-03-after,signed-reorg-plan-3,simple_rag,False
 Lab A,gpt-4o-mini,main,False,False,"['Lab E', 'Lab A', 'Lab E', 'Lab F']",Lab A,merge-manual-review-04-unresolved,signed-reorg-plan-4,simple_rag,False
 Lab D,gpt-4o-mini,main,False,False,"['Lab F', 'Lab B', 'Lab D']",Lab D,merge-concurrent-update-05-unresolved,signed-main-concurrent-update-5,simple_rag,False
+Lab C,gpt-4o-mini,main,False,False,"['Lab A', 'Lab C', 'Lab F']",Lab C,merge-competing-branches-06-unresolved,board-approved-source-6,simple_rag,False
+Lab F,gpt-4o-mini,main,False,False,"['Lab C', 'Lab F']",Lab F,merge-temporal-coexistence-07-before,signed-transfer-2026-7,simple_rag,False
+Lab F,gpt-4o-mini,main,True,False,"['Lab C', 'Lab F']",Lab F,merge-temporal-coexistence-07-after,signed-transfer-2026-7,simple_rag,False
+Lab C,gpt-4o-mini,main,False,False,"['Lab C', 'Lab D']",Lab C,merge-manual-review-08-unresolved,audited-hr-file-8,simple_rag,False
+Lab B,gpt-4o-mini,main,False,False,"['Lab D', 'Lab F', 'Lab B']",Lab B,merge-concurrent-update-09-unresolved,signed-main-concurrent-update-9,simple_rag,False
+Lab A,gpt-4o-mini,main,False,False,"['Lab E', 'Lab A', 'Lab D']",Lab A,merge-competing-branches-10-unresolved,board-approved-source-10,simple_rag,False
+Lab D,gpt-4o-mini,main,False,False,"['Lab B', 'Lab D', 'Lab A', 'Lab D']",Lab D,merge-temporal-coexistence-11-before,signed-reorg-plan-1,simple_rag,False
+Lab D,gpt-4o-mini,main,True,False,"['Lab B', 'Lab D', 'Lab A', 'Lab D']",Lab D,merge-temporal-coexistence-11-after,signed-reorg-plan-1,simple_rag,False
 Dublin,gpt-4o-mini,main,True,False,"['Seoul', 'Rome', 'Dublin']",Dublin,temporal-supersession-00-current,residence-ledger-0-c,embedding_rag,False
 Dublin,gpt-4o-mini,main,False,False,"['Seoul', 'Rome', 'Dublin']",Dublin,temporal-supersession-00-history,residence-ledger-0-c,embedding_rag,False
 Dublin,gpt-4o-mini,main,True,False,"['Seoul', 'Rome', 'Dublin']",Dublin,temporal-supersession-00-provenance,residence-ledger-0-c,embedding_rag,False
@@ -381,20 +439,49 @@ Paris,gpt-4o-mini,main,True,False,"['Paris', 'Paris']",Paris,provenance-current-
 Lima,gpt-4o-mini,main,False,False,"['Madrid', 'Lima']",Lima,provenance-rollback-source-01-source,bad-bulk-import-source-1,embedding_rag,False
 Lab C,gpt-4o-mini,main,True,False,"['Lab C', 'Lab F']",Lab C,provenance-branch-context-02-main-source,main-employment-contract-2,embedding_rag,False
 Lab C,gpt-4o-mini,grant-branch-2,False,False,"['Lab F', 'Lab C']",Lab C,provenance-branch-context-02-branch-source,main-employment-contract-2,embedding_rag,False
-Oslo,gpt-4o-mini,main,True,False,"['Oslo', 'Oslo']",Oslo,provenance-current-justification-03-source,official-current-registry-3,embedding_rag,False
-Seoul,gpt-4o-mini,main,False,False,"['Paris', 'Seoul']",Seoul,provenance-rollback-source-04-source,bad-bulk-import-source-4,embedding_rag,False
-Lab F,gpt-4o-mini,main,True,False,"['Lab F', 'Lab C']",Lab F,provenance-branch-context-05-main-source,main-employment-contract-5,embedding_rag,False
-Lab F,gpt-4o-mini,grant-branch-5,False,False,"['Lab C', 'Lab F']",Lab F,provenance-branch-context-05-branch-source,main-employment-contract-5,embedding_rag,False
+Lima,gpt-4o-mini,main,True,False,"['Lima', 'Lima']",Lima,provenance-same-object-rollback-03-source,corrupted-mirror-3,embedding_rag,False
+Lab F,gpt-4o-mini,main,True,False,"['Lab F', 'Lab F']",Lab F,provenance-same-object-branch-04-main-source,branch-audit-confirmation-4,embedding_rag,False
+Lab F,gpt-4o-mini,audit-branch-4,True,False,"['Lab F', 'Lab F']",Lab F,provenance-same-object-branch-04-branch-source,branch-audit-confirmation-4,embedding_rag,False
+Lab B,gpt-4o-mini,main,True,False,"['Lab F', 'Lab B', 'Lab D']",Lab B,provenance-merge-governing-source-05-source,signed-winning-reorg-source-5,embedding_rag,False
 Lima,gpt-4o-mini,main,True,False,"['Lima', 'Lima']",Lima,provenance-current-justification-06-source,official-current-registry-6,embedding_rag,False
 Madrid,gpt-4o-mini,main,False,False,"['Oslo', 'Madrid']",Madrid,provenance-rollback-source-07-source,bad-bulk-import-source-7,embedding_rag,False
 Lab C,gpt-4o-mini,main,True,False,"['Lab C', 'Lab F']",Lab C,provenance-branch-context-08-main-source,main-employment-contract-8,embedding_rag,False
 Lab C,gpt-4o-mini,grant-branch-8,False,False,"['Lab F', 'Lab C']",Lab C,provenance-branch-context-08-branch-source,main-employment-contract-8,embedding_rag,False
+Madrid,gpt-4o-mini,main,True,False,"['Madrid', 'Madrid']",Madrid,provenance-same-object-rollback-09-source,corrupted-mirror-9,embedding_rag,False
+Lab F,gpt-4o-mini,main,True,False,"['Lab F', 'Lab F']",Lab F,provenance-same-object-branch-10-main-source,branch-audit-confirmation-10,embedding_rag,False
+Lab F,gpt-4o-mini,audit-branch-10,True,False,"['Lab F', 'Lab F']",Lab F,provenance-same-object-branch-10-branch-source,branch-audit-confirmation-10,embedding_rag,False
+Lab B,gpt-4o-mini,main,True,False,"['Lab F', 'Lab B', 'Lab D']",Lab B,provenance-merge-governing-source-11-source,signed-winning-reorg-source-11,embedding_rag,False
+Madrid,gpt-4o-mini,main,True,False,"['Madrid', 'Madrid']",Madrid,provenance-current-justification-12-source,official-current-registry-12,embedding_rag,False
+Oslo,gpt-4o-mini,main,False,False,"['Seoul', 'Oslo']",Oslo,provenance-rollback-source-13-source,bad-bulk-import-source-13,embedding_rag,False
+Lab C,gpt-4o-mini,main,True,False,"['Lab C', 'Lab F']",Lab C,provenance-branch-context-14-main-source,main-employment-contract-14,embedding_rag,False
+Lab C,gpt-4o-mini,grant-branch-14,False,False,"['Lab F', 'Lab C']",Lab C,provenance-branch-context-14-branch-source,main-employment-contract-14,embedding_rag,False
+Oslo,gpt-4o-mini,main,True,False,"['Oslo', 'Oslo']",Oslo,provenance-same-object-rollback-15-source,corrupted-mirror-15,embedding_rag,False
+Lab F,gpt-4o-mini,main,True,False,"['Lab F', 'Lab F']",Lab F,provenance-same-object-branch-16-main-source,branch-audit-confirmation-16,embedding_rag,False
+Lab F,gpt-4o-mini,audit-branch-16,True,False,"['Lab F', 'Lab F']",Lab F,provenance-same-object-branch-16-branch-source,branch-audit-confirmation-16,embedding_rag,False
+Lab B,gpt-4o-mini,main,True,False,"['Lab F', 'Lab B', 'Lab D']",Lab B,provenance-merge-governing-source-17-source,signed-winning-reorg-source-17,embedding_rag,False
+Oslo,gpt-4o-mini,main,True,False,"['Oslo', 'Oslo']",Oslo,provenance-current-justification-18-source,official-current-registry-18,embedding_rag,False
+Seoul,gpt-4o-mini,main,False,False,"['Paris', 'Seoul']",Seoul,provenance-rollback-source-19-source,bad-bulk-import-source-19,embedding_rag,False
+Lab C,gpt-4o-mini,main,True,False,"['Lab C', 'Lab F']",Lab C,provenance-branch-context-20-main-source,main-employment-contract-20,embedding_rag,False
+Lab C,gpt-4o-mini,grant-branch-20,False,False,"['Lab F', 'Lab C']",Lab C,provenance-branch-context-20-branch-source,main-employment-contract-20,embedding_rag,False
+Seoul,gpt-4o-mini,main,True,False,"['Seoul', 'Seoul']",Seoul,provenance-same-object-rollback-21-source,corrupted-mirror-21,embedding_rag,False
+Lab F,gpt-4o-mini,main,True,False,"['Lab F', 'Lab F']",Lab F,provenance-same-object-branch-22-main-source,branch-audit-confirmation-22,embedding_rag,False
+Lab F,gpt-4o-mini,audit-branch-22,True,False,"['Lab F', 'Lab F']",Lab F,provenance-same-object-branch-22-branch-source,branch-audit-confirmation-22,embedding_rag,False
+Lab B,gpt-4o-mini,main,True,False,"['Lab F', 'Lab B', 'Lab D']",Lab B,provenance-merge-governing-source-23-source,signed-winning-reorg-source-23,embedding_rag,False
 Lab A,gpt-4o-mini,main,False,False,"['Lab B', 'Lab A']",Lab A,merge-manual-review-00-unresolved,audited-hr-file-0,embedding_rag,False
 Lab F,gpt-4o-mini,main,False,False,"['Lab F', 'Lab B', 'Lab D']",Lab F,merge-concurrent-update-01-unresolved,signed-main-concurrent-update-1,embedding_rag,False
-Lab C,gpt-4o-mini,main,False,False,"['Lab D', 'Lab C']",Lab C,merge-manual-review-02-unresolved,audited-hr-file-2,embedding_rag,False
-Lab B,gpt-4o-mini,main,False,False,"['Lab B', 'Lab D', 'Lab F']",Lab B,merge-concurrent-update-03-unresolved,signed-main-concurrent-update-3,embedding_rag,False
+Lab E,gpt-4o-mini,main,False,False,"['Lab C', 'Lab B', 'Lab E']",Lab E,merge-competing-branches-02-unresolved,board-approved-source-2,embedding_rag,False
+Lab B,gpt-4o-mini,main,False,False,"['Lab E', 'Lab B']",Lab B,merge-temporal-coexistence-03-before,signed-transfer-2026-3,embedding_rag,False
+Lab B,gpt-4o-mini,main,True,False,"['Lab E', 'Lab B']",Lab B,merge-temporal-coexistence-03-after,signed-transfer-2026-3,embedding_rag,False
 Lab E,gpt-4o-mini,main,False,False,"['Lab F', 'Lab E']",Lab E,merge-manual-review-04-unresolved,audited-hr-file-4,embedding_rag,False
 Lab D,gpt-4o-mini,main,False,False,"['Lab D', 'Lab F', 'Lab B']",Lab D,merge-concurrent-update-05-unresolved,signed-main-concurrent-update-5,embedding_rag,False
+Lab C,gpt-4o-mini,main,False,False,"['Lab A', 'Lab F', 'Lab C']",Lab C,merge-competing-branches-06-unresolved,board-approved-source-6,embedding_rag,False
+Lab F,gpt-4o-mini,main,False,False,"['Lab C', 'Lab F']",Lab F,merge-temporal-coexistence-07-before,signed-transfer-2026-7,embedding_rag,False
+Lab F,gpt-4o-mini,main,True,False,"['Lab C', 'Lab F']",Lab F,merge-temporal-coexistence-07-after,signed-transfer-2026-7,embedding_rag,False
+Lab C,gpt-4o-mini,main,False,False,"['Lab D', 'Lab C']",Lab C,merge-manual-review-08-unresolved,audited-hr-file-8,embedding_rag,False
+Lab B,gpt-4o-mini,main,False,False,"['Lab B', 'Lab D', 'Lab F']",Lab B,merge-concurrent-update-09-unresolved,signed-main-concurrent-update-9,embedding_rag,False
+Lab A,gpt-4o-mini,main,False,False,"['Lab E', 'Lab D', 'Lab A']",Lab A,merge-competing-branches-10-unresolved,board-approved-source-10,embedding_rag,False
+Lab D,gpt-4o-mini,main,False,False,"['Lab A', 'Lab D']",Lab D,merge-temporal-coexistence-11-before,signed-transfer-2026-11,embedding_rag,False
+Lab D,gpt-4o-mini,main,True,False,"['Lab A', 'Lab D']",Lab D,merge-temporal-coexistence-11-after,signed-transfer-2026-11,embedding_rag,False
 Dublin,gpt-4o-mini,main,True,False,"['Seoul', 'Rome', 'Dublin']",Dublin,temporal-supersession-00-current,residence-ledger-0-c,truthgit,False
 Dublin,gpt-4o-mini,main,False,False,"['Seoul', 'Rome', 'Dublin']",Dublin,temporal-supersession-00-history,residence-ledger-0-c,truthgit,False
 Dublin,gpt-4o-mini,main,True,False,"['Seoul', 'Rome', 'Dublin']",Dublin,temporal-supersession-00-provenance,residence-ledger-0-c,truthgit,False
@@ -509,24 +596,53 @@ Paris,gpt-4o-mini,main,True,False,"['Tokyo', 'Paris']",Paris,exact-provenance-01
 Lisbon,gpt-4o-mini,main,True,False,"['Madrid', 'Lisbon']",Lisbon,exact-provenance-02-source,signed-registry-2,truthgit,False
 Dublin,gpt-4o-mini,main,True,False,"['Rome', 'Dublin']",Dublin,exact-provenance-03-source,signed-registry-3,truthgit,False
 Oslo,gpt-4o-mini,main,True,False,"['Berlin', 'Oslo']",Oslo,exact-provenance-04-source,signed-registry-4,truthgit,False
-Paris,gpt-4o-mini,main,True,False,['Paris'],Paris,provenance-current-justification-00-source,community-blog-0,truthgit,False
+Paris,gpt-4o-mini,main,True,False,"['Paris', 'Paris']",Paris,provenance-current-justification-00-source,official-current-registry-0,truthgit,False
 Madrid,gpt-4o-mini,main,True,False,['Madrid'],Madrid,provenance-rollback-source-01-source,verified-residency-file-1,truthgit,False
 Lab C,gpt-4o-mini,main,True,False,"['Lab C', 'Lab F']",Lab C,provenance-branch-context-02-main-source,main-employment-contract-2,truthgit,False
 Lab F,gpt-4o-mini,grant-branch-2,True,False,"['Lab C', 'Lab F']",Lab F,provenance-branch-context-02-branch-source,branch-grant-plan-2,truthgit,False
-Oslo,gpt-4o-mini,main,True,False,['Oslo'],Oslo,provenance-current-justification-03-source,community-blog-3,truthgit,False
-Paris,gpt-4o-mini,main,True,False,['Paris'],Paris,provenance-rollback-source-04-source,verified-residency-file-4,truthgit,False
-Lab F,gpt-4o-mini,main,True,False,"['Lab F', 'Lab C']",Lab F,provenance-branch-context-05-main-source,main-employment-contract-5,truthgit,False
-Lab C,gpt-4o-mini,grant-branch-5,True,False,"['Lab F', 'Lab C']",Lab C,provenance-branch-context-05-branch-source,branch-grant-plan-5,truthgit,False
-Lima,gpt-4o-mini,main,True,False,['Lima'],Lima,provenance-current-justification-06-source,community-blog-6,truthgit,False
+Lima,gpt-4o-mini,main,True,False,['Lima'],Lima,provenance-same-object-rollback-03-source,municipal-file-3,truthgit,False
+Lab F,gpt-4o-mini,main,True,False,"['Lab F', 'Lab F']",Lab F,provenance-same-object-branch-04-main-source,main-personnel-file-4,truthgit,False
+Lab F,gpt-4o-mini,audit-branch-4,True,False,"['Lab F', 'Lab F']",Lab F,provenance-same-object-branch-04-branch-source,branch-audit-confirmation-4,truthgit,False
+Lab B,gpt-4o-mini,main,True,False,"['Lab F', 'Lab B', 'Lab B', 'Lab D', 'Lab D']",Lab B,provenance-merge-governing-source-05-source,signed-winning-reorg-source-5,truthgit,True
+Lima,gpt-4o-mini,main,True,False,"['Lima', 'Lima']",Lima,provenance-current-justification-06-source,official-current-registry-6,truthgit,False
 Oslo,gpt-4o-mini,main,True,False,['Oslo'],Oslo,provenance-rollback-source-07-source,verified-residency-file-7,truthgit,False
 Lab C,gpt-4o-mini,main,True,False,"['Lab C', 'Lab F']",Lab C,provenance-branch-context-08-main-source,main-employment-contract-8,truthgit,False
 Lab F,gpt-4o-mini,grant-branch-8,True,False,"['Lab C', 'Lab F']",Lab F,provenance-branch-context-08-branch-source,branch-grant-plan-8,truthgit,False
+Madrid,gpt-4o-mini,main,True,False,['Madrid'],Madrid,provenance-same-object-rollback-09-source,municipal-file-9,truthgit,False
+Lab F,gpt-4o-mini,main,True,False,"['Lab F', 'Lab F']",Lab F,provenance-same-object-branch-10-main-source,main-personnel-file-10,truthgit,False
+Lab F,gpt-4o-mini,audit-branch-10,True,False,"['Lab F', 'Lab F']",Lab F,provenance-same-object-branch-10-branch-source,branch-audit-confirmation-10,truthgit,False
+Lab B,gpt-4o-mini,main,True,False,"['Lab F', 'Lab B', 'Lab B', 'Lab D', 'Lab D']",Lab B,provenance-merge-governing-source-11-source,signed-winning-reorg-source-11,truthgit,True
+Madrid,gpt-4o-mini,main,True,False,"['Madrid', 'Madrid']",Madrid,provenance-current-justification-12-source,official-current-registry-12,truthgit,False
+Seoul,gpt-4o-mini,main,True,False,['Seoul'],Seoul,provenance-rollback-source-13-source,verified-residency-file-13,truthgit,False
+Lab C,gpt-4o-mini,main,True,False,"['Lab C', 'Lab F']",Lab C,provenance-branch-context-14-main-source,main-employment-contract-14,truthgit,False
+Lab F,gpt-4o-mini,grant-branch-14,True,False,"['Lab C', 'Lab F']",Lab F,provenance-branch-context-14-branch-source,branch-grant-plan-14,truthgit,False
+Oslo,gpt-4o-mini,main,True,False,['Oslo'],Oslo,provenance-same-object-rollback-15-source,municipal-file-15,truthgit,False
+Lab F,gpt-4o-mini,main,True,False,"['Lab F', 'Lab F']",Lab F,provenance-same-object-branch-16-main-source,main-personnel-file-16,truthgit,False
+Lab F,gpt-4o-mini,audit-branch-16,True,False,"['Lab F', 'Lab F']",Lab F,provenance-same-object-branch-16-branch-source,branch-audit-confirmation-16,truthgit,False
+Lab B,gpt-4o-mini,main,True,False,"['Lab F', 'Lab B', 'Lab B', 'Lab D', 'Lab D']",Lab B,provenance-merge-governing-source-17-source,signed-winning-reorg-source-17,truthgit,True
+Oslo,gpt-4o-mini,main,True,False,"['Oslo', 'Oslo']",Oslo,provenance-current-justification-18-source,official-current-registry-18,truthgit,False
+Paris,gpt-4o-mini,main,True,False,['Paris'],Paris,provenance-rollback-source-19-source,verified-residency-file-19,truthgit,False
+Lab C,gpt-4o-mini,main,True,False,"['Lab C', 'Lab F']",Lab C,provenance-branch-context-20-main-source,main-employment-contract-20,truthgit,False
+Lab F,gpt-4o-mini,grant-branch-20,True,False,"['Lab C', 'Lab F']",Lab F,provenance-branch-context-20-branch-source,branch-grant-plan-20,truthgit,False
+Seoul,gpt-4o-mini,main,True,False,['Seoul'],Seoul,provenance-same-object-rollback-21-source,municipal-file-21,truthgit,False
+Lab F,gpt-4o-mini,main,True,False,"['Lab F', 'Lab F']",Lab F,provenance-same-object-branch-22-main-source,main-personnel-file-22,truthgit,False
+Lab F,gpt-4o-mini,audit-branch-22,True,False,"['Lab F', 'Lab F']",Lab F,provenance-same-object-branch-22-branch-source,branch-audit-confirmation-22,truthgit,False
+Lab B,gpt-4o-mini,main,True,False,"['Lab F', 'Lab B', 'Lab B', 'Lab D', 'Lab D']",Lab B,provenance-merge-governing-source-23-source,signed-winning-reorg-source-23,truthgit,True
 Lab A,gpt-4o-mini,main,False,False,"['Lab A', 'Lab B', 'Lab B']",Lab A,merge-manual-review-00-unresolved,audited-hr-file-0,truthgit,True
 Lab F,gpt-4o-mini,main,False,False,"['Lab B', 'Lab D', 'Lab F', 'Lab D']",Lab F,merge-concurrent-update-01-unresolved,signed-main-concurrent-update-1,truthgit,True
-Lab C,gpt-4o-mini,main,False,False,"['Lab C', 'Lab D', 'Lab D']",Lab C,merge-manual-review-02-unresolved,audited-hr-file-2,truthgit,True
-Lab B,gpt-4o-mini,main,False,False,"['Lab D', 'Lab F', 'Lab B', 'Lab F']",Lab B,merge-concurrent-update-03-unresolved,signed-main-concurrent-update-3,truthgit,True
+Lab E,gpt-4o-mini,main,False,False,"['Lab C', 'Lab E', 'Lab B', 'Lab E', 'Lab B']",Lab E,merge-competing-branches-02-unresolved,board-approved-source-2,truthgit,True
+Lab E,gpt-4o-mini,main,True,False,"['Lab E', 'Lab B', 'Lab B']",Lab E,merge-temporal-coexistence-03-before,calendar-hr-2025-3,truthgit,False
+Lab B,gpt-4o-mini,main,True,False,"['Lab E', 'Lab B', 'Lab B']",Lab B,merge-temporal-coexistence-03-after,signed-transfer-2026-3,truthgit,False
 Lab E,gpt-4o-mini,main,False,False,"['Lab E', 'Lab F', 'Lab F']",Lab E,merge-manual-review-04-unresolved,audited-hr-file-4,truthgit,True
 Lab D,gpt-4o-mini,main,False,False,"['Lab F', 'Lab B', 'Lab D', 'Lab B']",Lab D,merge-concurrent-update-05-unresolved,signed-main-concurrent-update-5,truthgit,True
+Lab C,gpt-4o-mini,main,False,False,"['Lab A', 'Lab C', 'Lab F', 'Lab C', 'Lab F']",Lab C,merge-competing-branches-06-unresolved,board-approved-source-6,truthgit,True
+Lab C,gpt-4o-mini,main,True,False,"['Lab C', 'Lab F', 'Lab F']",Lab C,merge-temporal-coexistence-07-before,calendar-hr-2025-7,truthgit,False
+Lab F,gpt-4o-mini,main,True,False,"['Lab C', 'Lab F', 'Lab F']",Lab F,merge-temporal-coexistence-07-after,signed-transfer-2026-7,truthgit,False
+Lab C,gpt-4o-mini,main,False,False,"['Lab C', 'Lab D', 'Lab D']",Lab C,merge-manual-review-08-unresolved,audited-hr-file-8,truthgit,True
+Lab B,gpt-4o-mini,main,False,False,"['Lab D', 'Lab F', 'Lab B', 'Lab F']",Lab B,merge-concurrent-update-09-unresolved,signed-main-concurrent-update-9,truthgit,True
+Lab A,gpt-4o-mini,main,False,False,"['Lab E', 'Lab A', 'Lab D', 'Lab A', 'Lab D']",Lab A,merge-competing-branches-10-unresolved,board-approved-source-10,truthgit,True
+Lab A,gpt-4o-mini,main,True,False,"['Lab A', 'Lab D', 'Lab D']",Lab A,merge-temporal-coexistence-11-before,calendar-hr-2025-11,truthgit,False
+Lab D,gpt-4o-mini,main,True,False,"['Lab A', 'Lab D', 'Lab D']",Lab D,merge-temporal-coexistence-11-after,signed-transfer-2026-11,truthgit,False
 Dublin,gpt-4o-mini,main,True,False,"['Seoul', 'Rome', 'Dublin']",Dublin,temporal-supersession-00-current,residence-ledger-0-c,truthgit_no_branches,False
 Dublin,gpt-4o-mini,main,False,False,"['Seoul', 'Rome', 'Dublin']",Dublin,temporal-supersession-00-history,residence-ledger-0-c,truthgit_no_branches,False
 Dublin,gpt-4o-mini,main,True,False,"['Seoul', 'Rome', 'Dublin']",Dublin,temporal-supersession-00-provenance,residence-ledger-0-c,truthgit_no_branches,False
@@ -641,24 +757,53 @@ Paris,gpt-4o-mini,main,True,False,"['Tokyo', 'Paris']",Paris,exact-provenance-01
 Lisbon,gpt-4o-mini,main,True,False,"['Madrid', 'Lisbon']",Lisbon,exact-provenance-02-source,signed-registry-2,truthgit_no_branches,False
 Dublin,gpt-4o-mini,main,True,False,"['Rome', 'Dublin']",Dublin,exact-provenance-03-source,signed-registry-3,truthgit_no_branches,False
 Oslo,gpt-4o-mini,main,True,False,"['Berlin', 'Oslo']",Oslo,exact-provenance-04-source,signed-registry-4,truthgit_no_branches,False
-Paris,gpt-4o-mini,main,True,False,['Paris'],Paris,provenance-current-justification-00-source,community-blog-0,truthgit_no_branches,False
+Paris,gpt-4o-mini,main,True,False,"['Paris', 'Paris']",Paris,provenance-current-justification-00-source,official-current-registry-0,truthgit_no_branches,False
 Madrid,gpt-4o-mini,main,True,False,['Madrid'],Madrid,provenance-rollback-source-01-source,verified-residency-file-1,truthgit_no_branches,False
 Lab C,gpt-4o-mini,main,True,False,"['Lab C', 'Lab F']",Lab C,provenance-branch-context-02-main-source,main-employment-contract-2,truthgit_no_branches,True
 Lab C,gpt-4o-mini,grant-branch-2,False,False,"['Lab C', 'Lab F']",Lab C,provenance-branch-context-02-branch-source,main-employment-contract-2,truthgit_no_branches,True
-Oslo,gpt-4o-mini,main,True,False,['Oslo'],Oslo,provenance-current-justification-03-source,community-blog-3,truthgit_no_branches,False
-Paris,gpt-4o-mini,main,True,False,['Paris'],Paris,provenance-rollback-source-04-source,verified-residency-file-4,truthgit_no_branches,False
-Lab F,gpt-4o-mini,main,True,False,"['Lab F', 'Lab C']",Lab F,provenance-branch-context-05-main-source,main-employment-contract-5,truthgit_no_branches,True
-Lab F,gpt-4o-mini,grant-branch-5,False,False,"['Lab F', 'Lab C']",Lab F,provenance-branch-context-05-branch-source,main-employment-contract-5,truthgit_no_branches,True
-Lima,gpt-4o-mini,main,True,False,['Lima'],Lima,provenance-current-justification-06-source,community-blog-6,truthgit_no_branches,False
+Lima,gpt-4o-mini,main,True,False,['Lima'],Lima,provenance-same-object-rollback-03-source,municipal-file-3,truthgit_no_branches,False
+Lab F,gpt-4o-mini,main,True,False,"['Lab F', 'Lab F']",Lab F,provenance-same-object-branch-04-main-source,branch-audit-confirmation-4,truthgit_no_branches,False
+Lab F,gpt-4o-mini,audit-branch-4,True,False,"['Lab F', 'Lab F']",Lab F,provenance-same-object-branch-04-branch-source,branch-audit-confirmation-4,truthgit_no_branches,False
+Lab B,gpt-4o-mini,main,True,False,"['Lab F', 'Lab B', 'Lab D']",Lab B,provenance-merge-governing-source-05-source,signed-winning-reorg-source-5,truthgit_no_branches,True
+Lima,gpt-4o-mini,main,True,False,"['Lima', 'Lima']",Lima,provenance-current-justification-06-source,official-current-registry-6,truthgit_no_branches,False
 Oslo,gpt-4o-mini,main,True,False,['Oslo'],Oslo,provenance-rollback-source-07-source,verified-residency-file-7,truthgit_no_branches,False
 Lab C,gpt-4o-mini,main,True,False,"['Lab C', 'Lab F']",Lab C,provenance-branch-context-08-main-source,main-employment-contract-8,truthgit_no_branches,True
 Lab C,gpt-4o-mini,grant-branch-8,False,False,"['Lab C', 'Lab F']",Lab C,provenance-branch-context-08-branch-source,main-employment-contract-8,truthgit_no_branches,True
+Madrid,gpt-4o-mini,main,True,False,['Madrid'],Madrid,provenance-same-object-rollback-09-source,municipal-file-9,truthgit_no_branches,False
+Lab F,gpt-4o-mini,main,True,False,"['Lab F', 'Lab F']",Lab F,provenance-same-object-branch-10-main-source,branch-audit-confirmation-10,truthgit_no_branches,False
+Lab F,gpt-4o-mini,audit-branch-10,True,False,"['Lab F', 'Lab F']",Lab F,provenance-same-object-branch-10-branch-source,branch-audit-confirmation-10,truthgit_no_branches,False
+Lab B,gpt-4o-mini,main,True,False,"['Lab F', 'Lab B', 'Lab D']",Lab B,provenance-merge-governing-source-11-source,signed-winning-reorg-source-11,truthgit_no_branches,True
+Madrid,gpt-4o-mini,main,True,False,"['Madrid', 'Madrid']",Madrid,provenance-current-justification-12-source,official-current-registry-12,truthgit_no_branches,False
+Seoul,gpt-4o-mini,main,True,False,['Seoul'],Seoul,provenance-rollback-source-13-source,verified-residency-file-13,truthgit_no_branches,False
+Lab C,gpt-4o-mini,main,True,False,"['Lab C', 'Lab F']",Lab C,provenance-branch-context-14-main-source,main-employment-contract-14,truthgit_no_branches,True
+Lab C,gpt-4o-mini,grant-branch-14,False,False,"['Lab C', 'Lab F']",Lab C,provenance-branch-context-14-branch-source,main-employment-contract-14,truthgit_no_branches,True
+Oslo,gpt-4o-mini,main,True,False,['Oslo'],Oslo,provenance-same-object-rollback-15-source,municipal-file-15,truthgit_no_branches,False
+Lab F,gpt-4o-mini,main,True,False,"['Lab F', 'Lab F']",Lab F,provenance-same-object-branch-16-main-source,branch-audit-confirmation-16,truthgit_no_branches,False
+Lab F,gpt-4o-mini,audit-branch-16,True,False,"['Lab F', 'Lab F']",Lab F,provenance-same-object-branch-16-branch-source,branch-audit-confirmation-16,truthgit_no_branches,False
+Lab B,gpt-4o-mini,main,True,False,"['Lab F', 'Lab B', 'Lab D']",Lab B,provenance-merge-governing-source-17-source,signed-winning-reorg-source-17,truthgit_no_branches,True
+Oslo,gpt-4o-mini,main,True,False,"['Oslo', 'Oslo']",Oslo,provenance-current-justification-18-source,official-current-registry-18,truthgit_no_branches,False
+Paris,gpt-4o-mini,main,True,False,['Paris'],Paris,provenance-rollback-source-19-source,verified-residency-file-19,truthgit_no_branches,False
+Lab C,gpt-4o-mini,main,True,False,"['Lab C', 'Lab F']",Lab C,provenance-branch-context-20-main-source,main-employment-contract-20,truthgit_no_branches,True
+Lab C,gpt-4o-mini,grant-branch-20,False,False,"['Lab C', 'Lab F']",Lab C,provenance-branch-context-20-branch-source,main-employment-contract-20,truthgit_no_branches,True
+Seoul,gpt-4o-mini,main,True,False,['Seoul'],Seoul,provenance-same-object-rollback-21-source,municipal-file-21,truthgit_no_branches,False
+Lab F,gpt-4o-mini,main,True,False,"['Lab F', 'Lab F']",Lab F,provenance-same-object-branch-22-main-source,branch-audit-confirmation-22,truthgit_no_branches,False
+Lab F,gpt-4o-mini,audit-branch-22,True,False,"['Lab F', 'Lab F']",Lab F,provenance-same-object-branch-22-branch-source,branch-audit-confirmation-22,truthgit_no_branches,False
+Lab B,gpt-4o-mini,main,True,False,"['Lab F', 'Lab B', 'Lab D']",Lab B,provenance-merge-governing-source-23-source,signed-winning-reorg-source-23,truthgit_no_branches,True
 Lab A,gpt-4o-mini,main,False,False,"['Lab A', 'Lab B']",Lab A,merge-manual-review-00-unresolved,audited-hr-file-0,truthgit_no_branches,True
 Lab F,gpt-4o-mini,main,False,False,"['Lab B', 'Lab D', 'Lab F']",Lab F,merge-concurrent-update-01-unresolved,signed-main-concurrent-update-1,truthgit_no_branches,False
-Lab C,gpt-4o-mini,main,False,False,"['Lab C', 'Lab D']",Lab C,merge-manual-review-02-unresolved,audited-hr-file-2,truthgit_no_branches,True
-Lab B,gpt-4o-mini,main,False,False,"['Lab D', 'Lab F', 'Lab B']",Lab B,merge-concurrent-update-03-unresolved,signed-main-concurrent-update-3,truthgit_no_branches,False
+Lab E,gpt-4o-mini,main,False,False,"['Lab C', 'Lab E', 'Lab B']",Lab E,merge-competing-branches-02-unresolved,board-approved-source-2,truthgit_no_branches,True
+Lab E,gpt-4o-mini,main,True,False,"['Lab E', 'Lab B']",Lab E,merge-temporal-coexistence-03-before,calendar-hr-2025-3,truthgit_no_branches,False
+Lab B,gpt-4o-mini,main,True,False,"['Lab E', 'Lab B']",Lab B,merge-temporal-coexistence-03-after,signed-transfer-2026-3,truthgit_no_branches,False
 Lab E,gpt-4o-mini,main,False,False,"['Lab E', 'Lab F']",Lab E,merge-manual-review-04-unresolved,audited-hr-file-4,truthgit_no_branches,True
 Lab D,gpt-4o-mini,main,False,False,"['Lab F', 'Lab B', 'Lab D']",Lab D,merge-concurrent-update-05-unresolved,signed-main-concurrent-update-5,truthgit_no_branches,False
+Lab C,gpt-4o-mini,main,False,False,"['Lab A', 'Lab C', 'Lab F']",Lab C,merge-competing-branches-06-unresolved,board-approved-source-6,truthgit_no_branches,True
+Lab C,gpt-4o-mini,main,True,False,"['Lab C', 'Lab F']",Lab C,merge-temporal-coexistence-07-before,calendar-hr-2025-7,truthgit_no_branches,False
+Lab F,gpt-4o-mini,main,True,False,"['Lab C', 'Lab F']",Lab F,merge-temporal-coexistence-07-after,signed-transfer-2026-7,truthgit_no_branches,False
+Lab C,gpt-4o-mini,main,False,False,"['Lab C', 'Lab D']",Lab C,merge-manual-review-08-unresolved,audited-hr-file-8,truthgit_no_branches,True
+Lab B,gpt-4o-mini,main,False,False,"['Lab D', 'Lab F', 'Lab B']",Lab B,merge-concurrent-update-09-unresolved,signed-main-concurrent-update-9,truthgit_no_branches,False
+Lab A,gpt-4o-mini,main,False,False,"['Lab E', 'Lab A', 'Lab D']",Lab A,merge-competing-branches-10-unresolved,board-approved-source-10,truthgit_no_branches,True
+Lab A,gpt-4o-mini,main,True,False,"['Lab A', 'Lab D']",Lab A,merge-temporal-coexistence-11-before,calendar-hr-2025-11,truthgit_no_branches,False
+Lab D,gpt-4o-mini,main,True,False,"['Lab A', 'Lab D']",Lab D,merge-temporal-coexistence-11-after,signed-transfer-2026-11,truthgit_no_branches,False
 Dublin,gpt-4o-mini,main,True,False,"['Seoul', 'Rome', 'Dublin']",Dublin,temporal-supersession-00-current,residence-ledger-0-c,truthgit_no_rollback,False
 Dublin,gpt-4o-mini,main,False,False,"['Seoul', 'Rome', 'Dublin']",Dublin,temporal-supersession-00-history,residence-ledger-0-c,truthgit_no_rollback,False
 Dublin,gpt-4o-mini,main,True,False,"['Seoul', 'Rome', 'Dublin']",Dublin,temporal-supersession-00-provenance,residence-ledger-0-c,truthgit_no_rollback,False
@@ -773,24 +918,53 @@ Paris,gpt-4o-mini,main,True,False,"['Tokyo', 'Paris']",Paris,exact-provenance-01
 Lisbon,gpt-4o-mini,main,True,False,"['Madrid', 'Lisbon']",Lisbon,exact-provenance-02-source,signed-registry-2,truthgit_no_rollback,False
 Dublin,gpt-4o-mini,main,True,False,"['Rome', 'Dublin']",Dublin,exact-provenance-03-source,signed-registry-3,truthgit_no_rollback,False
 Oslo,gpt-4o-mini,main,True,False,"['Berlin', 'Oslo']",Oslo,exact-provenance-04-source,signed-registry-4,truthgit_no_rollback,False
-Paris,gpt-4o-mini,main,True,False,['Paris'],Paris,provenance-current-justification-00-source,community-blog-0,truthgit_no_rollback,False
+Paris,gpt-4o-mini,main,True,False,"['Paris', 'Paris']",Paris,provenance-current-justification-00-source,official-current-registry-0,truthgit_no_rollback,False
 Lima,gpt-4o-mini,main,False,False,"['Madrid', 'Lima']",Lima,provenance-rollback-source-01-source,bad-bulk-import-source-1,truthgit_no_rollback,False
 Lab C,gpt-4o-mini,main,True,False,"['Lab C', 'Lab F']",Lab C,provenance-branch-context-02-main-source,main-employment-contract-2,truthgit_no_rollback,False
 Lab F,gpt-4o-mini,grant-branch-2,True,False,"['Lab C', 'Lab F']",Lab F,provenance-branch-context-02-branch-source,branch-grant-plan-2,truthgit_no_rollback,False
-Oslo,gpt-4o-mini,main,True,False,['Oslo'],Oslo,provenance-current-justification-03-source,community-blog-3,truthgit_no_rollback,False
-Seoul,gpt-4o-mini,main,False,False,"['Paris', 'Seoul']",Seoul,provenance-rollback-source-04-source,bad-bulk-import-source-4,truthgit_no_rollback,False
-Lab F,gpt-4o-mini,main,True,False,"['Lab F', 'Lab C']",Lab F,provenance-branch-context-05-main-source,main-employment-contract-5,truthgit_no_rollback,False
-Lab C,gpt-4o-mini,grant-branch-5,True,False,"['Lab F', 'Lab C']",Lab C,provenance-branch-context-05-branch-source,branch-grant-plan-5,truthgit_no_rollback,False
-Lima,gpt-4o-mini,main,True,False,['Lima'],Lima,provenance-current-justification-06-source,community-blog-6,truthgit_no_rollback,False
+Lima,gpt-4o-mini,main,True,False,"['Lima', 'Lima']",Lima,provenance-same-object-rollback-03-source,corrupted-mirror-3,truthgit_no_rollback,False
+Lab F,gpt-4o-mini,main,True,False,"['Lab F', 'Lab F']",Lab F,provenance-same-object-branch-04-main-source,main-personnel-file-4,truthgit_no_rollback,False
+Lab F,gpt-4o-mini,audit-branch-4,True,False,"['Lab F', 'Lab F']",Lab F,provenance-same-object-branch-04-branch-source,branch-audit-confirmation-4,truthgit_no_rollback,False
+Lab B,gpt-4o-mini,main,True,False,"['Lab F', 'Lab B', 'Lab B', 'Lab D', 'Lab D']",Lab B,provenance-merge-governing-source-05-source,signed-winning-reorg-source-5,truthgit_no_rollback,True
+Lima,gpt-4o-mini,main,True,False,"['Lima', 'Lima']",Lima,provenance-current-justification-06-source,official-current-registry-6,truthgit_no_rollback,False
 Madrid,gpt-4o-mini,main,False,False,"['Oslo', 'Madrid']",Madrid,provenance-rollback-source-07-source,bad-bulk-import-source-7,truthgit_no_rollback,False
 Lab C,gpt-4o-mini,main,True,False,"['Lab C', 'Lab F']",Lab C,provenance-branch-context-08-main-source,main-employment-contract-8,truthgit_no_rollback,False
 Lab F,gpt-4o-mini,grant-branch-8,True,False,"['Lab C', 'Lab F']",Lab F,provenance-branch-context-08-branch-source,branch-grant-plan-8,truthgit_no_rollback,False
+Madrid,gpt-4o-mini,main,True,False,"['Madrid', 'Madrid']",Madrid,provenance-same-object-rollback-09-source,corrupted-mirror-9,truthgit_no_rollback,False
+Lab F,gpt-4o-mini,main,True,False,"['Lab F', 'Lab F']",Lab F,provenance-same-object-branch-10-main-source,main-personnel-file-10,truthgit_no_rollback,False
+Lab F,gpt-4o-mini,audit-branch-10,True,False,"['Lab F', 'Lab F']",Lab F,provenance-same-object-branch-10-branch-source,branch-audit-confirmation-10,truthgit_no_rollback,False
+Lab B,gpt-4o-mini,main,True,False,"['Lab F', 'Lab B', 'Lab B', 'Lab D', 'Lab D']",Lab B,provenance-merge-governing-source-11-source,signed-winning-reorg-source-11,truthgit_no_rollback,True
+Madrid,gpt-4o-mini,main,True,False,"['Madrid', 'Madrid']",Madrid,provenance-current-justification-12-source,official-current-registry-12,truthgit_no_rollback,False
+Oslo,gpt-4o-mini,main,False,False,"['Seoul', 'Oslo']",Oslo,provenance-rollback-source-13-source,bad-bulk-import-source-13,truthgit_no_rollback,False
+Lab C,gpt-4o-mini,main,True,False,"['Lab C', 'Lab F']",Lab C,provenance-branch-context-14-main-source,main-employment-contract-14,truthgit_no_rollback,False
+Lab F,gpt-4o-mini,grant-branch-14,True,False,"['Lab C', 'Lab F']",Lab F,provenance-branch-context-14-branch-source,branch-grant-plan-14,truthgit_no_rollback,False
+Oslo,gpt-4o-mini,main,True,False,"['Oslo', 'Oslo']",Oslo,provenance-same-object-rollback-15-source,corrupted-mirror-15,truthgit_no_rollback,False
+Lab F,gpt-4o-mini,main,True,False,"['Lab F', 'Lab F']",Lab F,provenance-same-object-branch-16-main-source,main-personnel-file-16,truthgit_no_rollback,False
+Lab F,gpt-4o-mini,audit-branch-16,True,False,"['Lab F', 'Lab F']",Lab F,provenance-same-object-branch-16-branch-source,branch-audit-confirmation-16,truthgit_no_rollback,False
+Lab B,gpt-4o-mini,main,True,False,"['Lab F', 'Lab B', 'Lab B', 'Lab D', 'Lab D']",Lab B,provenance-merge-governing-source-17-source,signed-winning-reorg-source-17,truthgit_no_rollback,True
+Oslo,gpt-4o-mini,main,True,False,"['Oslo', 'Oslo']",Oslo,provenance-current-justification-18-source,official-current-registry-18,truthgit_no_rollback,False
+Seoul,gpt-4o-mini,main,False,False,"['Paris', 'Seoul']",Seoul,provenance-rollback-source-19-source,bad-bulk-import-source-19,truthgit_no_rollback,False
+Lab C,gpt-4o-mini,main,True,False,"['Lab C', 'Lab F']",Lab C,provenance-branch-context-20-main-source,main-employment-contract-20,truthgit_no_rollback,False
+Lab F,gpt-4o-mini,grant-branch-20,True,False,"['Lab C', 'Lab F']",Lab F,provenance-branch-context-20-branch-source,branch-grant-plan-20,truthgit_no_rollback,False
+Seoul,gpt-4o-mini,main,True,False,"['Seoul', 'Seoul']",Seoul,provenance-same-object-rollback-21-source,corrupted-mirror-21,truthgit_no_rollback,False
+Lab F,gpt-4o-mini,main,True,False,"['Lab F', 'Lab F']",Lab F,provenance-same-object-branch-22-main-source,main-personnel-file-22,truthgit_no_rollback,False
+Lab F,gpt-4o-mini,audit-branch-22,True,False,"['Lab F', 'Lab F']",Lab F,provenance-same-object-branch-22-branch-source,branch-audit-confirmation-22,truthgit_no_rollback,False
+Lab B,gpt-4o-mini,main,True,False,"['Lab F', 'Lab B', 'Lab B', 'Lab D', 'Lab D']",Lab B,provenance-merge-governing-source-23-source,signed-winning-reorg-source-23,truthgit_no_rollback,True
 Lab A,gpt-4o-mini,main,False,False,"['Lab A', 'Lab B', 'Lab B']",Lab A,merge-manual-review-00-unresolved,audited-hr-file-0,truthgit_no_rollback,True
 Lab F,gpt-4o-mini,main,False,False,"['Lab B', 'Lab D', 'Lab F', 'Lab D']",Lab F,merge-concurrent-update-01-unresolved,signed-main-concurrent-update-1,truthgit_no_rollback,True
-Lab C,gpt-4o-mini,main,False,False,"['Lab C', 'Lab D', 'Lab D']",Lab C,merge-manual-review-02-unresolved,audited-hr-file-2,truthgit_no_rollback,True
-Lab B,gpt-4o-mini,main,False,False,"['Lab D', 'Lab F', 'Lab B', 'Lab F']",Lab B,merge-concurrent-update-03-unresolved,signed-main-concurrent-update-3,truthgit_no_rollback,True
+Lab E,gpt-4o-mini,main,False,False,"['Lab C', 'Lab E', 'Lab B', 'Lab E', 'Lab B']",Lab E,merge-competing-branches-02-unresolved,board-approved-source-2,truthgit_no_rollback,True
+Lab E,gpt-4o-mini,main,True,False,"['Lab E', 'Lab B', 'Lab B']",Lab E,merge-temporal-coexistence-03-before,calendar-hr-2025-3,truthgit_no_rollback,False
+Lab B,gpt-4o-mini,main,True,False,"['Lab E', 'Lab B', 'Lab B']",Lab B,merge-temporal-coexistence-03-after,signed-transfer-2026-3,truthgit_no_rollback,False
 Lab E,gpt-4o-mini,main,False,False,"['Lab E', 'Lab F', 'Lab F']",Lab E,merge-manual-review-04-unresolved,audited-hr-file-4,truthgit_no_rollback,True
 Lab D,gpt-4o-mini,main,False,False,"['Lab F', 'Lab B', 'Lab D', 'Lab B']",Lab D,merge-concurrent-update-05-unresolved,signed-main-concurrent-update-5,truthgit_no_rollback,True
+Lab C,gpt-4o-mini,main,False,False,"['Lab A', 'Lab C', 'Lab F', 'Lab C', 'Lab F']",Lab C,merge-competing-branches-06-unresolved,board-approved-source-6,truthgit_no_rollback,True
+Lab C,gpt-4o-mini,main,True,False,"['Lab C', 'Lab F', 'Lab F']",Lab C,merge-temporal-coexistence-07-before,calendar-hr-2025-7,truthgit_no_rollback,False
+Lab F,gpt-4o-mini,main,True,False,"['Lab C', 'Lab F', 'Lab F']",Lab F,merge-temporal-coexistence-07-after,signed-transfer-2026-7,truthgit_no_rollback,False
+Lab C,gpt-4o-mini,main,False,False,"['Lab C', 'Lab D', 'Lab D']",Lab C,merge-manual-review-08-unresolved,audited-hr-file-8,truthgit_no_rollback,True
+Lab B,gpt-4o-mini,main,False,False,"['Lab D', 'Lab F', 'Lab B', 'Lab F']",Lab B,merge-concurrent-update-09-unresolved,signed-main-concurrent-update-9,truthgit_no_rollback,True
+Lab A,gpt-4o-mini,main,False,False,"['Lab E', 'Lab A', 'Lab D', 'Lab A', 'Lab D']",Lab A,merge-competing-branches-10-unresolved,board-approved-source-10,truthgit_no_rollback,True
+Lab A,gpt-4o-mini,main,True,False,"['Lab A', 'Lab D', 'Lab D']",Lab A,merge-temporal-coexistence-11-before,calendar-hr-2025-11,truthgit_no_rollback,False
+Lab D,gpt-4o-mini,main,True,False,"['Lab A', 'Lab D', 'Lab D']",Lab D,merge-temporal-coexistence-11-after,signed-transfer-2026-11,truthgit_no_rollback,False
 Dublin,gpt-4o-mini,main,True,False,"['Seoul', 'Rome', 'Dublin']",Dublin,temporal-supersession-00-current,residence-ledger-0-c,truthgit_no_review_gate,False
 Dublin,gpt-4o-mini,main,False,False,"['Seoul', 'Rome', 'Dublin']",Dublin,temporal-supersession-00-history,residence-ledger-0-c,truthgit_no_review_gate,False
 Dublin,gpt-4o-mini,main,True,False,"['Seoul', 'Rome', 'Dublin']",Dublin,temporal-supersession-00-provenance,residence-ledger-0-c,truthgit_no_review_gate,False
@@ -905,24 +1079,53 @@ Paris,gpt-4o-mini,main,True,False,"['Tokyo', 'Paris']",Paris,exact-provenance-01
 Lisbon,gpt-4o-mini,main,True,False,"['Madrid', 'Lisbon']",Lisbon,exact-provenance-02-source,signed-registry-2,truthgit_no_review_gate,False
 Dublin,gpt-4o-mini,main,True,False,"['Rome', 'Dublin']",Dublin,exact-provenance-03-source,signed-registry-3,truthgit_no_review_gate,False
 Oslo,gpt-4o-mini,main,True,False,"['Berlin', 'Oslo']",Oslo,exact-provenance-04-source,signed-registry-4,truthgit_no_review_gate,False
-Paris,gpt-4o-mini,main,True,False,['Paris'],Paris,provenance-current-justification-00-source,community-blog-0,truthgit_no_review_gate,False
+Paris,gpt-4o-mini,main,True,False,"['Paris', 'Paris']",Paris,provenance-current-justification-00-source,official-current-registry-0,truthgit_no_review_gate,False
 Madrid,gpt-4o-mini,main,True,False,['Madrid'],Madrid,provenance-rollback-source-01-source,verified-residency-file-1,truthgit_no_review_gate,False
 Lab C,gpt-4o-mini,main,True,False,"['Lab C', 'Lab F']",Lab C,provenance-branch-context-02-main-source,main-employment-contract-2,truthgit_no_review_gate,False
 Lab F,gpt-4o-mini,grant-branch-2,True,False,"['Lab C', 'Lab F']",Lab F,provenance-branch-context-02-branch-source,branch-grant-plan-2,truthgit_no_review_gate,False
-Oslo,gpt-4o-mini,main,True,False,['Oslo'],Oslo,provenance-current-justification-03-source,community-blog-3,truthgit_no_review_gate,False
-Paris,gpt-4o-mini,main,True,False,['Paris'],Paris,provenance-rollback-source-04-source,verified-residency-file-4,truthgit_no_review_gate,False
-Lab F,gpt-4o-mini,main,True,False,"['Lab F', 'Lab C']",Lab F,provenance-branch-context-05-main-source,main-employment-contract-5,truthgit_no_review_gate,False
-Lab C,gpt-4o-mini,grant-branch-5,True,False,"['Lab F', 'Lab C']",Lab C,provenance-branch-context-05-branch-source,branch-grant-plan-5,truthgit_no_review_gate,False
-Lima,gpt-4o-mini,main,True,False,['Lima'],Lima,provenance-current-justification-06-source,community-blog-6,truthgit_no_review_gate,False
+Lima,gpt-4o-mini,main,True,False,['Lima'],Lima,provenance-same-object-rollback-03-source,municipal-file-3,truthgit_no_review_gate,False
+Lab F,gpt-4o-mini,main,True,False,"['Lab F', 'Lab F']",Lab F,provenance-same-object-branch-04-main-source,main-personnel-file-4,truthgit_no_review_gate,False
+Lab F,gpt-4o-mini,audit-branch-4,True,False,"['Lab F', 'Lab F']",Lab F,provenance-same-object-branch-04-branch-source,branch-audit-confirmation-4,truthgit_no_review_gate,False
+Lab B,gpt-4o-mini,main,True,False,"['Lab F', 'Lab B', 'Lab B', 'Lab D', 'Lab D']",Lab B,provenance-merge-governing-source-05-source,signed-winning-reorg-source-5,truthgit_no_review_gate,True
+Lima,gpt-4o-mini,main,True,False,"['Lima', 'Lima']",Lima,provenance-current-justification-06-source,official-current-registry-6,truthgit_no_review_gate,False
 Oslo,gpt-4o-mini,main,True,False,['Oslo'],Oslo,provenance-rollback-source-07-source,verified-residency-file-7,truthgit_no_review_gate,False
 Lab C,gpt-4o-mini,main,True,False,"['Lab C', 'Lab F']",Lab C,provenance-branch-context-08-main-source,main-employment-contract-8,truthgit_no_review_gate,False
 Lab F,gpt-4o-mini,grant-branch-8,True,False,"['Lab C', 'Lab F']",Lab F,provenance-branch-context-08-branch-source,branch-grant-plan-8,truthgit_no_review_gate,False
+Madrid,gpt-4o-mini,main,True,False,['Madrid'],Madrid,provenance-same-object-rollback-09-source,municipal-file-9,truthgit_no_review_gate,False
+Lab F,gpt-4o-mini,main,True,False,"['Lab F', 'Lab F']",Lab F,provenance-same-object-branch-10-main-source,main-personnel-file-10,truthgit_no_review_gate,False
+Lab F,gpt-4o-mini,audit-branch-10,True,False,"['Lab F', 'Lab F']",Lab F,provenance-same-object-branch-10-branch-source,branch-audit-confirmation-10,truthgit_no_review_gate,False
+Lab B,gpt-4o-mini,main,True,False,"['Lab F', 'Lab B', 'Lab B', 'Lab D', 'Lab D']",Lab B,provenance-merge-governing-source-11-source,signed-winning-reorg-source-11,truthgit_no_review_gate,True
+Madrid,gpt-4o-mini,main,True,False,"['Madrid', 'Madrid']",Madrid,provenance-current-justification-12-source,official-current-registry-12,truthgit_no_review_gate,False
+Seoul,gpt-4o-mini,main,True,False,['Seoul'],Seoul,provenance-rollback-source-13-source,verified-residency-file-13,truthgit_no_review_gate,False
+Lab C,gpt-4o-mini,main,True,False,"['Lab C', 'Lab F']",Lab C,provenance-branch-context-14-main-source,main-employment-contract-14,truthgit_no_review_gate,False
+Lab F,gpt-4o-mini,grant-branch-14,True,False,"['Lab C', 'Lab F']",Lab F,provenance-branch-context-14-branch-source,branch-grant-plan-14,truthgit_no_review_gate,False
+Oslo,gpt-4o-mini,main,True,False,['Oslo'],Oslo,provenance-same-object-rollback-15-source,municipal-file-15,truthgit_no_review_gate,False
+Lab F,gpt-4o-mini,main,True,False,"['Lab F', 'Lab F']",Lab F,provenance-same-object-branch-16-main-source,main-personnel-file-16,truthgit_no_review_gate,False
+Lab F,gpt-4o-mini,audit-branch-16,True,False,"['Lab F', 'Lab F']",Lab F,provenance-same-object-branch-16-branch-source,branch-audit-confirmation-16,truthgit_no_review_gate,False
+Lab B,gpt-4o-mini,main,True,False,"['Lab F', 'Lab B', 'Lab B', 'Lab D', 'Lab D']",Lab B,provenance-merge-governing-source-17-source,signed-winning-reorg-source-17,truthgit_no_review_gate,True
+Oslo,gpt-4o-mini,main,True,False,"['Oslo', 'Oslo']",Oslo,provenance-current-justification-18-source,official-current-registry-18,truthgit_no_review_gate,False
+Paris,gpt-4o-mini,main,True,False,['Paris'],Paris,provenance-rollback-source-19-source,verified-residency-file-19,truthgit_no_review_gate,False
+Lab C,gpt-4o-mini,main,True,False,"['Lab C', 'Lab F']",Lab C,provenance-branch-context-20-main-source,main-employment-contract-20,truthgit_no_review_gate,False
+Lab F,gpt-4o-mini,grant-branch-20,True,False,"['Lab C', 'Lab F']",Lab F,provenance-branch-context-20-branch-source,branch-grant-plan-20,truthgit_no_review_gate,False
+Seoul,gpt-4o-mini,main,True,False,['Seoul'],Seoul,provenance-same-object-rollback-21-source,municipal-file-21,truthgit_no_review_gate,False
+Lab F,gpt-4o-mini,main,True,False,"['Lab F', 'Lab F']",Lab F,provenance-same-object-branch-22-main-source,main-personnel-file-22,truthgit_no_review_gate,False
+Lab F,gpt-4o-mini,audit-branch-22,True,False,"['Lab F', 'Lab F']",Lab F,provenance-same-object-branch-22-branch-source,branch-audit-confirmation-22,truthgit_no_review_gate,False
+Lab B,gpt-4o-mini,main,True,False,"['Lab F', 'Lab B', 'Lab B', 'Lab D', 'Lab D']",Lab B,provenance-merge-governing-source-23-source,signed-winning-reorg-source-23,truthgit_no_review_gate,True
 Lab A,gpt-4o-mini,main,False,False,"['Lab A', 'Lab B', 'Lab B']",Lab A,merge-manual-review-00-unresolved,audited-hr-file-0,truthgit_no_review_gate,True
 Lab F,gpt-4o-mini,main,False,False,"['Lab B', 'Lab D', 'Lab F', 'Lab D']",Lab F,merge-concurrent-update-01-unresolved,signed-main-concurrent-update-1,truthgit_no_review_gate,True
-Lab C,gpt-4o-mini,main,False,False,"['Lab C', 'Lab D', 'Lab D']",Lab C,merge-manual-review-02-unresolved,audited-hr-file-2,truthgit_no_review_gate,True
-Lab B,gpt-4o-mini,main,False,False,"['Lab D', 'Lab F', 'Lab B', 'Lab F']",Lab B,merge-concurrent-update-03-unresolved,signed-main-concurrent-update-3,truthgit_no_review_gate,True
+Lab E,gpt-4o-mini,main,False,False,"['Lab C', 'Lab E', 'Lab B', 'Lab E', 'Lab B']",Lab E,merge-competing-branches-02-unresolved,board-approved-source-2,truthgit_no_review_gate,True
+Lab E,gpt-4o-mini,main,True,False,"['Lab E', 'Lab B', 'Lab B']",Lab E,merge-temporal-coexistence-03-before,calendar-hr-2025-3,truthgit_no_review_gate,False
+Lab B,gpt-4o-mini,main,True,False,"['Lab E', 'Lab B', 'Lab B']",Lab B,merge-temporal-coexistence-03-after,signed-transfer-2026-3,truthgit_no_review_gate,False
 Lab E,gpt-4o-mini,main,False,False,"['Lab E', 'Lab F', 'Lab F']",Lab E,merge-manual-review-04-unresolved,audited-hr-file-4,truthgit_no_review_gate,True
 Lab D,gpt-4o-mini,main,False,False,"['Lab F', 'Lab B', 'Lab D', 'Lab B']",Lab D,merge-concurrent-update-05-unresolved,signed-main-concurrent-update-5,truthgit_no_review_gate,True
+Lab C,gpt-4o-mini,main,False,False,"['Lab A', 'Lab C', 'Lab F', 'Lab C', 'Lab F']",Lab C,merge-competing-branches-06-unresolved,board-approved-source-6,truthgit_no_review_gate,True
+Lab C,gpt-4o-mini,main,True,False,"['Lab C', 'Lab F', 'Lab F']",Lab C,merge-temporal-coexistence-07-before,calendar-hr-2025-7,truthgit_no_review_gate,False
+Lab F,gpt-4o-mini,main,True,False,"['Lab C', 'Lab F', 'Lab F']",Lab F,merge-temporal-coexistence-07-after,signed-transfer-2026-7,truthgit_no_review_gate,False
+Lab C,gpt-4o-mini,main,False,False,"['Lab C', 'Lab D', 'Lab D']",Lab C,merge-manual-review-08-unresolved,audited-hr-file-8,truthgit_no_review_gate,True
+Lab B,gpt-4o-mini,main,False,False,"['Lab D', 'Lab F', 'Lab B', 'Lab F']",Lab B,merge-concurrent-update-09-unresolved,signed-main-concurrent-update-9,truthgit_no_review_gate,True
+Lab A,gpt-4o-mini,main,False,False,"['Lab E', 'Lab A', 'Lab D', 'Lab A', 'Lab D']",Lab A,merge-competing-branches-10-unresolved,board-approved-source-10,truthgit_no_review_gate,True
+Lab A,gpt-4o-mini,main,True,False,"['Lab A', 'Lab D', 'Lab D']",Lab A,merge-temporal-coexistence-11-before,calendar-hr-2025-11,truthgit_no_review_gate,False
+Lab D,gpt-4o-mini,main,True,False,"['Lab A', 'Lab D', 'Lab D']",Lab D,merge-temporal-coexistence-11-after,signed-transfer-2026-11,truthgit_no_review_gate,False
 Dublin,gpt-4o-mini,main,True,False,"['Seoul', 'Rome', 'Dublin']",Dublin,temporal-supersession-00-current,residence-ledger-0-c,truthgit_no_trust_scoring,False
 Dublin,gpt-4o-mini,main,False,False,"['Seoul', 'Rome', 'Dublin']",Dublin,temporal-supersession-00-history,residence-ledger-0-c,truthgit_no_trust_scoring,False
 Dublin,gpt-4o-mini,main,True,False,"['Seoul', 'Rome', 'Dublin']",Dublin,temporal-supersession-00-provenance,residence-ledger-0-c,truthgit_no_trust_scoring,False
@@ -1037,21 +1240,50 @@ Paris,gpt-4o-mini,main,True,False,"['Tokyo', 'Paris']",Paris,exact-provenance-01
 Lisbon,gpt-4o-mini,main,True,False,"['Madrid', 'Lisbon']",Lisbon,exact-provenance-02-source,signed-registry-2,truthgit_no_trust_scoring,False
 Dublin,gpt-4o-mini,main,True,False,"['Rome', 'Dublin']",Dublin,exact-provenance-03-source,signed-registry-3,truthgit_no_trust_scoring,False
 Oslo,gpt-4o-mini,main,True,False,"['Berlin', 'Oslo']",Oslo,exact-provenance-04-source,signed-registry-4,truthgit_no_trust_scoring,False
-Paris,gpt-4o-mini,main,True,False,['Paris'],Paris,provenance-current-justification-00-source,community-blog-0,truthgit_no_trust_scoring,False
+Paris,gpt-4o-mini,main,True,False,"['Paris', 'Paris']",Paris,provenance-current-justification-00-source,official-current-registry-0,truthgit_no_trust_scoring,False
 Madrid,gpt-4o-mini,main,True,False,['Madrid'],Madrid,provenance-rollback-source-01-source,verified-residency-file-1,truthgit_no_trust_scoring,False
 Lab C,gpt-4o-mini,main,True,False,"['Lab C', 'Lab F']",Lab C,provenance-branch-context-02-main-source,main-employment-contract-2,truthgit_no_trust_scoring,False
 Lab F,gpt-4o-mini,grant-branch-2,True,False,"['Lab C', 'Lab F']",Lab F,provenance-branch-context-02-branch-source,branch-grant-plan-2,truthgit_no_trust_scoring,False
-Oslo,gpt-4o-mini,main,True,False,['Oslo'],Oslo,provenance-current-justification-03-source,community-blog-3,truthgit_no_trust_scoring,False
-Paris,gpt-4o-mini,main,True,False,['Paris'],Paris,provenance-rollback-source-04-source,verified-residency-file-4,truthgit_no_trust_scoring,False
-Lab F,gpt-4o-mini,main,True,False,"['Lab F', 'Lab C']",Lab F,provenance-branch-context-05-main-source,main-employment-contract-5,truthgit_no_trust_scoring,False
-Lab C,gpt-4o-mini,grant-branch-5,True,False,"['Lab F', 'Lab C']",Lab C,provenance-branch-context-05-branch-source,branch-grant-plan-5,truthgit_no_trust_scoring,False
-Lima,gpt-4o-mini,main,True,False,['Lima'],Lima,provenance-current-justification-06-source,community-blog-6,truthgit_no_trust_scoring,False
+Lima,gpt-4o-mini,main,True,False,['Lima'],Lima,provenance-same-object-rollback-03-source,municipal-file-3,truthgit_no_trust_scoring,False
+Lab F,gpt-4o-mini,main,True,False,"['Lab F', 'Lab F']",Lab F,provenance-same-object-branch-04-main-source,main-personnel-file-4,truthgit_no_trust_scoring,False
+Lab F,gpt-4o-mini,audit-branch-4,True,False,"['Lab F', 'Lab F']",Lab F,provenance-same-object-branch-04-branch-source,branch-audit-confirmation-4,truthgit_no_trust_scoring,False
+Lab D,gpt-4o-mini,main,False,False,"['Lab F', 'Lab B', 'Lab B', 'Lab D', 'Lab D']",Lab D,provenance-merge-governing-source-05-source,rumor-reorg-source-5,truthgit_no_trust_scoring,True
+Lima,gpt-4o-mini,main,True,False,"['Lima', 'Lima']",Lima,provenance-current-justification-06-source,official-current-registry-6,truthgit_no_trust_scoring,False
 Oslo,gpt-4o-mini,main,True,False,['Oslo'],Oslo,provenance-rollback-source-07-source,verified-residency-file-7,truthgit_no_trust_scoring,False
 Lab C,gpt-4o-mini,main,True,False,"['Lab C', 'Lab F']",Lab C,provenance-branch-context-08-main-source,main-employment-contract-8,truthgit_no_trust_scoring,False
 Lab F,gpt-4o-mini,grant-branch-8,True,False,"['Lab C', 'Lab F']",Lab F,provenance-branch-context-08-branch-source,branch-grant-plan-8,truthgit_no_trust_scoring,False
+Madrid,gpt-4o-mini,main,True,False,['Madrid'],Madrid,provenance-same-object-rollback-09-source,municipal-file-9,truthgit_no_trust_scoring,False
+Lab F,gpt-4o-mini,main,True,False,"['Lab F', 'Lab F']",Lab F,provenance-same-object-branch-10-main-source,main-personnel-file-10,truthgit_no_trust_scoring,False
+Lab F,gpt-4o-mini,audit-branch-10,True,False,"['Lab F', 'Lab F']",Lab F,provenance-same-object-branch-10-branch-source,branch-audit-confirmation-10,truthgit_no_trust_scoring,False
+Lab D,gpt-4o-mini,main,False,False,"['Lab F', 'Lab B', 'Lab B', 'Lab D', 'Lab D']",Lab D,provenance-merge-governing-source-11-source,rumor-reorg-source-11,truthgit_no_trust_scoring,True
+Madrid,gpt-4o-mini,main,True,False,"['Madrid', 'Madrid']",Madrid,provenance-current-justification-12-source,official-current-registry-12,truthgit_no_trust_scoring,False
+Seoul,gpt-4o-mini,main,True,False,['Seoul'],Seoul,provenance-rollback-source-13-source,verified-residency-file-13,truthgit_no_trust_scoring,False
+Lab C,gpt-4o-mini,main,True,False,"['Lab C', 'Lab F']",Lab C,provenance-branch-context-14-main-source,main-employment-contract-14,truthgit_no_trust_scoring,False
+Lab F,gpt-4o-mini,grant-branch-14,True,False,"['Lab C', 'Lab F']",Lab F,provenance-branch-context-14-branch-source,branch-grant-plan-14,truthgit_no_trust_scoring,False
+Oslo,gpt-4o-mini,main,True,False,['Oslo'],Oslo,provenance-same-object-rollback-15-source,municipal-file-15,truthgit_no_trust_scoring,False
+Lab F,gpt-4o-mini,main,True,False,"['Lab F', 'Lab F']",Lab F,provenance-same-object-branch-16-main-source,main-personnel-file-16,truthgit_no_trust_scoring,False
+Lab F,gpt-4o-mini,audit-branch-16,True,False,"['Lab F', 'Lab F']",Lab F,provenance-same-object-branch-16-branch-source,branch-audit-confirmation-16,truthgit_no_trust_scoring,False
+Lab D,gpt-4o-mini,main,False,False,"['Lab F', 'Lab B', 'Lab B', 'Lab D', 'Lab D']",Lab D,provenance-merge-governing-source-17-source,rumor-reorg-source-17,truthgit_no_trust_scoring,True
+Oslo,gpt-4o-mini,main,True,False,"['Oslo', 'Oslo']",Oslo,provenance-current-justification-18-source,official-current-registry-18,truthgit_no_trust_scoring,False
+Paris,gpt-4o-mini,main,True,False,['Paris'],Paris,provenance-rollback-source-19-source,verified-residency-file-19,truthgit_no_trust_scoring,False
+Lab C,gpt-4o-mini,main,True,False,"['Lab C', 'Lab F']",Lab C,provenance-branch-context-20-main-source,main-employment-contract-20,truthgit_no_trust_scoring,False
+Lab F,gpt-4o-mini,grant-branch-20,True,False,"['Lab C', 'Lab F']",Lab F,provenance-branch-context-20-branch-source,branch-grant-plan-20,truthgit_no_trust_scoring,False
+Seoul,gpt-4o-mini,main,True,False,['Seoul'],Seoul,provenance-same-object-rollback-21-source,municipal-file-21,truthgit_no_trust_scoring,False
+Lab F,gpt-4o-mini,main,True,False,"['Lab F', 'Lab F']",Lab F,provenance-same-object-branch-22-main-source,main-personnel-file-22,truthgit_no_trust_scoring,False
+Lab F,gpt-4o-mini,audit-branch-22,True,False,"['Lab F', 'Lab F']",Lab F,provenance-same-object-branch-22-branch-source,branch-audit-confirmation-22,truthgit_no_trust_scoring,False
+Lab D,gpt-4o-mini,main,False,False,"['Lab F', 'Lab B', 'Lab B', 'Lab D', 'Lab D']",Lab D,provenance-merge-governing-source-23-source,rumor-reorg-source-23,truthgit_no_trust_scoring,True
 Lab B,gpt-4o-mini,main,False,False,"['Lab A', 'Lab B', 'Lab B']",Lab B,merge-manual-review-00-unresolved,unconfirmed-reorg-draft-0,truthgit_no_trust_scoring,True
 Lab D,gpt-4o-mini,main,False,False,"['Lab B', 'Lab D', 'Lab F', 'Lab D']",Lab D,merge-concurrent-update-01-unresolved,parallel-branch-update-1,truthgit_no_trust_scoring,True
-Lab D,gpt-4o-mini,main,False,False,"['Lab C', 'Lab D', 'Lab D']",Lab D,merge-manual-review-02-unresolved,unconfirmed-reorg-draft-2,truthgit_no_trust_scoring,True
-Lab F,gpt-4o-mini,main,False,False,"['Lab D', 'Lab F', 'Lab B', 'Lab F']",Lab F,merge-concurrent-update-03-unresolved,parallel-branch-update-3,truthgit_no_trust_scoring,True
+Lab B,gpt-4o-mini,main,False,False,"['Lab C', 'Lab E', 'Lab B', 'Lab E', 'Lab B']",Lab B,merge-competing-branches-02-unresolved,draft-reorg-source-2,truthgit_no_trust_scoring,True
+Lab E,gpt-4o-mini,main,True,False,"['Lab E', 'Lab B', 'Lab B']",Lab E,merge-temporal-coexistence-03-before,calendar-hr-2025-3,truthgit_no_trust_scoring,False
+Lab B,gpt-4o-mini,main,True,False,"['Lab E', 'Lab B', 'Lab B']",Lab B,merge-temporal-coexistence-03-after,signed-transfer-2026-3,truthgit_no_trust_scoring,False
 Lab F,gpt-4o-mini,main,False,False,"['Lab E', 'Lab F', 'Lab F']",Lab F,merge-manual-review-04-unresolved,unconfirmed-reorg-draft-4,truthgit_no_trust_scoring,True
 Lab B,gpt-4o-mini,main,False,False,"['Lab F', 'Lab B', 'Lab D', 'Lab B']",Lab B,merge-concurrent-update-05-unresolved,parallel-branch-update-5,truthgit_no_trust_scoring,True
+Lab F,gpt-4o-mini,main,False,False,"['Lab A', 'Lab C', 'Lab F', 'Lab C', 'Lab F']",Lab F,merge-competing-branches-06-unresolved,draft-reorg-source-6,truthgit_no_trust_scoring,True
+Lab C,gpt-4o-mini,main,True,False,"['Lab C', 'Lab F', 'Lab F']",Lab C,merge-temporal-coexistence-07-before,calendar-hr-2025-7,truthgit_no_trust_scoring,False
+Lab F,gpt-4o-mini,main,True,False,"['Lab C', 'Lab F', 'Lab F']",Lab F,merge-temporal-coexistence-07-after,signed-transfer-2026-7,truthgit_no_trust_scoring,False
+Lab D,gpt-4o-mini,main,False,False,"['Lab C', 'Lab D', 'Lab D']",Lab D,merge-manual-review-08-unresolved,unconfirmed-reorg-draft-8,truthgit_no_trust_scoring,True
+Lab F,gpt-4o-mini,main,False,False,"['Lab D', 'Lab F', 'Lab B', 'Lab F']",Lab F,merge-concurrent-update-09-unresolved,parallel-branch-update-9,truthgit_no_trust_scoring,True
+Lab D,gpt-4o-mini,main,False,False,"['Lab E', 'Lab A', 'Lab D', 'Lab A', 'Lab D']",Lab D,merge-competing-branches-10-unresolved,draft-reorg-source-10,truthgit_no_trust_scoring,True
+Lab A,gpt-4o-mini,main,True,False,"['Lab A', 'Lab D', 'Lab D']",Lab A,merge-temporal-coexistence-11-before,calendar-hr-2025-11,truthgit_no_trust_scoring,False
+Lab D,gpt-4o-mini,main,True,False,"['Lab A', 'Lab D', 'Lab D']",Lab D,merge-temporal-coexistence-11-after,signed-transfer-2026-11,truthgit_no_trust_scoring,False

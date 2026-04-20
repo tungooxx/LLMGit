@@ -141,8 +141,8 @@ class SyntheticBenchmarkGenerator:
         cases.extend(self._rollback_cases(8))
         cases.extend(self._merge_conflict_cases(5))
         cases.extend(self._provenance_cases(5))
-        cases.extend(self._provenance_hardening_cases(9))
-        cases.extend(self._merge_hardening_cases(6))
+        cases.extend(self._provenance_hardening_cases(24))
+        cases.extend(self._merge_hardening_cases(12))
         return cases
 
     def _temporal_supersession_cases(self, count: int) -> list[BenchmarkCase]:
@@ -571,13 +571,19 @@ class SyntheticBenchmarkGenerator:
     def _provenance_hardening_cases(self, count: int) -> list[BenchmarkCase]:
         cases: list[BenchmarkCase] = []
         for idx in range(count):
-            mode = idx % 3
+            mode = idx % 6
             if mode == 0:
                 cases.append(self._same_fact_current_justification_case(idx))
             elif mode == 1:
                 cases.append(self._rollback_source_case(idx))
-            else:
+            elif mode == 2:
                 cases.append(self._branch_specific_source_case(idx))
+            elif mode == 3:
+                cases.append(self._same_object_rollback_source_case(idx))
+            elif mode == 4:
+                cases.append(self._branch_same_object_context_case(idx))
+            else:
+                cases.append(self._merge_governing_source_case(idx))
         return cases
 
     def _same_fact_current_justification_case(self, idx: int) -> BenchmarkCase:
@@ -743,13 +749,208 @@ class SyntheticBenchmarkGenerator:
             questions=questions,
         )
 
+    def _same_object_rollback_source_case(self, idx: int) -> BenchmarkCase:
+        person = f"RollbackSameObject{idx}"
+        city = self.cities[(idx + 9) % len(self.cities)]
+        case_id = f"provenance-same-object-rollback-{idx:02d}"
+        events = [
+            BenchmarkEvent(
+                event_id=f"{case_id}-verified",
+                event_type="fact",
+                text=f"Verified municipal file says {person} lives in {city}.",
+                subject=person,
+                predicate="lives_in",
+                object_value=city,
+                source_ref=f"municipal-file-{idx}",
+                trust_score=0.74,
+                confidence=0.78,
+            ),
+            BenchmarkEvent(
+                event_id=f"{case_id}-bad-corroboration",
+                event_type="bad_fact",
+                text=f"Corrupted mirror also says {person} lives in {city}.",
+                subject=person,
+                predicate="lives_in",
+                object_value=city,
+                source_ref=f"corrupted-mirror-{idx}",
+                trust_score=0.99,
+                confidence=0.95,
+            ),
+            BenchmarkEvent(
+                event_id=f"{case_id}-rollback",
+                event_type="rollback",
+                text=f"Rollback corrupted corroborating source for {person}.",
+                rollback_target_event_id=f"{case_id}-bad-corroboration",
+            ),
+        ]
+        questions = [
+            BenchmarkQuestion(
+                question_id=f"{case_id}-source",
+                metric="provenance_accuracy",
+                prompt=f"After rollback, which source currently justifies {person}'s residence?",
+                subject=person,
+                predicate="lives_in",
+                expected_object_value=city,
+                expected_source_ref=f"municipal-file-{idx}",
+                related_event_id=f"{case_id}-rollback",
+            )
+        ]
+        return BenchmarkCase(
+            case_id=case_id,
+            description="A rolled-back same-object corroborating source must not remain the current justification.",
+            events=events,
+            questions=questions,
+        )
+
+    def _branch_same_object_context_case(self, idx: int) -> BenchmarkCase:
+        person = f"SameObjectBranch{idx}"
+        lab = self.labs[(idx + 1) % len(self.labs)]
+        branch_name = f"audit-branch-{idx}"
+        case_id = f"provenance-same-object-branch-{idx:02d}"
+        events = [
+            BenchmarkEvent(
+                event_id=f"{case_id}-main",
+                event_type="fact",
+                text=f"Main personnel file says {person} works at {lab}.",
+                subject=person,
+                predicate="works_at",
+                object_value=lab,
+                source_ref=f"main-personnel-file-{idx}",
+                trust_score=0.81,
+                confidence=0.82,
+            ),
+            BenchmarkEvent(
+                event_id=f"{case_id}-branch",
+                event_type="branch_fact",
+                text=f"Audit branch independently confirms {person} works at {lab}.",
+                subject=person,
+                predicate="works_at",
+                object_value=lab,
+                branch_name=branch_name,
+                source_ref=f"branch-audit-confirmation-{idx}",
+                trust_score=0.99,
+                confidence=0.94,
+            ),
+        ]
+        questions = [
+            BenchmarkQuestion(
+                question_id=f"{case_id}-main-source",
+                metric="provenance_accuracy",
+                prompt=f"On main, which source currently justifies where {person} works?",
+                subject=person,
+                predicate="works_at",
+                branch_name="main",
+                expected_object_value=lab,
+                expected_source_ref=f"main-personnel-file-{idx}",
+            ),
+            BenchmarkQuestion(
+                question_id=f"{case_id}-branch-source",
+                metric="provenance_accuracy",
+                prompt=f"On {branch_name}, which source currently justifies where {person} works?",
+                subject=person,
+                predicate="works_at",
+                branch_name=branch_name,
+                expected_object_value=lab,
+                expected_source_ref=f"branch-audit-confirmation-{idx}",
+            ),
+        ]
+        return BenchmarkCase(
+            case_id=case_id,
+            description="The same object is true on main and branch, but each context has a different governing source.",
+            events=events,
+            questions=questions,
+        )
+
+    def _merge_governing_source_case(self, idx: int) -> BenchmarkCase:
+        person = f"MergeSource{idx}"
+        old_lab = self.labs[idx % len(self.labs)]
+        winning_lab = self.labs[(idx + 2) % len(self.labs)]
+        rejected_lab = self.labs[(idx + 4) % len(self.labs)]
+        winning_branch = f"signed-reorg-source-{idx}"
+        rejected_branch = f"rumor-reorg-source-{idx}"
+        case_id = f"provenance-merge-governing-source-{idx:02d}"
+        events = [
+            BenchmarkEvent(
+                event_id=f"{case_id}-main",
+                event_type="fact",
+                text=f"Old HR file says {person} works at {old_lab}.",
+                subject=person,
+                predicate="works_at",
+                object_value=old_lab,
+                source_ref=f"old-hr-source-{idx}",
+                trust_score=0.62,
+                confidence=0.7,
+            ),
+            BenchmarkEvent(
+                event_id=f"{case_id}-winning-branch",
+                event_type="branch_fact",
+                text=f"Signed reorg branch says {person} works at {winning_lab}.",
+                subject=person,
+                predicate="works_at",
+                object_value=winning_lab,
+                branch_name=winning_branch,
+                source_ref=f"signed-winning-reorg-source-{idx}",
+                trust_score=0.97,
+                confidence=0.92,
+            ),
+            BenchmarkEvent(
+                event_id=f"{case_id}-winning-merge",
+                event_type="merge",
+                text=f"Merge {winning_branch} into main.",
+                merge_source_branch=winning_branch,
+                merge_target_branch="main",
+            ),
+            BenchmarkEvent(
+                event_id=f"{case_id}-rejected-branch",
+                event_type="branch_fact",
+                text=f"Rumor branch says {person} works at {rejected_lab}.",
+                subject=person,
+                predicate="works_at",
+                object_value=rejected_lab,
+                branch_name=rejected_branch,
+                source_ref=f"rumor-reorg-source-{idx}",
+                trust_score=0.42,
+                confidence=0.7,
+            ),
+            BenchmarkEvent(
+                event_id=f"{case_id}-rejected-merge",
+                event_type="merge",
+                text=f"Merge {rejected_branch} into main for review.",
+                merge_source_branch=rejected_branch,
+                merge_target_branch="main",
+            ),
+        ]
+        questions = [
+            BenchmarkQuestion(
+                question_id=f"{case_id}-source",
+                metric="provenance_accuracy",
+                prompt=f"After both merges, which source currently justifies where {person} works?",
+                subject=person,
+                predicate="works_at",
+                expected_object_value=winning_lab,
+                expected_source_ref=f"signed-winning-reorg-source-{idx}",
+                related_event_id=f"{case_id}-rejected-merge",
+            )
+        ]
+        return BenchmarkCase(
+            case_id=case_id,
+            description="After a winning merge and a weaker conflicting merge, the current justification should remain the winning branch source.",
+            events=events,
+            questions=questions,
+        )
+
     def _merge_hardening_cases(self, count: int) -> list[BenchmarkCase]:
         cases: list[BenchmarkCase] = []
         for idx in range(count):
-            if idx % 2 == 0:
+            mode = idx % 4
+            if mode == 0:
                 cases.append(self._manual_review_merge_case(idx))
-            else:
+            elif mode == 1:
                 cases.append(self._concurrent_update_merge_case(idx))
+            elif mode == 2:
+                cases.append(self._competing_branches_merge_case(idx))
+            else:
+                cases.append(self._temporal_coexistence_merge_case(idx))
         return cases
 
     def _manual_review_merge_case(self, idx: int) -> BenchmarkCase:
@@ -872,6 +1073,157 @@ class SyntheticBenchmarkGenerator:
         return BenchmarkCase(
             case_id=case_id,
             description="Concurrent main and branch updates should surface an unresolved merge conflict.",
+            events=events,
+            questions=questions,
+        )
+
+    def _competing_branches_merge_case(self, idx: int) -> BenchmarkCase:
+        person = f"CompetingBranches{idx}"
+        old_lab = self.labs[idx % len(self.labs)]
+        winner_lab = self.labs[(idx + 2) % len(self.labs)]
+        loser_lab = self.labs[(idx + 5) % len(self.labs)]
+        winner_branch = f"board-approved-{idx}"
+        loser_branch = f"draft-reorg-{idx}"
+        case_id = f"merge-competing-branches-{idx:02d}"
+        events = [
+            BenchmarkEvent(
+                event_id=f"{case_id}-main",
+                event_type="fact",
+                text=f"Initial HR file says {person} works at {old_lab}.",
+                subject=person,
+                predicate="works_at",
+                object_value=old_lab,
+                source_ref=f"initial-hr-{idx}",
+                trust_score=0.7,
+                confidence=0.75,
+            ),
+            BenchmarkEvent(
+                event_id=f"{case_id}-winner",
+                event_type="branch_fact",
+                text=f"Board-approved branch says {person} works at {winner_lab}.",
+                subject=person,
+                predicate="works_at",
+                object_value=winner_lab,
+                branch_name=winner_branch,
+                source_ref=f"board-approved-source-{idx}",
+                trust_score=0.96,
+                confidence=0.92,
+            ),
+            BenchmarkEvent(
+                event_id=f"{case_id}-loser",
+                event_type="branch_fact",
+                text=f"Draft branch says {person} works at {loser_lab}.",
+                subject=person,
+                predicate="works_at",
+                object_value=loser_lab,
+                branch_name=loser_branch,
+                source_ref=f"draft-reorg-source-{idx}",
+                trust_score=0.48,
+                confidence=0.72,
+            ),
+            BenchmarkEvent(
+                event_id=f"{case_id}-merge-winner",
+                event_type="merge",
+                text=f"Merge {winner_branch} into main.",
+                merge_source_branch=winner_branch,
+                merge_target_branch="main",
+            ),
+            BenchmarkEvent(
+                event_id=f"{case_id}-merge-loser",
+                event_type="merge",
+                text=f"Merge {loser_branch} into main for conflict review.",
+                merge_source_branch=loser_branch,
+                merge_target_branch="main",
+            ),
+        ]
+        questions = [
+            BenchmarkQuestion(
+                question_id=f"{case_id}-unresolved",
+                metric="merge_conflict_resolution_score",
+                prompt=f"After merging two competing branches, should {person}'s workplace remain under manual review?",
+                subject=person,
+                predicate="works_at",
+                expected_unresolved_conflict=True,
+                related_event_id=f"{case_id}-merge-loser",
+            )
+        ]
+        return BenchmarkCase(
+            case_id=case_id,
+            description="Two competing branch merges should leave the lower-trust conflict unresolved instead of silently overwriting.",
+            events=events,
+            questions=questions,
+        )
+
+    def _temporal_coexistence_merge_case(self, idx: int) -> BenchmarkCase:
+        person = f"TemporalMerge{idx}"
+        old_lab = self.labs[(idx + 1) % len(self.labs)]
+        future_lab = self.labs[(idx + 4) % len(self.labs)]
+        branch_name = f"future-transfer-{idx}"
+        case_id = f"merge-temporal-coexistence-{idx:02d}"
+        events = [
+            BenchmarkEvent(
+                event_id=f"{case_id}-main",
+                event_type="fact",
+                text=f"{person} works at {old_lab} during 2025.",
+                subject=person,
+                predicate="works_at",
+                object_value=old_lab,
+                source_ref=f"calendar-hr-2025-{idx}",
+                trust_score=0.88,
+                confidence=0.86,
+                valid_from=date(2025, 1, 1),
+                valid_to=date(2025, 12, 31),
+            ),
+            BenchmarkEvent(
+                event_id=f"{case_id}-branch",
+                event_type="branch_fact",
+                text=f"Future transfer branch says {person} works at {future_lab} starting January 2026.",
+                subject=person,
+                predicate="works_at",
+                object_value=future_lab,
+                branch_name=branch_name,
+                source_ref=f"signed-transfer-2026-{idx}",
+                trust_score=0.9,
+                confidence=0.88,
+                valid_from=date(2026, 1, 1),
+            ),
+            BenchmarkEvent(
+                event_id=f"{case_id}-merge",
+                event_type="merge",
+                text=f"Merge {branch_name} into main with temporal coexistence.",
+                merge_source_branch=branch_name,
+                merge_target_branch="main",
+            ),
+        ]
+        questions = [
+            BenchmarkQuestion(
+                question_id=f"{case_id}-before",
+                metric="merge_conflict_resolution_score",
+                prompt=f"After the merge, where did {person} work in June 2025?",
+                subject=person,
+                predicate="works_at",
+                expected_object_value=old_lab,
+                forbidden_object_value=future_lab,
+                expected_conflict_resolution=True,
+                as_of=date(2025, 6, 1),
+                related_event_id=f"{case_id}-merge",
+            ),
+            BenchmarkQuestion(
+                question_id=f"{case_id}-after",
+                metric="merge_conflict_resolution_score",
+                prompt=f"After the merge, where does {person} work in February 2026?",
+                subject=person,
+                predicate="works_at",
+                expected_object_value=future_lab,
+                forbidden_object_value=old_lab,
+                expected_conflict_resolution=True,
+                as_of=date(2026, 2, 1),
+                related_event_id=f"{case_id}-merge",
+            ),
+        ]
+        return BenchmarkCase(
+            case_id=case_id,
+            description="A merge with non-overlapping temporal windows should coexist by time slice rather than overwrite.",
             events=events,
             questions=questions,
         )

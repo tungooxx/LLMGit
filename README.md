@@ -220,7 +220,7 @@ RAG usually answers from retrieved chunks and leaves truth state implicit. Truth
 
 ## Changing-World Benchmark V3
 
-The `experiments/` package adds a deterministic synthetic benchmark for research comparisons. Benchmark v3 generates 65 changing-world cases and 132 structured questions with:
+The `experiments/` package adds a deterministic synthetic benchmark for research comparisons. Benchmark v3 phase 2 generates 86 changing-world cases and 161 structured questions with:
 
 - superseded facts
 - conflicting sources
@@ -237,6 +237,9 @@ The `experiments/` package adds a deterministic synthetic benchmark for research
 - branch-specific provenance questions
 - unresolved/manual-review merge questions
 - concurrent main-vs-branch update questions
+- same-object rollback-invalidated source questions
+- two-competing-branch merge questions
+- temporal coexistence merge questions
 
 Run the first paper table with one backbone label, `gpt-4o-mini`:
 
@@ -269,6 +272,8 @@ python -m experiments.plot_results `
   --summary-csv experiments\results\metric_summary.csv `
   --output-png experiments\results\metric_summary.png
 ```
+
+The frozen paper draft for the current Benchmark v3 phase 2 table is in `docs/paper_draft.md`.
 
 Compared systems:
 
@@ -308,22 +313,22 @@ TruthGit is evaluated through its real deterministic service layer: `Source`, `B
 
 ### Current Benchmark Interpretation
 
-The current table uses `gpt-4o-mini` as the backbone label and deterministic benchmark adapters for all memory systems. The strongest result is structural: TruthGit reaches 1.0 on current truth, exact ordered history, rollback recovery, branch isolation, low-trust warning, and merge conflict resolution, while the flat and RAG baselines fail the columns that require explicit version-control state.
+The current table uses `gpt-4o-mini` as the backbone label and deterministic benchmark adapters for all memory systems. The strongest result is structural: TruthGit reaches 1.0 on current truth, exact ordered history, exact current provenance, rollback recovery, branch isolation, low-trust warning, and merge conflict resolution, while the flat and RAG baselines fail the columns that require explicit version-control state.
 
 | System | Current | History | Provenance | Rollback | Branch | Merge | Low-trust |
 | --- | ---: | ---: | ---: | ---: | ---: | ---: | ---: |
-| naive chat history | 0.545 | 0.545 | 0.846 | 0.000 | 0.500 | 0.455 | 0.000 |
-| simple RAG | 1.000 | 0.545 | 0.846 | 0.000 | 0.500 | 0.455 | 0.000 |
-| embedding RAG | 1.000 | 0.273 | 0.846 | 0.000 | 0.500 | 0.455 | 0.000 |
-| TruthGit | 1.000 | 1.000 | 0.923 | 1.000 | 1.000 | 1.000 | 1.000 |
+| naive chat history | 0.545 | 0.545 | 0.661 | 0.000 | 0.500 | 0.400 | 0.000 |
+| simple RAG | 1.000 | 0.545 | 0.729 | 0.000 | 0.500 | 0.350 | 0.000 |
+| embedding RAG | 1.000 | 0.273 | 0.729 | 0.000 | 0.500 | 0.400 | 0.000 |
+| TruthGit | 1.000 | 1.000 | 1.000 | 1.000 | 1.000 | 1.000 | 1.000 |
 
-Benchmark v3 also makes the paper more honest: provenance is no longer saturated. The remaining TruthGit provenance misses come from same-fact corroboration cases where an early source and a later stronger source assert the same object. The commit engine treats the later claim as a duplicate, so the active belief remains correct but the best current justification source is not upgraded. That is a useful next research target: represent corroborating sources as first-class support sets instead of only one source per belief version.
+Benchmark v3 phase 2 makes provenance discriminative. The generator now includes same-object corroboration, rollback-invalidated sources, branch-specific current sources, and merge-governing sources. TruthGit handles these by making stronger same-object corroboration a versioned provenance update instead of treating it as a no-op duplicate.
 
-The merge column is now more discriminative. Resolved high-trust branch merges and unresolved manual-review merges are both scored. Flat baselines can sometimes return the right object, but they cannot mark concurrent branch-vs-main changes as unresolved conflicts because they do not maintain branch-local lineage or contradiction groups.
+The merge column is also more discriminative. Resolved high-trust branch merges, unresolved manual-review merges, concurrent main-vs-branch updates, two competing branches, and temporal coexistence cases are scored. Flat baselines can sometimes return the right object, but they cannot mark concurrent branch-vs-main changes as unresolved conflicts or answer time-sliced merge questions because they do not maintain branch-local lineage, contradiction groups, or temporal validity windows.
 
 ### Limitations
 
-The benchmark is synthetic and still much smaller than a deployed agent workload. It measures structured memory correctness rather than full natural-language response quality. The embedding baseline is local TF-IDF rather than a production neural retriever with reranking and temporal post-processing. TruthGit still uses hand-written conflict and merge policies rather than learned or probabilistic trust calibration, and it does not yet model multiple corroborating sources for one unchanged belief object.
+The benchmark is synthetic and still much smaller than a deployed agent workload. It measures structured memory correctness rather than full natural-language response quality. The embedding baseline is local TF-IDF rather than a production neural retriever with reranking and temporal post-processing. TruthGit still uses hand-written conflict and merge policies rather than learned or probabilistic trust calibration. Same-object corroboration is currently represented by a new governing belief version, while a fuller system should retain all corroborating sources as a support set.
 
 ### Future Work
 
