@@ -12,6 +12,7 @@ def test_demo_page_loads(client: TestClient) -> None:
     assert "Git Graph" in response.text
     assert "use LLM" in response.text
     assert "LLM branch/trust" in response.text
+    assert "ask current" in response.text
     assert "Benchmark Playback" not in response.text
 
 
@@ -94,6 +95,42 @@ def test_demo_manual_prompt_branch_only_hypothetical(client: TestClient) -> None
         and version["branch_name"] == "trip-plan"
         for version in payload["versions"]
     )
+
+
+def test_demo_answers_questions_from_memory_without_writing(client: TestClient) -> None:
+    reset = client.post("/demo/reset", json={"confirm": True})
+    assert reset.status_code == 200
+
+    write = client.post(
+        "/demo/manual",
+        json={
+            "message": "Alice lives in Seoul.",
+            "branch_name": "main",
+            "trust_score": 0.8,
+            "auto_approve": True,
+            "extraction_mode": "local",
+        },
+    )
+    assert write.status_code == 200
+
+    answer = client.post(
+        "/demo/manual",
+        json={
+            "message": "Where does Alice live now?",
+            "branch_name": "main",
+            "trust_score": 0.8,
+            "auto_approve": True,
+            "extraction_mode": "llm",
+            "auto_metadata": True,
+        },
+    )
+
+    assert answer.status_code == 200
+    payload = answer.json()
+    assert payload["claims"] == []
+    assert payload["staged"] is None
+    assert payload["commit"] is None
+    assert "Seoul" in payload["assistant_reply"]
 
 
 def test_demo_llm_mode_falls_back_and_suggests_metadata_without_api_key(client: TestClient) -> None:

@@ -70,6 +70,10 @@ def manual_prompt(
         trust_score=write_plan.trust_score,
     )
     if not claims:
+        answer = LLMClient(get_settings()).answer_from_memory(
+            request.message,
+            _demo_memory_context(db, branch),
+        )
         db.commit()
         return {
             "branch": _branch_payload(branch),
@@ -78,10 +82,8 @@ def manual_prompt(
             "commit": None,
             "versions": [],
             "timelines": [],
-            "assistant_reply": write_plan.assistant_reply,
-            "warnings": sorted(
-                set(["No explicit atomic claim was extracted from that prompt.", *extraction_warnings])
-            ),
+            "assistant_reply": answer,
+            "warnings": sorted(set(extraction_warnings)),
             "extraction": extraction_info,
             "snapshot": _demo_snapshot(db),
         }
@@ -319,6 +321,32 @@ def _demo_snapshot(db: Session) -> dict[str, Any]:
                 "created_at": _iso(event.created_at),
             }
             for event in audit
+        ],
+    }
+
+
+def _demo_memory_context(db: Session, branch: models.Branch) -> dict[str, Any]:
+    """Build compact memory context for read-only demo chat answers."""
+
+    beliefs = list(db.scalars(select(models.Belief).order_by(models.Belief.id)))
+    current: list[dict[str, Any]] = []
+    for belief in beliefs:
+        versions = crud.get_current_versions(db, belief_id=belief.id, branch_id=branch.id)
+        current.extend(_version_payload(db, version) for version in versions)
+    timelines = crud.search_beliefs(db, query="", include_inactive=True, limit=80)
+    return {
+        "branch": _branch_payload(branch),
+        "current_beliefs": current,
+        "timelines": [_version_payload(db, version) for version in timelines],
+        "commits": [_commit_payload(commit) for commit in crud.list_commits(db)[:30]],
+        "pending_staged_commits": [
+            _staged_payload(staged)
+            for staged in db.scalars(
+                select(models.StagedCommit)
+                .where(models.StagedCommit.status == "pending")
+                .order_by(models.StagedCommit.created_at.desc())
+                .limit(20)
+            )
         ],
     }
 
@@ -662,7 +690,7 @@ _HTML = """
 <body>
   <header>
     <h1>TruthGit Memory Chat</h1>
-    <p>Manual prompts flow through extraction, durable staging, review, commits, belief versions, rollback, provenance, and audit state. The graph updates from the live SQLite memory store.</p>
+    <p>Chat normally while TruthGit extracts durable memory updates, answers from versioned beliefs, and refreshes the commit graph from the live SQLite store.</p>
   </header>
   <main>
     <section class="panel chat-panel">
@@ -678,12 +706,14 @@ _HTML = """
         <div class="quick">
           <button data-example="Alice lives in Seoul." data-branch="main" data-trust="0.8">initial fact</button>
           <button data-example="Alice moved to Busan in March 2026." data-branch="main" data-trust="0.86">supersede</button>
+          <button data-example="Where does Alice live now?" data-branch="main" data-trust="0.8">ask current</button>
+          <button data-example="Why do you think Alice lives in Busan if earlier she lived in Seoul?" data-branch="main" data-trust="0.8">ask lineage</button>
           <button data-example="Alice lives in Atlantis." data-branch="main" data-trust="0.2">bad update</button>
           <button data-example="During the conference week, Alice will stay in Tokyo." data-branch="trip-plan" data-trust="0.78">branch-only</button>
         </div>
       </div>
       <div class="messages" id="messages">
-        <div class="msg system">Send a belief update. TruthGit will extract atomic claims, stage them, optionally approve them into commits, and preserve the old versions instead of overwriting them.</div>
+        <div class="msg system">Send updates or ask questions. TruthGit will stage new beliefs as commits, answer from current branch memory, and keep old versions visible instead of overwriting them.</div>
       </div>
       <div class="composer">
         <textarea id="manualText" placeholder="Type a memory update, for example: Alice lives in Seoul.">Alice lives in Seoul.</textarea>

@@ -4,6 +4,7 @@ from __future__ import annotations
 
 import json
 import logging
+import re
 from collections.abc import Callable
 from typing import Any
 
@@ -177,6 +178,43 @@ class LLMClient:
                 fallback_trust_score=fallback_trust_score,
             )
 
+    def answer_from_memory(self, message: str, memory_context: dict[str, Any]) -> str:
+        """Answer a chat turn from explicit TruthGit memory context."""
+
+        if self.client is None:
+            return _fallback_answer_from_memory(message, memory_context)
+        try:
+            response = self.client.responses.create(
+                model=self.settings.openai_model,
+                input=[
+                    {
+                        "role": "system",
+                        "content": (
+                            "You are the chat face of TruthGit. Answer naturally and concisely using only "
+                            "the supplied version-controlled memory context. For current-truth questions, "
+                            "prefer current_beliefs from the selected branch. For history or why questions, "
+                            "use timelines and mention superseded, retracted, or hypothetical status when relevant. "
+                            "If the memory context does not support an answer, say that TruthGit has no evidence yet. "
+                            "Do not mutate memory and do not invent facts."
+                        ),
+                    },
+                    {
+                        "role": "user",
+                        "content": json.dumps(
+                            {"message": message, "truthgit_memory": memory_context},
+                            ensure_ascii=False,
+                            default=str,
+                        ),
+                    },
+                ],
+            )
+            return (getattr(response, "output_text", None) or _response_text(response)).strip()
+        except (OpenAIError, ValueError, TypeError) as exc:
+            if self.settings.app_env == "production":
+                raise
+            logger.warning("Falling back to deterministic memory answer: %s", exc)
+            return _fallback_answer_from_memory(message, memory_context)
+
     def run_tool_loop(
         self,
         *,
@@ -320,6 +358,66 @@ def _fallback_assistant_reply(text: str, claim_count: int) -> str:
     if any(token in lower for token in ("atlantis", "fake", "joke", "impossible", "rumor", "heard")):
         return "I will stage that cautiously for review because the source sounds low-trust or uncertain."
     return "I will stage that as a reviewable TruthGit memory update and preserve any previous version."
+
+
+def _fallback_answer_from_memory(message: str, memory_context: dict[str, Any]) -> str:
+    """Answer from memory context without an LLM."""
+
+    current = memory_context.get("current_beliefs") or []
+    timelines = memory_context.get("timelines") or []
+    branch_name = (memory_context.get("branch") or {}).get("name", "main")
+    lower = message.lower()
+    subject_hint = _subject_hint(message)
+
+    if any(token in lower for token in ("why", "previous", "previously", "history", "timeline")):
+        relevant_timeline = [
+            item
+            for item in timelines
+            if subject_hint is None or str(item.get("subject", "")).lower() == subject_hint
+        ]
+        if relevant_timeline:
+            rendered = " -> ".join(
+                f"v{item.get('id')}:{item.get('object_value')}({item.get('status')})"
+                for item in sorted(relevant_timeline, key=lambda row: int(row.get("id") or 0))
+            )
+            return f"TruthGit's lineage on branch '{branch_name}' is {rendered}."
+
+    relevant_current = [
+        item
+        for item in current
+        if subject_hint is None or str(item.get("subject", "")).lower() == subject_hint
+    ]
+    if any(token in lower for token in ("where", "live", "lives", "residence", "current")):
+        location = [
+            item
+            for item in relevant_current
+            if item.get("predicate") in {"lives_in", "stays_in"}
+        ]
+        if location:
+            facts = "; ".join(
+                f"{item.get('subject')} {item.get('predicate')} {item.get('object_value')} "
+                f"(v{item.get('id')}, {item.get('status')})"
+                for item in location
+            )
+            return f"On branch '{branch_name}', TruthGit currently has: {facts}."
+
+    if relevant_current:
+        facts = "; ".join(
+            f"{item.get('subject')} {item.get('predicate')} {item.get('object_value')} "
+            f"(v{item.get('id')}, {item.get('status')})"
+            for item in relevant_current[:5]
+        )
+        return f"On branch '{branch_name}', TruthGit has evidence for: {facts}."
+    return f"TruthGit has no evidence-backed memory for that on branch '{branch_name}' yet."
+
+
+def _subject_hint(message: str) -> str | None:
+    ignored = {"what", "where", "when", "why", "how", "who", "which"}
+    for match in re.finditer(r"\b([A-Z][a-zA-Z0-9_-]+)\b", message):
+        candidate = match.group(1).lower()
+        if candidate not in ignored:
+            return candidate
+    return None
 
 
 def openai_strict_json_schema(model: Any) -> dict[str, Any]:
