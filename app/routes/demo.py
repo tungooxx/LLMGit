@@ -1130,44 +1130,86 @@ _HTML = """
 
     function renderGraph(snapshot) {
       const svg = document.getElementById("gitGraph");
-      const commits = [...(snapshot.commits || [])].reverse();
+      const commits = [...(snapshot.commits || [])].sort((left, right) => Number(left.id) - Number(right.id));
+      const versions = [...(snapshot.versions || [])].sort((left, right) => Number(left.id) - Number(right.id));
       const branches = snapshot.branches || [];
       const branchById = new Map(branches.map(branch => [branch.id, branch]));
-      const lanes = new Map(branches.map((branch, index) => [branch.id, 100 + index * 160]));
-      const width = Math.max(920, 260 + Math.max(0, branches.length - 1) * 160);
-      const height = Math.max(300, 86 + commits.length * 76);
+      const commitX = new Map(commits.map((commit, index) => [commit.id, 118 + index * 230]));
+      const versionX = new Map(versions.map((version, index) => [version.id, 110 + index * 250]));
+      const width = Math.max(920, 180 + Math.max(commits.length, versions.length) * 250);
+      const height = versions.length ? 340 : 190;
       svg.setAttribute("width", width);
       svg.setAttribute("height", height);
-      if (!commits.length) {
+      if (!commits.length && !versions.length) {
         svg.innerHTML = `<text x="40" y="72" fill="#667085" font-size="15">No commits yet. Send a prompt to create the first memory commit.</text>`;
         return;
       }
-      const yByCommit = new Map();
-      commits.forEach((commit, index) => yByCommit.set(commit.id, 56 + index * 76));
+      const commitY = 74;
+      const versionY = 218;
       const lines = [];
       const nodes = [];
-      for (const branch of branches) {
-        const x = lanes.get(branch.id) || 100;
-        lines.push(`<text x="${x - 34}" y="24" fill="#667085" font-size="12">${escapeSvg(branch.name)}</text>`);
-      }
+      lines.push(`
+        <defs>
+          <marker id="arrow" markerWidth="10" markerHeight="10" refX="8" refY="3" orient="auto" markerUnits="strokeWidth">
+            <path d="M0,0 L0,6 L9,3 z" fill="#667085"></path>
+          </marker>
+        </defs>
+        <text x="34" y="28" fill="#475467" font-size="13" font-weight="700">Commit lane</text>
+        <line x1="34" y1="${commitY}" x2="${width - 42}" y2="${commitY}" stroke="#e4e7ec" stroke-width="2"></line>
+      `);
       for (const commit of commits) {
-        const x = lanes.get(commit.branch_id) || 100;
-        const y = yByCommit.get(commit.id);
-        if (commit.parent_commit_id && yByCommit.has(commit.parent_commit_id)) {
-          const parent = commits.find(item => item.id === commit.parent_commit_id);
-          const px = parent ? (lanes.get(parent.branch_id) || 100) : x;
-          const py = yByCommit.get(commit.parent_commit_id);
-          lines.push(`<line x1="${px}" y1="${py}" x2="${x}" y2="${y}" stroke="#98a2b3" stroke-width="2" />`);
+        const x = commitX.get(commit.id) || 118;
+        if (commit.parent_commit_id && commitX.has(commit.parent_commit_id)) {
+          const px = commitX.get(commit.parent_commit_id);
+          lines.push(`<line x1="${px + 16}" y1="${commitY}" x2="${x - 18}" y2="${commitY}" stroke="#98a2b3" stroke-width="2" marker-end="url(#arrow)" />`);
         }
         const color = commit.operation_type === "rollback" ? "#b42318" : commit.operation_type === "merge" ? "#6d3fc4" : "#1b7f5a";
         const branch = branchById.get(commit.branch_id);
         nodes.push(`
-          <circle cx="${x}" cy="${y}" r="13" fill="${color}" stroke="#ffffff" stroke-width="3"></circle>
-          <text x="${x + 24}" y="${y - 7}" fill="#1f2933" font-size="13" font-weight="700">#${commit.id} ${escapeSvg(commit.operation_type)}</text>
-          <text x="${x + 24}" y="${y + 10}" fill="#667085" font-size="12">${escapeSvg(branch?.name || String(commit.branch_id))} ${escapeSvg(shorten(commit.message || "", 48))}</text>
+          <circle cx="${x}" cy="${commitY}" r="16" fill="${color}" stroke="#ffffff" stroke-width="4"></circle>
+          <text x="${x + 26}" y="${commitY - 8}" fill="#1f2933" font-size="13" font-weight="700">#${commit.id} ${escapeSvg(commit.operation_type)}</text>
+          <text x="${x + 26}" y="${commitY + 10}" fill="#667085" font-size="12">${escapeSvg(branch?.name || String(commit.branch_id))}</text>
+          <text x="${x + 26}" y="${commitY + 27}" fill="#667085" font-size="12">${escapeSvg(shorten(commit.message || "", 44))}</text>
         `);
       }
+      if (versions.length) {
+        const versionById = new Map(versions.map(version => [version.id, version]));
+        lines.push(`
+          <text x="34" y="158" fill="#475467" font-size="13" font-weight="700">Belief lineage</text>
+          <line x1="34" y1="${versionY}" x2="${width - 42}" y2="${versionY}" stroke="#e4e7ec" stroke-width="2"></line>
+        `);
+        for (const version of versions) {
+          const x = versionX.get(version.id) || 110;
+          const cx = x + 76;
+          if (version.supersedes_version_id && versionX.has(version.supersedes_version_id)) {
+            const sx = (versionX.get(version.supersedes_version_id) || 110) + 152;
+            lines.push(`<line x1="${sx + 8}" y1="${versionY}" x2="${x - 12}" y2="${versionY}" stroke="#667085" stroke-width="2" marker-end="url(#arrow)" />`);
+            lines.push(`<text x="${Math.min(sx + 26, x - 86)}" y="${versionY - 14}" fill="#667085" font-size="11">supersedes</text>`);
+          }
+          if (commitX.has(version.commit_id)) {
+            const commitCenterX = commitX.get(version.commit_id);
+            lines.push(`<line x1="${commitCenterX}" y1="${commitY + 22}" x2="${cx}" y2="${versionY - 42}" stroke="#d0d5dd" stroke-width="1.5" stroke-dasharray="4 5"></line>`);
+          }
+          const style = versionStyle(version.status);
+          nodes.push(`
+            <rect x="${x}" y="${versionY - 42}" width="152" height="84" rx="8" fill="${style.fill}" stroke="${style.stroke}" stroke-width="1.5"></rect>
+            <text x="${x + 12}" y="${versionY - 19}" fill="#1f2933" font-size="13" font-weight="700">#${version.id} ${escapeSvg(version.subject || "")}</text>
+            <text x="${x + 12}" y="${versionY - 1}" fill="#475467" font-size="12">${escapeSvg(version.predicate || "")}</text>
+            <text x="${x + 12}" y="${versionY + 20}" fill="#1f2933" font-size="15" font-weight="800">${escapeSvg(shorten(version.object_value || "", 16))}</text>
+            <text x="${x + 98}" y="${versionY + 20}" fill="${style.text}" font-size="11" font-weight="700">${escapeSvg(version.status || "")}</text>
+            <text x="${x + 12}" y="${versionY + 36}" fill="#667085" font-size="11">commit #${version.commit_id} ${escapeSvg(version.branch_name || "")}</text>
+          `);
+        }
+      }
       svg.innerHTML = lines.join("") + nodes.join("");
+    }
+
+    function versionStyle(status) {
+      if (status === "active") return {fill: "#ecfdf3", stroke: "#1b7f5a", text: "#166534"};
+      if (status === "superseded") return {fill: "#fffaeb", stroke: "#d89a00", text: "#a65f00"};
+      if (status === "retracted") return {fill: "#fef3f2", stroke: "#b42318", text: "#b42318"};
+      if (status === "hypothetical") return {fill: "#f4f0ff", stroke: "#6d3fc4", text: "#6d3fc4"};
+      return {fill: "#f8fafc", stroke: "#98a2b3", text: "#475467"};
     }
 
     function renderVersions(rows) {
