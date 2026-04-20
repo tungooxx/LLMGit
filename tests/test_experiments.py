@@ -10,7 +10,7 @@ def test_default_benchmark_covers_required_metrics() -> None:
     cases = default_benchmark()
     metrics = {question.metric for case in cases for question in case.questions}
 
-    assert len(cases) >= 60
+    assert len(cases) >= 80
     assert "current_truth_accuracy" in metrics
     assert "historical_truth_accuracy" in metrics
     assert "provenance_accuracy" in metrics
@@ -45,9 +45,10 @@ def test_default_benchmark_covers_required_metrics() -> None:
         if question.metric == "provenance_accuracy"
         and "rollback-source" in question.question_id
     ]
-    assert len(unresolved_merge_questions) >= 6
+    assert len(unresolved_merge_questions) >= 9
     assert branch_provenance_questions
     assert rollback_provenance_questions
+    assert sum(1 for case in cases for question in case.questions if question.metric == "provenance_accuracy") >= 50
 
 
 def test_benchmark_run_exports_all_system_scores() -> None:
@@ -174,3 +175,5 @@ def test_truthgit_scores_branch_and_rollback() -> None:
 
     assert truthgit["branch_isolation_score"] == 1.0
     assert truthgit["rollback_recovery_rate"] == 1.0
+    assert truthgit["provenance_accuracy"] == 1.0
+    assert truthgit["merge_conflict_resolution_score"] == 1.0

@@ -117,20 +117,49 @@ Paris,official-current-registry-0,provenance_accuracy,official-current-registry-
 Lima,verified-residency-file-1,provenance_accuracy,bad-bulk-import-source-1,provenance-rollback-source-01-source,0.0,naive_chat_history
 Lab F,main-employment-contract-2,provenance_accuracy,branch-grant-plan-2,provenance-branch-context-02-main-source,0.0,naive_chat_history
 Lab F,branch-grant-plan-2,provenance_accuracy,branch-grant-plan-2,provenance-branch-context-02-branch-source,1.0,naive_chat_history
-Oslo,official-current-registry-3,provenance_accuracy,official-current-registry-3,provenance-current-justification-03-source,1.0,naive_chat_history
-Seoul,verified-residency-file-4,provenance_accuracy,bad-bulk-import-source-4,provenance-rollback-source-04-source,0.0,naive_chat_history
-Lab C,main-employment-contract-5,provenance_accuracy,branch-grant-plan-5,provenance-branch-context-05-main-source,0.0,naive_chat_history
-Lab C,branch-grant-plan-5,provenance_accuracy,branch-grant-plan-5,provenance-branch-context-05-branch-source,1.0,naive_chat_history
+Lima,municipal-file-3,provenance_accuracy,corrupted-mirror-3,provenance-same-object-rollback-03-source,0.0,naive_chat_history
+Lab F,main-personnel-file-4,provenance_accuracy,branch-audit-confirmation-4,provenance-same-object-branch-04-main-source,0.0,naive_chat_history
+Lab F,branch-audit-confirmation-4,provenance_accuracy,branch-audit-confirmation-4,provenance-same-object-branch-04-branch-source,1.0,naive_chat_history
+Lab D,signed-winning-reorg-source-5,provenance_accuracy,rumor-reorg-source-5,provenance-merge-governing-source-05-source,0.0,naive_chat_history
 Lima,official-current-registry-6,provenance_accuracy,official-current-registry-6,provenance-current-justification-06-source,1.0,naive_chat_history
 Madrid,verified-residency-file-7,provenance_accuracy,bad-bulk-import-source-7,provenance-rollback-source-07-source,0.0,naive_chat_history
 Lab F,main-employment-contract-8,provenance_accuracy,branch-grant-plan-8,provenance-branch-context-08-main-source,0.0,naive_chat_history
 Lab F,branch-grant-plan-8,provenance_accuracy,branch-grant-plan-8,provenance-branch-context-08-branch-source,1.0,naive_chat_history
+Madrid,municipal-file-9,provenance_accuracy,corrupted-mirror-9,provenance-same-object-rollback-09-source,0.0,naive_chat_history
+Lab F,main-personnel-file-10,provenance_accuracy,branch-audit-confirmation-10,provenance-same-object-branch-10-main-source,0.0,naive_chat_history
+Lab F,branch-audit-confirmation-10,provenance_accuracy,branch-audit-confirmation-10,provenance-same-object-branch-10-branch-source,1.0,naive_chat_history
+Lab D,signed-winning-reorg-source-11,provenance_accuracy,rumor-reorg-source-11,provenance-merge-governing-source-11-source,0.0,naive_chat_history
+Madrid,official-current-registry-12,provenance_accuracy,official-current-registry-12,provenance-current-justification-12-source,1.0,naive_chat_history
+Oslo,verified-residency-file-13,provenance_accuracy,bad-bulk-import-source-13,provenance-rollback-source-13-source,0.0,naive_chat_history
+Lab F,main-employment-contract-14,provenance_accuracy,branch-grant-plan-14,provenance-branch-context-14-main-source,0.0,naive_chat_history
+Lab F,branch-grant-plan-14,provenance_accuracy,branch-grant-plan-14,provenance-branch-context-14-branch-source,1.0,naive_chat_history
+Oslo,municipal-file-15,provenance_accuracy,corrupted-mirror-15,provenance-same-object-rollback-15-source,0.0,naive_chat_history
+Lab F,main-personnel-file-16,provenance_accuracy,branch-audit-confirmation-16,provenance-same-object-branch-16-main-source,0.0,naive_chat_history
+Lab F,branch-audit-confirmation-16,provenance_accuracy,branch-audit-confirmation-16,provenance-same-object-branch-16-branch-source,1.0,naive_chat_history
+Lab D,signed-winning-reorg-source-17,provenance_accuracy,rumor-reorg-source-17,provenance-merge-governing-source-17-source,0.0,naive_chat_history
+Oslo,official-current-registry-18,provenance_accuracy,official-current-registry-18,provenance-current-justification-18-source,1.0,naive_chat_history
+Seoul,verified-residency-file-19,provenance_accuracy,bad-bulk-import-source-19,provenance-rollback-source-19-source,0.0,naive_chat_history
+Lab F,main-employment-contract-20,provenance_accuracy,branch-grant-plan-20,provenance-branch-context-20-main-source,0.0,naive_chat_history
+Lab F,branch-grant-plan-20,provenance_accuracy,branch-grant-plan-20,provenance-branch-context-20-branch-source,1.0,naive_chat_history
+Seoul,municipal-file-21,provenance_accuracy,corrupted-mirror-21,provenance-same-object-rollback-21-source,0.0,naive_chat_history
+Lab F,main-personnel-file-22,provenance_accuracy,branch-audit-confirmation-22,provenance-same-object-branch-22-main-source,0.0,naive_chat_history
+Lab F,branch-audit-confirmation-22,provenance_accuracy,branch-audit-confirmation-22,provenance-same-object-branch-22-branch-source,1.0,naive_chat_history
+Lab D,signed-winning-reorg-source-23,provenance_accuracy,rumor-reorg-source-23,provenance-merge-governing-source-23-source,0.0,naive_chat_history
 Lab B,unresolved_conflict,merge_conflict_resolution_score,Lab B,merge-manual-review-00-unresolved,0.0,naive_chat_history
 Lab F,unresolved_conflict,merge_conflict_resolution_score,Lab F,merge-concurrent-update-01-unresolved,0.0,naive_chat_history
-Lab D,unresolved_conflict,merge_conflict_resolution_score,Lab D,merge-manual-review-02-unresolved,0.0,naive_chat_history
-Lab B,unresolved_conflict,merge_conflict_resolution_score,Lab B,merge-concurrent-update-03-unresolved,0.0,naive_chat_history
+Lab B,unresolved_conflict,merge_conflict_resolution_score,Lab B,merge-competing-branches-02-unresolved,0.0,naive_chat_history
+Lab B,Lab E,merge_conflict_resolution_score,Lab B,merge-temporal-coexistence-03-before,0.0,naive_chat_history
+Lab B,Lab B,merge_conflict_resolution_score,Lab B,merge-temporal-coexistence-03-after,1.0,naive_chat_history
 Lab F,unresolved_conflict,merge_conflict_resolution_score,Lab F,merge-manual-review-04-unresolved,0.0,naive_chat_history
 Lab D,unresolved_conflict,merge_conflict_resolution_score,Lab D,merge-concurrent-update-05-unresolved,0.0,naive_chat_history
+Lab F,unresolved_conflict,merge_conflict_resolution_score,Lab F,merge-competing-branches-06-unresolved,0.0,naive_chat_history
+Lab F,Lab C,merge_conflict_resolution_score,Lab F,merge-temporal-coexistence-07-before,0.0,naive_chat_history
+Lab F,Lab F,merge_conflict_resolution_score,Lab F,merge-temporal-coexistence-07-after,1.0,naive_chat_history
+Lab D,unresolved_conflict,merge_conflict_resolution_score,Lab D,merge-manual-review-08-unresolved,0.0,naive_chat_history
+Lab B,unresolved_conflict,merge_conflict_resolution_score,Lab B,merge-concurrent-update-09-unresolved,0.0,naive_chat_history
+Lab D,unresolved_conflict,merge_conflict_resolution_score,Lab D,merge-competing-branches-10-unresolved,0.0,naive_chat_history
+Lab D,Lab A,merge_conflict_resolution_score,Lab D,merge-temporal-coexistence-11-before,0.0,naive_chat_history
+Lab D,Lab D,merge_conflict_resolution_score,Lab D,merge-temporal-coexistence-11-after,1.0,naive_chat_history
 Dublin,Dublin,current_truth_accuracy,Dublin,temporal-supersession-00-current,1.0,simple_rag
 Dublin,Seoul -> Rome -> Dublin,historical_truth_accuracy,Seoul -> Rome -> Dublin,temporal-supersession-00-history,1.0,simple_rag
 Dublin,residence-ledger-0-c,provenance_accuracy,residence-ledger-0-c,temporal-supersession-00-provenance,1.0,simple_rag
@@ -249,20 +278,49 @@ Paris,official-current-registry-0,provenance_accuracy,official-current-registry-
 Lima,verified-residency-file-1,provenance_accuracy,bad-bulk-import-source-1,provenance-rollback-source-01-source,0.0,simple_rag
 Lab C,main-employment-contract-2,provenance_accuracy,main-employment-contract-2,provenance-branch-context-02-main-source,1.0,simple_rag
 Lab C,branch-grant-plan-2,provenance_accuracy,main-employment-contract-2,provenance-branch-context-02-branch-source,0.0,simple_rag
-Oslo,official-current-registry-3,provenance_accuracy,official-current-registry-3,provenance-current-justification-03-source,1.0,simple_rag
-Seoul,verified-residency-file-4,provenance_accuracy,bad-bulk-import-source-4,provenance-rollback-source-04-source,0.0,simple_rag
-Lab F,main-employment-contract-5,provenance_accuracy,main-employment-contract-5,provenance-branch-context-05-main-source,1.0,simple_rag
-Lab F,branch-grant-plan-5,provenance_accuracy,main-employment-contract-5,provenance-branch-context-05-branch-source,0.0,simple_rag
+Lima,municipal-file-3,provenance_accuracy,corrupted-mirror-3,provenance-same-object-rollback-03-source,0.0,simple_rag
+Lab F,main-personnel-file-4,provenance_accuracy,branch-audit-confirmation-4,provenance-same-object-branch-04-main-source,0.0,simple_rag
+Lab F,branch-audit-confirmation-4,provenance_accuracy,branch-audit-confirmation-4,provenance-same-object-branch-04-branch-source,1.0,simple_rag
+Lab B,signed-winning-reorg-source-5,provenance_accuracy,signed-winning-reorg-source-5,provenance-merge-governing-source-05-source,1.0,simple_rag
 Lima,official-current-registry-6,provenance_accuracy,official-current-registry-6,provenance-current-justification-06-source,1.0,simple_rag
 Madrid,verified-residency-file-7,provenance_accuracy,bad-bulk-import-source-7,provenance-rollback-source-07-source,0.0,simple_rag
 Lab C,main-employment-contract-8,provenance_accuracy,main-employment-contract-8,provenance-branch-context-08-main-source,1.0,simple_rag
 Lab C,branch-grant-plan-8,provenance_accuracy,main-employment-contract-8,provenance-branch-context-08-branch-source,0.0,simple_rag
+Madrid,municipal-file-9,provenance_accuracy,corrupted-mirror-9,provenance-same-object-rollback-09-source,0.0,simple_rag
+Lab F,main-personnel-file-10,provenance_accuracy,branch-audit-confirmation-10,provenance-same-object-branch-10-main-source,0.0,simple_rag
+Lab F,branch-audit-confirmation-10,provenance_accuracy,branch-audit-confirmation-10,provenance-same-object-branch-10-branch-source,1.0,simple_rag
+Lab B,signed-winning-reorg-source-11,provenance_accuracy,signed-winning-reorg-source-11,provenance-merge-governing-source-11-source,1.0,simple_rag
+Madrid,official-current-registry-12,provenance_accuracy,official-current-registry-12,provenance-current-justification-12-source,1.0,simple_rag
+Oslo,verified-residency-file-13,provenance_accuracy,bad-bulk-import-source-13,provenance-rollback-source-13-source,0.0,simple_rag
+Lab C,main-employment-contract-14,provenance_accuracy,main-employment-contract-14,provenance-branch-context-14-main-source,1.0,simple_rag
+Lab C,branch-grant-plan-14,provenance_accuracy,main-employment-contract-14,provenance-branch-context-14-branch-source,0.0,simple_rag
+Oslo,municipal-file-15,provenance_accuracy,corrupted-mirror-15,provenance-same-object-rollback-15-source,0.0,simple_rag
+Lab F,main-personnel-file-16,provenance_accuracy,branch-audit-confirmation-16,provenance-same-object-branch-16-main-source,0.0,simple_rag
+Lab F,branch-audit-confirmation-16,provenance_accuracy,branch-audit-confirmation-16,provenance-same-object-branch-16-branch-source,1.0,simple_rag
+Lab B,signed-winning-reorg-source-17,provenance_accuracy,signed-winning-reorg-source-17,provenance-merge-governing-source-17-source,1.0,simple_rag
+Oslo,official-current-registry-18,provenance_accuracy,official-current-registry-18,provenance-current-justification-18-source,1.0,simple_rag
+Seoul,verified-residency-file-19,provenance_accuracy,bad-bulk-import-source-19,provenance-rollback-source-19-source,0.0,simple_rag
+Lab C,main-employment-contract-20,provenance_accuracy,main-employment-contract-20,provenance-branch-context-20-main-source,1.0,simple_rag
+Lab C,branch-grant-plan-20,provenance_accuracy,main-employment-contract-20,provenance-branch-context-20-branch-source,0.0,simple_rag
+Seoul,municipal-file-21,provenance_accuracy,corrupted-mirror-21,provenance-same-object-rollback-21-source,0.0,simple_rag
+Lab F,main-personnel-file-22,provenance_accuracy,branch-audit-confirmation-22,provenance-same-object-branch-22-main-source,0.0,simple_rag
+Lab F,branch-audit-confirmation-22,provenance_accuracy,branch-audit-confirmation-22,provenance-same-object-branch-22-branch-source,1.0,simple_rag
+Lab B,signed-winning-reorg-source-23,provenance_accuracy,signed-winning-reorg-source-23,provenance-merge-governing-source-23-source,1.0,simple_rag
 Lab C,unresolved_conflict,merge_conflict_resolution_score,Lab C,merge-manual-review-00-unresolved,0.0,simple_rag
 Lab F,unresolved_conflict,merge_conflict_resolution_score,Lab F,merge-concurrent-update-01-unresolved,0.0,simple_rag
-Lab E,unresolved_conflict,merge_conflict_resolution_score,Lab E,merge-manual-review-02-unresolved,0.0,simple_rag
-Lab B,unresolved_conflict,merge_conflict_resolution_score,Lab B,merge-concurrent-update-03-unresolved,0.0,simple_rag
+Lab E,unresolved_conflict,merge_conflict_resolution_score,Lab E,merge-competing-branches-02-unresolved,0.0,simple_rag
+Lab F,Lab E,merge_conflict_resolution_score,Lab F,merge-temporal-coexistence-03-before,0.0,simple_rag
+Lab F,Lab B,merge_conflict_resolution_score,Lab F,merge-temporal-coexistence-03-after,0.0,simple_rag
 Lab A,unresolved_conflict,merge_conflict_resolution_score,Lab A,merge-manual-review-04-unresolved,0.0,simple_rag
 Lab D,unresolved_conflict,merge_conflict_resolution_score,Lab D,merge-concurrent-update-05-unresolved,0.0,simple_rag
+Lab C,unresolved_conflict,merge_conflict_resolution_score,Lab C,merge-competing-branches-06-unresolved,0.0,simple_rag
+Lab F,Lab C,merge_conflict_resolution_score,Lab F,merge-temporal-coexistence-07-before,0.0,simple_rag
+Lab F,Lab F,merge_conflict_resolution_score,Lab F,merge-temporal-coexistence-07-after,1.0,simple_rag
+Lab C,unresolved_conflict,merge_conflict_resolution_score,Lab C,merge-manual-review-08-unresolved,0.0,simple_rag
+Lab B,unresolved_conflict,merge_conflict_resolution_score,Lab B,merge-concurrent-update-09-unresolved,0.0,simple_rag
+Lab A,unresolved_conflict,merge_conflict_resolution_score,Lab A,merge-competing-branches-10-unresolved,0.0,simple_rag
+Lab D,Lab A,merge_conflict_resolution_score,Lab D,merge-temporal-coexistence-11-before,0.0,simple_rag
+Lab D,Lab D,merge_conflict_resolution_score,Lab D,merge-temporal-coexistence-11-after,1.0,simple_rag
 Dublin,Dublin,current_truth_accuracy,Dublin,temporal-supersession-00-current,1.0,embedding_rag
 Dublin,Seoul -> Rome -> Dublin,historical_truth_accuracy,Seoul -> Rome -> Dublin,temporal-supersession-00-history,1.0,embedding_rag
 Dublin,residence-ledger-0-c,provenance_accuracy,residence-ledger-0-c,temporal-supersession-00-provenance,1.0,embedding_rag
@@ -381,20 +439,49 @@ Paris,official-current-registry-0,provenance_accuracy,official-current-registry-
 Lima,verified-residency-file-1,provenance_accuracy,bad-bulk-import-source-1,provenance-rollback-source-01-source,0.0,embedding_rag
 Lab C,main-employment-contract-2,provenance_accuracy,main-employment-contract-2,provenance-branch-context-02-main-source,1.0,embedding_rag
 Lab C,branch-grant-plan-2,provenance_accuracy,main-employment-contract-2,provenance-branch-context-02-branch-source,0.0,embedding_rag
-Oslo,official-current-registry-3,provenance_accuracy,official-current-registry-3,provenance-current-justification-03-source,1.0,embedding_rag
-Seoul,verified-residency-file-4,provenance_accuracy,bad-bulk-import-source-4,provenance-rollback-source-04-source,0.0,embedding_rag
-Lab F,main-employment-contract-5,provenance_accuracy,main-employment-contract-5,provenance-branch-context-05-main-source,1.0,embedding_rag
-Lab F,branch-grant-plan-5,provenance_accuracy,main-employment-contract-5,provenance-branch-context-05-branch-source,0.0,embedding_rag
+Lima,municipal-file-3,provenance_accuracy,corrupted-mirror-3,provenance-same-object-rollback-03-source,0.0,embedding_rag
+Lab F,main-personnel-file-4,provenance_accuracy,branch-audit-confirmation-4,provenance-same-object-branch-04-main-source,0.0,embedding_rag
+Lab F,branch-audit-confirmation-4,provenance_accuracy,branch-audit-confirmation-4,provenance-same-object-branch-04-branch-source,1.0,embedding_rag
+Lab B,signed-winning-reorg-source-5,provenance_accuracy,signed-winning-reorg-source-5,provenance-merge-governing-source-05-source,1.0,embedding_rag
 Lima,official-current-registry-6,provenance_accuracy,official-current-registry-6,provenance-current-justification-06-source,1.0,embedding_rag
 Madrid,verified-residency-file-7,provenance_accuracy,bad-bulk-import-source-7,provenance-rollback-source-07-source,0.0,embedding_rag
 Lab C,main-employment-contract-8,provenance_accuracy,main-employment-contract-8,provenance-branch-context-08-main-source,1.0,embedding_rag
 Lab C,branch-grant-plan-8,provenance_accuracy,main-employment-contract-8,provenance-branch-context-08-branch-source,0.0,embedding_rag
+Madrid,municipal-file-9,provenance_accuracy,corrupted-mirror-9,provenance-same-object-rollback-09-source,0.0,embedding_rag
+Lab F,main-personnel-file-10,provenance_accuracy,branch-audit-confirmation-10,provenance-same-object-branch-10-main-source,0.0,embedding_rag
+Lab F,branch-audit-confirmation-10,provenance_accuracy,branch-audit-confirmation-10,provenance-same-object-branch-10-branch-source,1.0,embedding_rag
+Lab B,signed-winning-reorg-source-11,provenance_accuracy,signed-winning-reorg-source-11,provenance-merge-governing-source-11-source,1.0,embedding_rag
+Madrid,official-current-registry-12,provenance_accuracy,official-current-registry-12,provenance-current-justification-12-source,1.0,embedding_rag
+Oslo,verified-residency-file-13,provenance_accuracy,bad-bulk-import-source-13,provenance-rollback-source-13-source,0.0,embedding_rag
+Lab C,main-employment-contract-14,provenance_accuracy,main-employment-contract-14,provenance-branch-context-14-main-source,1.0,embedding_rag
+Lab C,branch-grant-plan-14,provenance_accuracy,main-employment-contract-14,provenance-branch-context-14-branch-source,0.0,embedding_rag
+Oslo,municipal-file-15,provenance_accuracy,corrupted-mirror-15,provenance-same-object-rollback-15-source,0.0,embedding_rag
+Lab F,main-personnel-file-16,provenance_accuracy,branch-audit-confirmation-16,provenance-same-object-branch-16-main-source,0.0,embedding_rag
+Lab F,branch-audit-confirmation-16,provenance_accuracy,branch-audit-confirmation-16,provenance-same-object-branch-16-branch-source,1.0,embedding_rag
+Lab B,signed-winning-reorg-source-17,provenance_accuracy,signed-winning-reorg-source-17,provenance-merge-governing-source-17-source,1.0,embedding_rag
+Oslo,official-current-registry-18,provenance_accuracy,official-current-registry-18,provenance-current-justification-18-source,1.0,embedding_rag
+Seoul,verified-residency-file-19,provenance_accuracy,bad-bulk-import-source-19,provenance-rollback-source-19-source,0.0,embedding_rag
+Lab C,main-employment-contract-20,provenance_accuracy,main-employment-contract-20,provenance-branch-context-20-main-source,1.0,embedding_rag
+Lab C,branch-grant-plan-20,provenance_accuracy,main-employment-contract-20,provenance-branch-context-20-branch-source,0.0,embedding_rag
+Seoul,municipal-file-21,provenance_accuracy,corrupted-mirror-21,provenance-same-object-rollback-21-source,0.0,embedding_rag
+Lab F,main-personnel-file-22,provenance_accuracy,branch-audit-confirmation-22,provenance-same-object-branch-22-main-source,0.0,embedding_rag
+Lab F,branch-audit-confirmation-22,provenance_accuracy,branch-audit-confirmation-22,provenance-same-object-branch-22-branch-source,1.0,embedding_rag
+Lab B,signed-winning-reorg-source-23,provenance_accuracy,signed-winning-reorg-source-23,provenance-merge-governing-source-23-source,1.0,embedding_rag
 Lab A,unresolved_conflict,merge_conflict_resolution_score,Lab A,merge-manual-review-00-unresolved,0.0,embedding_rag
 Lab F,unresolved_conflict,merge_conflict_resolution_score,Lab F,merge-concurrent-update-01-unresolved,0.0,embedding_rag
-Lab C,unresolved_conflict,merge_conflict_resolution_score,Lab C,merge-manual-review-02-unresolved,0.0,embedding_rag
-Lab B,unresolved_conflict,merge_conflict_resolution_score,Lab B,merge-concurrent-update-03-unresolved,0.0,embedding_rag
+Lab E,unresolved_conflict,merge_conflict_resolution_score,Lab E,merge-competing-branches-02-unresolved,0.0,embedding_rag
+Lab B,Lab E,merge_conflict_resolution_score,Lab B,merge-temporal-coexistence-03-before,0.0,embedding_rag
+Lab B,Lab B,merge_conflict_resolution_score,Lab B,merge-temporal-coexistence-03-after,1.0,embedding_rag
 Lab E,unresolved_conflict,merge_conflict_resolution_score,Lab E,merge-manual-review-04-unresolved,0.0,embedding_rag
 Lab D,unresolved_conflict,merge_conflict_resolution_score,Lab D,merge-concurrent-update-05-unresolved,0.0,embedding_rag
+Lab C,unresolved_conflict,merge_conflict_resolution_score,Lab C,merge-competing-branches-06-unresolved,0.0,embedding_rag
+Lab F,Lab C,merge_conflict_resolution_score,Lab F,merge-temporal-coexistence-07-before,0.0,embedding_rag
+Lab F,Lab F,merge_conflict_resolution_score,Lab F,merge-temporal-coexistence-07-after,1.0,embedding_rag
+Lab C,unresolved_conflict,merge_conflict_resolution_score,Lab C,merge-manual-review-08-unresolved,0.0,embedding_rag
+Lab B,unresolved_conflict,merge_conflict_resolution_score,Lab B,merge-concurrent-update-09-unresolved,0.0,embedding_rag
+Lab A,unresolved_conflict,merge_conflict_resolution_score,Lab A,merge-competing-branches-10-unresolved,0.0,embedding_rag
+Lab D,Lab A,merge_conflict_resolution_score,Lab D,merge-temporal-coexistence-11-before,0.0,embedding_rag
+Lab D,Lab D,merge_conflict_resolution_score,Lab D,merge-temporal-coexistence-11-after,1.0,embedding_rag
 Dublin,Dublin,current_truth_accuracy,Dublin,temporal-supersession-00-current,1.0,truthgit
 Dublin,Seoul -> Rome -> Dublin,historical_truth_accuracy,Seoul -> Rome -> Dublin,temporal-supersession-00-history,1.0,truthgit
 Dublin,residence-ledger-0-c,provenance_accuracy,residence-ledger-0-c,temporal-supersession-00-provenance,1.0,truthgit
@@ -509,24 +596,53 @@ Paris,signed-registry-1,provenance_accuracy,signed-registry-1,exact-provenance-0
 Lisbon,signed-registry-2,provenance_accuracy,signed-registry-2,exact-provenance-02-source,1.0,truthgit
 Dublin,signed-registry-3,provenance_accuracy,signed-registry-3,exact-provenance-03-source,1.0,truthgit
 Oslo,signed-registry-4,provenance_accuracy,signed-registry-4,exact-provenance-04-source,1.0,truthgit
-Paris,official-current-registry-0,provenance_accuracy,community-blog-0,provenance-current-justification-00-source,0.0,truthgit
+Paris,official-current-registry-0,provenance_accuracy,official-current-registry-0,provenance-current-justification-00-source,1.0,truthgit
 Madrid,verified-residency-file-1,provenance_accuracy,verified-residency-file-1,provenance-rollback-source-01-source,1.0,truthgit
 Lab C,main-employment-contract-2,provenance_accuracy,main-employment-contract-2,provenance-branch-context-02-main-source,1.0,truthgit
 Lab F,branch-grant-plan-2,provenance_accuracy,branch-grant-plan-2,provenance-branch-context-02-branch-source,1.0,truthgit
-Oslo,official-current-registry-3,provenance_accuracy,community-blog-3,provenance-current-justification-03-source,0.0,truthgit
-Paris,verified-residency-file-4,provenance_accuracy,verified-residency-file-4,provenance-rollback-source-04-source,1.0,truthgit
-Lab F,main-employment-contract-5,provenance_accuracy,main-employment-contract-5,provenance-branch-context-05-main-source,1.0,truthgit
-Lab C,branch-grant-plan-5,provenance_accuracy,branch-grant-plan-5,provenance-branch-context-05-branch-source,1.0,truthgit
-Lima,official-current-registry-6,provenance_accuracy,community-blog-6,provenance-current-justification-06-source,0.0,truthgit
+Lima,municipal-file-3,provenance_accuracy,municipal-file-3,provenance-same-object-rollback-03-source,1.0,truthgit
+Lab F,main-personnel-file-4,provenance_accuracy,main-personnel-file-4,provenance-same-object-branch-04-main-source,1.0,truthgit
+Lab F,branch-audit-confirmation-4,provenance_accuracy,branch-audit-confirmation-4,provenance-same-object-branch-04-branch-source,1.0,truthgit
+Lab B,signed-winning-reorg-source-5,provenance_accuracy,signed-winning-reorg-source-5,provenance-merge-governing-source-05-source,1.0,truthgit
+Lima,official-current-registry-6,provenance_accuracy,official-current-registry-6,provenance-current-justification-06-source,1.0,truthgit
 Oslo,verified-residency-file-7,provenance_accuracy,verified-residency-file-7,provenance-rollback-source-07-source,1.0,truthgit
 Lab C,main-employment-contract-8,provenance_accuracy,main-employment-contract-8,provenance-branch-context-08-main-source,1.0,truthgit
 Lab F,branch-grant-plan-8,provenance_accuracy,branch-grant-plan-8,provenance-branch-context-08-branch-source,1.0,truthgit
+Madrid,municipal-file-9,provenance_accuracy,municipal-file-9,provenance-same-object-rollback-09-source,1.0,truthgit
+Lab F,main-personnel-file-10,provenance_accuracy,main-personnel-file-10,provenance-same-object-branch-10-main-source,1.0,truthgit
+Lab F,branch-audit-confirmation-10,provenance_accuracy,branch-audit-confirmation-10,provenance-same-object-branch-10-branch-source,1.0,truthgit
+Lab B,signed-winning-reorg-source-11,provenance_accuracy,signed-winning-reorg-source-11,provenance-merge-governing-source-11-source,1.0,truthgit
+Madrid,official-current-registry-12,provenance_accuracy,official-current-registry-12,provenance-current-justification-12-source,1.0,truthgit
+Seoul,verified-residency-file-13,provenance_accuracy,verified-residency-file-13,provenance-rollback-source-13-source,1.0,truthgit
+Lab C,main-employment-contract-14,provenance_accuracy,main-employment-contract-14,provenance-branch-context-14-main-source,1.0,truthgit
+Lab F,branch-grant-plan-14,provenance_accuracy,branch-grant-plan-14,provenance-branch-context-14-branch-source,1.0,truthgit
+Oslo,municipal-file-15,provenance_accuracy,municipal-file-15,provenance-same-object-rollback-15-source,1.0,truthgit
+Lab F,main-personnel-file-16,provenance_accuracy,main-personnel-file-16,provenance-same-object-branch-16-main-source,1.0,truthgit
+Lab F,branch-audit-confirmation-16,provenance_accuracy,branch-audit-confirmation-16,provenance-same-object-branch-16-branch-source,1.0,truthgit
+Lab B,signed-winning-reorg-source-17,provenance_accuracy,signed-winning-reorg-source-17,provenance-merge-governing-source-17-source,1.0,truthgit
+Oslo,official-current-registry-18,provenance_accuracy,official-current-registry-18,provenance-current-justification-18-source,1.0,truthgit
+Paris,verified-residency-file-19,provenance_accuracy,verified-residency-file-19,provenance-rollback-source-19-source,1.0,truthgit
+Lab C,main-employment-contract-20,provenance_accuracy,main-employment-contract-20,provenance-branch-context-20-main-source,1.0,truthgit
+Lab F,branch-grant-plan-20,provenance_accuracy,branch-grant-plan-20,provenance-branch-context-20-branch-source,1.0,truthgit
+Seoul,municipal-file-21,provenance_accuracy,municipal-file-21,provenance-same-object-rollback-21-source,1.0,truthgit
+Lab F,main-personnel-file-22,provenance_accuracy,main-personnel-file-22,provenance-same-object-branch-22-main-source,1.0,truthgit
+Lab F,branch-audit-confirmation-22,provenance_accuracy,branch-audit-confirmation-22,provenance-same-object-branch-22-branch-source,1.0,truthgit
+Lab B,signed-winning-reorg-source-23,provenance_accuracy,signed-winning-reorg-source-23,provenance-merge-governing-source-23-source,1.0,truthgit
 Lab A,unresolved_conflict,merge_conflict_resolution_score,unresolved_conflict,merge-manual-review-00-unresolved,1.0,truthgit
 Lab F,unresolved_conflict,merge_conflict_resolution_score,unresolved_conflict,merge-concurrent-update-01-unresolved,1.0,truthgit
-Lab C,unresolved_conflict,merge_conflict_resolution_score,unresolved_conflict,merge-manual-review-02-unresolved,1.0,truthgit
-Lab B,unresolved_conflict,merge_conflict_resolution_score,unresolved_conflict,merge-concurrent-update-03-unresolved,1.0,truthgit
+Lab E,unresolved_conflict,merge_conflict_resolution_score,unresolved_conflict,merge-competing-branches-02-unresolved,1.0,truthgit
+Lab E,Lab E,merge_conflict_resolution_score,Lab E,merge-temporal-coexistence-03-before,1.0,truthgit
+Lab B,Lab B,merge_conflict_resolution_score,Lab B,merge-temporal-coexistence-03-after,1.0,truthgit
 Lab E,unresolved_conflict,merge_conflict_resolution_score,unresolved_conflict,merge-manual-review-04-unresolved,1.0,truthgit
 Lab D,unresolved_conflict,merge_conflict_resolution_score,unresolved_conflict,merge-concurrent-update-05-unresolved,1.0,truthgit
+Lab C,unresolved_conflict,merge_conflict_resolution_score,unresolved_conflict,merge-competing-branches-06-unresolved,1.0,truthgit
+Lab C,Lab C,merge_conflict_resolution_score,Lab C,merge-temporal-coexistence-07-before,1.0,truthgit
+Lab F,Lab F,merge_conflict_resolution_score,Lab F,merge-temporal-coexistence-07-after,1.0,truthgit
+Lab C,unresolved_conflict,merge_conflict_resolution_score,unresolved_conflict,merge-manual-review-08-unresolved,1.0,truthgit
+Lab B,unresolved_conflict,merge_conflict_resolution_score,unresolved_conflict,merge-concurrent-update-09-unresolved,1.0,truthgit
+Lab A,unresolved_conflict,merge_conflict_resolution_score,unresolved_conflict,merge-competing-branches-10-unresolved,1.0,truthgit
+Lab A,Lab A,merge_conflict_resolution_score,Lab A,merge-temporal-coexistence-11-before,1.0,truthgit
+Lab D,Lab D,merge_conflict_resolution_score,Lab D,merge-temporal-coexistence-11-after,1.0,truthgit
 Dublin,Dublin,current_truth_accuracy,Dublin,temporal-supersession-00-current,1.0,truthgit_no_branches
 Dublin,Seoul -> Rome -> Dublin,historical_truth_accuracy,Seoul -> Rome -> Dublin,temporal-supersession-00-history,1.0,truthgit_no_branches
 Dublin,residence-ledger-0-c,provenance_accuracy,residence-ledger-0-c,temporal-supersession-00-provenance,1.0,truthgit_no_branches
@@ -641,24 +757,53 @@ Paris,signed-registry-1,provenance_accuracy,signed-registry-1,exact-provenance-0
 Lisbon,signed-registry-2,provenance_accuracy,signed-registry-2,exact-provenance-02-source,1.0,truthgit_no_branches
 Dublin,signed-registry-3,provenance_accuracy,signed-registry-3,exact-provenance-03-source,1.0,truthgit_no_branches
 Oslo,signed-registry-4,provenance_accuracy,signed-registry-4,exact-provenance-04-source,1.0,truthgit_no_branches
-Paris,official-current-registry-0,provenance_accuracy,community-blog-0,provenance-current-justification-00-source,0.0,truthgit_no_branches
+Paris,official-current-registry-0,provenance_accuracy,official-current-registry-0,provenance-current-justification-00-source,1.0,truthgit_no_branches
 Madrid,verified-residency-file-1,provenance_accuracy,verified-residency-file-1,provenance-rollback-source-01-source,1.0,truthgit_no_branches
 Lab C,main-employment-contract-2,provenance_accuracy,main-employment-contract-2,provenance-branch-context-02-main-source,1.0,truthgit_no_branches
 Lab C,branch-grant-plan-2,provenance_accuracy,main-employment-contract-2,provenance-branch-context-02-branch-source,0.0,truthgit_no_branches
-Oslo,official-current-registry-3,provenance_accuracy,community-blog-3,provenance-current-justification-03-source,0.0,truthgit_no_branches
-Paris,verified-residency-file-4,provenance_accuracy,verified-residency-file-4,provenance-rollback-source-04-source,1.0,truthgit_no_branches
-Lab F,main-employment-contract-5,provenance_accuracy,main-employment-contract-5,provenance-branch-context-05-main-source,1.0,truthgit_no_branches
-Lab F,branch-grant-plan-5,provenance_accuracy,main-employment-contract-5,provenance-branch-context-05-branch-source,0.0,truthgit_no_branches
-Lima,official-current-registry-6,provenance_accuracy,community-blog-6,provenance-current-justification-06-source,0.0,truthgit_no_branches
+Lima,municipal-file-3,provenance_accuracy,municipal-file-3,provenance-same-object-rollback-03-source,1.0,truthgit_no_branches
+Lab F,main-personnel-file-4,provenance_accuracy,branch-audit-confirmation-4,provenance-same-object-branch-04-main-source,0.0,truthgit_no_branches
+Lab F,branch-audit-confirmation-4,provenance_accuracy,branch-audit-confirmation-4,provenance-same-object-branch-04-branch-source,1.0,truthgit_no_branches
+Lab B,signed-winning-reorg-source-5,provenance_accuracy,signed-winning-reorg-source-5,provenance-merge-governing-source-05-source,1.0,truthgit_no_branches
+Lima,official-current-registry-6,provenance_accuracy,official-current-registry-6,provenance-current-justification-06-source,1.0,truthgit_no_branches
 Oslo,verified-residency-file-7,provenance_accuracy,verified-residency-file-7,provenance-rollback-source-07-source,1.0,truthgit_no_branches
 Lab C,main-employment-contract-8,provenance_accuracy,main-employment-contract-8,provenance-branch-context-08-main-source,1.0,truthgit_no_branches
 Lab C,branch-grant-plan-8,provenance_accuracy,main-employment-contract-8,provenance-branch-context-08-branch-source,0.0,truthgit_no_branches
+Madrid,municipal-file-9,provenance_accuracy,municipal-file-9,provenance-same-object-rollback-09-source,1.0,truthgit_no_branches
+Lab F,main-personnel-file-10,provenance_accuracy,branch-audit-confirmation-10,provenance-same-object-branch-10-main-source,0.0,truthgit_no_branches
+Lab F,branch-audit-confirmation-10,provenance_accuracy,branch-audit-confirmation-10,provenance-same-object-branch-10-branch-source,1.0,truthgit_no_branches
+Lab B,signed-winning-reorg-source-11,provenance_accuracy,signed-winning-reorg-source-11,provenance-merge-governing-source-11-source,1.0,truthgit_no_branches
+Madrid,official-current-registry-12,provenance_accuracy,official-current-registry-12,provenance-current-justification-12-source,1.0,truthgit_no_branches
+Seoul,verified-residency-file-13,provenance_accuracy,verified-residency-file-13,provenance-rollback-source-13-source,1.0,truthgit_no_branches
+Lab C,main-employment-contract-14,provenance_accuracy,main-employment-contract-14,provenance-branch-context-14-main-source,1.0,truthgit_no_branches
+Lab C,branch-grant-plan-14,provenance_accuracy,main-employment-contract-14,provenance-branch-context-14-branch-source,0.0,truthgit_no_branches
+Oslo,municipal-file-15,provenance_accuracy,municipal-file-15,provenance-same-object-rollback-15-source,1.0,truthgit_no_branches
+Lab F,main-personnel-file-16,provenance_accuracy,branch-audit-confirmation-16,provenance-same-object-branch-16-main-source,0.0,truthgit_no_branches
+Lab F,branch-audit-confirmation-16,provenance_accuracy,branch-audit-confirmation-16,provenance-same-object-branch-16-branch-source,1.0,truthgit_no_branches
+Lab B,signed-winning-reorg-source-17,provenance_accuracy,signed-winning-reorg-source-17,provenance-merge-governing-source-17-source,1.0,truthgit_no_branches
+Oslo,official-current-registry-18,provenance_accuracy,official-current-registry-18,provenance-current-justification-18-source,1.0,truthgit_no_branches
+Paris,verified-residency-file-19,provenance_accuracy,verified-residency-file-19,provenance-rollback-source-19-source,1.0,truthgit_no_branches
+Lab C,main-employment-contract-20,provenance_accuracy,main-employment-contract-20,provenance-branch-context-20-main-source,1.0,truthgit_no_branches
+Lab C,branch-grant-plan-20,provenance_accuracy,main-employment-contract-20,provenance-branch-context-20-branch-source,0.0,truthgit_no_branches
+Seoul,municipal-file-21,provenance_accuracy,municipal-file-21,provenance-same-object-rollback-21-source,1.0,truthgit_no_branches
+Lab F,main-personnel-file-22,provenance_accuracy,branch-audit-confirmation-22,provenance-same-object-branch-22-main-source,0.0,truthgit_no_branches
+Lab F,branch-audit-confirmation-22,provenance_accuracy,branch-audit-confirmation-22,provenance-same-object-branch-22-branch-source,1.0,truthgit_no_branches
+Lab B,signed-winning-reorg-source-23,provenance_accuracy,signed-winning-reorg-source-23,provenance-merge-governing-source-23-source,1.0,truthgit_no_branches
 Lab A,unresolved_conflict,merge_conflict_resolution_score,unresolved_conflict,merge-manual-review-00-unresolved,1.0,truthgit_no_branches
 Lab F,unresolved_conflict,merge_conflict_resolution_score,Lab F,merge-concurrent-update-01-unresolved,0.0,truthgit_no_branches
-Lab C,unresolved_conflict,merge_conflict_resolution_score,unresolved_conflict,merge-manual-review-02-unresolved,1.0,truthgit_no_branches
-Lab B,unresolved_conflict,merge_conflict_resolution_score,Lab B,merge-concurrent-update-03-unresolved,0.0,truthgit_no_branches
+Lab E,unresolved_conflict,merge_conflict_resolution_score,unresolved_conflict,merge-competing-branches-02-unresolved,1.0,truthgit_no_branches
+Lab E,Lab E,merge_conflict_resolution_score,Lab E,merge-temporal-coexistence-03-before,1.0,truthgit_no_branches
+Lab B,Lab B,merge_conflict_resolution_score,Lab B,merge-temporal-coexistence-03-after,1.0,truthgit_no_branches
 Lab E,unresolved_conflict,merge_conflict_resolution_score,unresolved_conflict,merge-manual-review-04-unresolved,1.0,truthgit_no_branches
 Lab D,unresolved_conflict,merge_conflict_resolution_score,Lab D,merge-concurrent-update-05-unresolved,0.0,truthgit_no_branches
+Lab C,unresolved_conflict,merge_conflict_resolution_score,unresolved_conflict,merge-competing-branches-06-unresolved,1.0,truthgit_no_branches
+Lab C,Lab C,merge_conflict_resolution_score,Lab C,merge-temporal-coexistence-07-before,1.0,truthgit_no_branches
+Lab F,Lab F,merge_conflict_resolution_score,Lab F,merge-temporal-coexistence-07-after,1.0,truthgit_no_branches
+Lab C,unresolved_conflict,merge_conflict_resolution_score,unresolved_conflict,merge-manual-review-08-unresolved,1.0,truthgit_no_branches
+Lab B,unresolved_conflict,merge_conflict_resolution_score,Lab B,merge-concurrent-update-09-unresolved,0.0,truthgit_no_branches
+Lab A,unresolved_conflict,merge_conflict_resolution_score,unresolved_conflict,merge-competing-branches-10-unresolved,1.0,truthgit_no_branches
+Lab A,Lab A,merge_conflict_resolution_score,Lab A,merge-temporal-coexistence-11-before,1.0,truthgit_no_branches
+Lab D,Lab D,merge_conflict_resolution_score,Lab D,merge-temporal-coexistence-11-after,1.0,truthgit_no_branches
 Dublin,Dublin,current_truth_accuracy,Dublin,temporal-supersession-00-current,1.0,truthgit_no_rollback
 Dublin,Seoul -> Rome -> Dublin,historical_truth_accuracy,Seoul -> Rome -> Dublin,temporal-supersession-00-history,1.0,truthgit_no_rollback
 Dublin,residence-ledger-0-c,provenance_accuracy,residence-ledger-0-c,temporal-supersession-00-provenance,1.0,truthgit_no_rollback
@@ -773,24 +918,53 @@ Paris,signed-registry-1,provenance_accuracy,signed-registry-1,exact-provenance-0
 Lisbon,signed-registry-2,provenance_accuracy,signed-registry-2,exact-provenance-02-source,1.0,truthgit_no_rollback
 Dublin,signed-registry-3,provenance_accuracy,signed-registry-3,exact-provenance-03-source,1.0,truthgit_no_rollback
 Oslo,signed-registry-4,provenance_accuracy,signed-registry-4,exact-provenance-04-source,1.0,truthgit_no_rollback
-Paris,official-current-registry-0,provenance_accuracy,community-blog-0,provenance-current-justification-00-source,0.0,truthgit_no_rollback
+Paris,official-current-registry-0,provenance_accuracy,official-current-registry-0,provenance-current-justification-00-source,1.0,truthgit_no_rollback
 Lima,verified-residency-file-1,provenance_accuracy,bad-bulk-import-source-1,provenance-rollback-source-01-source,0.0,truthgit_no_rollback
 Lab C,main-employment-contract-2,provenance_accuracy,main-employment-contract-2,provenance-branch-context-02-main-source,1.0,truthgit_no_rollback
 Lab F,branch-grant-plan-2,provenance_accuracy,branch-grant-plan-2,provenance-branch-context-02-branch-source,1.0,truthgit_no_rollback
-Oslo,official-current-registry-3,provenance_accuracy,community-blog-3,provenance-current-justification-03-source,0.0,truthgit_no_rollback
-Seoul,verified-residency-file-4,provenance_accuracy,bad-bulk-import-source-4,provenance-rollback-source-04-source,0.0,truthgit_no_rollback
-Lab F,main-employment-contract-5,provenance_accuracy,main-employment-contract-5,provenance-branch-context-05-main-source,1.0,truthgit_no_rollback
-Lab C,branch-grant-plan-5,provenance_accuracy,branch-grant-plan-5,provenance-branch-context-05-branch-source,1.0,truthgit_no_rollback
-Lima,official-current-registry-6,provenance_accuracy,community-blog-6,provenance-current-justification-06-source,0.0,truthgit_no_rollback
+Lima,municipal-file-3,provenance_accuracy,corrupted-mirror-3,provenance-same-object-rollback-03-source,0.0,truthgit_no_rollback
+Lab F,main-personnel-file-4,provenance_accuracy,main-personnel-file-4,provenance-same-object-branch-04-main-source,1.0,truthgit_no_rollback
+Lab F,branch-audit-confirmation-4,provenance_accuracy,branch-audit-confirmation-4,provenance-same-object-branch-04-branch-source,1.0,truthgit_no_rollback
+Lab B,signed-winning-reorg-source-5,provenance_accuracy,signed-winning-reorg-source-5,provenance-merge-governing-source-05-source,1.0,truthgit_no_rollback
+Lima,official-current-registry-6,provenance_accuracy,official-current-registry-6,provenance-current-justification-06-source,1.0,truthgit_no_rollback
 Madrid,verified-residency-file-7,provenance_accuracy,bad-bulk-import-source-7,provenance-rollback-source-07-source,0.0,truthgit_no_rollback
 Lab C,main-employment-contract-8,provenance_accuracy,main-employment-contract-8,provenance-branch-context-08-main-source,1.0,truthgit_no_rollback
 Lab F,branch-grant-plan-8,provenance_accuracy,branch-grant-plan-8,provenance-branch-context-08-branch-source,1.0,truthgit_no_rollback
+Madrid,municipal-file-9,provenance_accuracy,corrupted-mirror-9,provenance-same-object-rollback-09-source,0.0,truthgit_no_rollback
+Lab F,main-personnel-file-10,provenance_accuracy,main-personnel-file-10,provenance-same-object-branch-10-main-source,1.0,truthgit_no_rollback
+Lab F,branch-audit-confirmation-10,provenance_accuracy,branch-audit-confirmation-10,provenance-same-object-branch-10-branch-source,1.0,truthgit_no_rollback
+Lab B,signed-winning-reorg-source-11,provenance_accuracy,signed-winning-reorg-source-11,provenance-merge-governing-source-11-source,1.0,truthgit_no_rollback
+Madrid,official-current-registry-12,provenance_accuracy,official-current-registry-12,provenance-current-justification-12-source,1.0,truthgit_no_rollback
+Oslo,verified-residency-file-13,provenance_accuracy,bad-bulk-import-source-13,provenance-rollback-source-13-source,0.0,truthgit_no_rollback
+Lab C,main-employment-contract-14,provenance_accuracy,main-employment-contract-14,provenance-branch-context-14-main-source,1.0,truthgit_no_rollback
+Lab F,branch-grant-plan-14,provenance_accuracy,branch-grant-plan-14,provenance-branch-context-14-branch-source,1.0,truthgit_no_rollback
+Oslo,municipal-file-15,provenance_accuracy,corrupted-mirror-15,provenance-same-object-rollback-15-source,0.0,truthgit_no_rollback
+Lab F,main-personnel-file-16,provenance_accuracy,main-personnel-file-16,provenance-same-object-branch-16-main-source,1.0,truthgit_no_rollback
+Lab F,branch-audit-confirmation-16,provenance_accuracy,branch-audit-confirmation-16,provenance-same-object-branch-16-branch-source,1.0,truthgit_no_rollback
+Lab B,signed-winning-reorg-source-17,provenance_accuracy,signed-winning-reorg-source-17,provenance-merge-governing-source-17-source,1.0,truthgit_no_rollback
+Oslo,official-current-registry-18,provenance_accuracy,official-current-registry-18,provenance-current-justification-18-source,1.0,truthgit_no_rollback
+Seoul,verified-residency-file-19,provenance_accuracy,bad-bulk-import-source-19,provenance-rollback-source-19-source,0.0,truthgit_no_rollback
+Lab C,main-employment-contract-20,provenance_accuracy,main-employment-contract-20,provenance-branch-context-20-main-source,1.0,truthgit_no_rollback
+Lab F,branch-grant-plan-20,provenance_accuracy,branch-grant-plan-20,provenance-branch-context-20-branch-source,1.0,truthgit_no_rollback
+Seoul,municipal-file-21,provenance_accuracy,corrupted-mirror-21,provenance-same-object-rollback-21-source,0.0,truthgit_no_rollback
+Lab F,main-personnel-file-22,provenance_accuracy,main-personnel-file-22,provenance-same-object-branch-22-main-source,1.0,truthgit_no_rollback
+Lab F,branch-audit-confirmation-22,provenance_accuracy,branch-audit-confirmation-22,provenance-same-object-branch-22-branch-source,1.0,truthgit_no_rollback
+Lab B,signed-winning-reorg-source-23,provenance_accuracy,signed-winning-reorg-source-23,provenance-merge-governing-source-23-source,1.0,truthgit_no_rollback
 Lab A,unresolved_conflict,merge_conflict_resolution_score,unresolved_conflict,merge-manual-review-00-unresolved,1.0,truthgit_no_rollback
 Lab F,unresolved_conflict,merge_conflict_resolution_score,unresolved_conflict,merge-concurrent-update-01-unresolved,1.0,truthgit_no_rollback
-Lab C,unresolved_conflict,merge_conflict_resolution_score,unresolved_conflict,merge-manual-review-02-unresolved,1.0,truthgit_no_rollback
-Lab B,unresolved_conflict,merge_conflict_resolution_score,unresolved_conflict,merge-concurrent-update-03-unresolved,1.0,truthgit_no_rollback
+Lab E,unresolved_conflict,merge_conflict_resolution_score,unresolved_conflict,merge-competing-branches-02-unresolved,1.0,truthgit_no_rollback
+Lab E,Lab E,merge_conflict_resolution_score,Lab E,merge-temporal-coexistence-03-before,1.0,truthgit_no_rollback
+Lab B,Lab B,merge_conflict_resolution_score,Lab B,merge-temporal-coexistence-03-after,1.0,truthgit_no_rollback
 Lab E,unresolved_conflict,merge_conflict_resolution_score,unresolved_conflict,merge-manual-review-04-unresolved,1.0,truthgit_no_rollback
 Lab D,unresolved_conflict,merge_conflict_resolution_score,unresolved_conflict,merge-concurrent-update-05-unresolved,1.0,truthgit_no_rollback
+Lab C,unresolved_conflict,merge_conflict_resolution_score,unresolved_conflict,merge-competing-branches-06-unresolved,1.0,truthgit_no_rollback
+Lab C,Lab C,merge_conflict_resolution_score,Lab C,merge-temporal-coexistence-07-before,1.0,truthgit_no_rollback
+Lab F,Lab F,merge_conflict_resolution_score,Lab F,merge-temporal-coexistence-07-after,1.0,truthgit_no_rollback
+Lab C,unresolved_conflict,merge_conflict_resolution_score,unresolved_conflict,merge-manual-review-08-unresolved,1.0,truthgit_no_rollback
+Lab B,unresolved_conflict,merge_conflict_resolution_score,unresolved_conflict,merge-concurrent-update-09-unresolved,1.0,truthgit_no_rollback
+Lab A,unresolved_conflict,merge_conflict_resolution_score,unresolved_conflict,merge-competing-branches-10-unresolved,1.0,truthgit_no_rollback
+Lab A,Lab A,merge_conflict_resolution_score,Lab A,merge-temporal-coexistence-11-before,1.0,truthgit_no_rollback
+Lab D,Lab D,merge_conflict_resolution_score,Lab D,merge-temporal-coexistence-11-after,1.0,truthgit_no_rollback
 Dublin,Dublin,current_truth_accuracy,Dublin,temporal-supersession-00-current,1.0,truthgit_no_review_gate
 Dublin,Seoul -> Rome -> Dublin,historical_truth_accuracy,Seoul -> Rome -> Dublin,temporal-supersession-00-history,1.0,truthgit_no_review_gate
 Dublin,residence-ledger-0-c,provenance_accuracy,residence-ledger-0-c,temporal-supersession-00-provenance,1.0,truthgit_no_review_gate
@@ -905,24 +1079,53 @@ Paris,signed-registry-1,provenance_accuracy,signed-registry-1,exact-provenance-0
 Lisbon,signed-registry-2,provenance_accuracy,signed-registry-2,exact-provenance-02-source,1.0,truthgit_no_review_gate
 Dublin,signed-registry-3,provenance_accuracy,signed-registry-3,exact-provenance-03-source,1.0,truthgit_no_review_gate
 Oslo,signed-registry-4,provenance_accuracy,signed-registry-4,exact-provenance-04-source,1.0,truthgit_no_review_gate
-Paris,official-current-registry-0,provenance_accuracy,community-blog-0,provenance-current-justification-00-source,0.0,truthgit_no_review_gate
+Paris,official-current-registry-0,provenance_accuracy,official-current-registry-0,provenance-current-justification-00-source,1.0,truthgit_no_review_gate
 Madrid,verified-residency-file-1,provenance_accuracy,verified-residency-file-1,provenance-rollback-source-01-source,1.0,truthgit_no_review_gate
 Lab C,main-employment-contract-2,provenance_accuracy,main-employment-contract-2,provenance-branch-context-02-main-source,1.0,truthgit_no_review_gate
 Lab F,branch-grant-plan-2,provenance_accuracy,branch-grant-plan-2,provenance-branch-context-02-branch-source,1.0,truthgit_no_review_gate
-Oslo,official-current-registry-3,provenance_accuracy,community-blog-3,provenance-current-justification-03-source,0.0,truthgit_no_review_gate
-Paris,verified-residency-file-4,provenance_accuracy,verified-residency-file-4,provenance-rollback-source-04-source,1.0,truthgit_no_review_gate
-Lab F,main-employment-contract-5,provenance_accuracy,main-employment-contract-5,provenance-branch-context-05-main-source,1.0,truthgit_no_review_gate
-Lab C,branch-grant-plan-5,provenance_accuracy,branch-grant-plan-5,provenance-branch-context-05-branch-source,1.0,truthgit_no_review_gate
-Lima,official-current-registry-6,provenance_accuracy,community-blog-6,provenance-current-justification-06-source,0.0,truthgit_no_review_gate
+Lima,municipal-file-3,provenance_accuracy,municipal-file-3,provenance-same-object-rollback-03-source,1.0,truthgit_no_review_gate
+Lab F,main-personnel-file-4,provenance_accuracy,main-personnel-file-4,provenance-same-object-branch-04-main-source,1.0,truthgit_no_review_gate
+Lab F,branch-audit-confirmation-4,provenance_accuracy,branch-audit-confirmation-4,provenance-same-object-branch-04-branch-source,1.0,truthgit_no_review_gate
+Lab B,signed-winning-reorg-source-5,provenance_accuracy,signed-winning-reorg-source-5,provenance-merge-governing-source-05-source,1.0,truthgit_no_review_gate
+Lima,official-current-registry-6,provenance_accuracy,official-current-registry-6,provenance-current-justification-06-source,1.0,truthgit_no_review_gate
 Oslo,verified-residency-file-7,provenance_accuracy,verified-residency-file-7,provenance-rollback-source-07-source,1.0,truthgit_no_review_gate
 Lab C,main-employment-contract-8,provenance_accuracy,main-employment-contract-8,provenance-branch-context-08-main-source,1.0,truthgit_no_review_gate
 Lab F,branch-grant-plan-8,provenance_accuracy,branch-grant-plan-8,provenance-branch-context-08-branch-source,1.0,truthgit_no_review_gate
+Madrid,municipal-file-9,provenance_accuracy,municipal-file-9,provenance-same-object-rollback-09-source,1.0,truthgit_no_review_gate
+Lab F,main-personnel-file-10,provenance_accuracy,main-personnel-file-10,provenance-same-object-branch-10-main-source,1.0,truthgit_no_review_gate
+Lab F,branch-audit-confirmation-10,provenance_accuracy,branch-audit-confirmation-10,provenance-same-object-branch-10-branch-source,1.0,truthgit_no_review_gate
+Lab B,signed-winning-reorg-source-11,provenance_accuracy,signed-winning-reorg-source-11,provenance-merge-governing-source-11-source,1.0,truthgit_no_review_gate
+Madrid,official-current-registry-12,provenance_accuracy,official-current-registry-12,provenance-current-justification-12-source,1.0,truthgit_no_review_gate
+Seoul,verified-residency-file-13,provenance_accuracy,verified-residency-file-13,provenance-rollback-source-13-source,1.0,truthgit_no_review_gate
+Lab C,main-employment-contract-14,provenance_accuracy,main-employment-contract-14,provenance-branch-context-14-main-source,1.0,truthgit_no_review_gate
+Lab F,branch-grant-plan-14,provenance_accuracy,branch-grant-plan-14,provenance-branch-context-14-branch-source,1.0,truthgit_no_review_gate
+Oslo,municipal-file-15,provenance_accuracy,municipal-file-15,provenance-same-object-rollback-15-source,1.0,truthgit_no_review_gate
+Lab F,main-personnel-file-16,provenance_accuracy,main-personnel-file-16,provenance-same-object-branch-16-main-source,1.0,truthgit_no_review_gate
+Lab F,branch-audit-confirmation-16,provenance_accuracy,branch-audit-confirmation-16,provenance-same-object-branch-16-branch-source,1.0,truthgit_no_review_gate
+Lab B,signed-winning-reorg-source-17,provenance_accuracy,signed-winning-reorg-source-17,provenance-merge-governing-source-17-source,1.0,truthgit_no_review_gate
+Oslo,official-current-registry-18,provenance_accuracy,official-current-registry-18,provenance-current-justification-18-source,1.0,truthgit_no_review_gate
+Paris,verified-residency-file-19,provenance_accuracy,verified-residency-file-19,provenance-rollback-source-19-source,1.0,truthgit_no_review_gate
+Lab C,main-employment-contract-20,provenance_accuracy,main-employment-contract-20,provenance-branch-context-20-main-source,1.0,truthgit_no_review_gate
+Lab F,branch-grant-plan-20,provenance_accuracy,branch-grant-plan-20,provenance-branch-context-20-branch-source,1.0,truthgit_no_review_gate
+Seoul,municipal-file-21,provenance_accuracy,municipal-file-21,provenance-same-object-rollback-21-source,1.0,truthgit_no_review_gate
+Lab F,main-personnel-file-22,provenance_accuracy,main-personnel-file-22,provenance-same-object-branch-22-main-source,1.0,truthgit_no_review_gate
+Lab F,branch-audit-confirmation-22,provenance_accuracy,branch-audit-confirmation-22,provenance-same-object-branch-22-branch-source,1.0,truthgit_no_review_gate
+Lab B,signed-winning-reorg-source-23,provenance_accuracy,signed-winning-reorg-source-23,provenance-merge-governing-source-23-source,1.0,truthgit_no_review_gate
 Lab A,unresolved_conflict,merge_conflict_resolution_score,unresolved_conflict,merge-manual-review-00-unresolved,1.0,truthgit_no_review_gate
 Lab F,unresolved_conflict,merge_conflict_resolution_score,unresolved_conflict,merge-concurrent-update-01-unresolved,1.0,truthgit_no_review_gate
-Lab C,unresolved_conflict,merge_conflict_resolution_score,unresolved_conflict,merge-manual-review-02-unresolved,1.0,truthgit_no_review_gate
-Lab B,unresolved_conflict,merge_conflict_resolution_score,unresolved_conflict,merge-concurrent-update-03-unresolved,1.0,truthgit_no_review_gate
+Lab E,unresolved_conflict,merge_conflict_resolution_score,unresolved_conflict,merge-competing-branches-02-unresolved,1.0,truthgit_no_review_gate
+Lab E,Lab E,merge_conflict_resolution_score,Lab E,merge-temporal-coexistence-03-before,1.0,truthgit_no_review_gate
+Lab B,Lab B,merge_conflict_resolution_score,Lab B,merge-temporal-coexistence-03-after,1.0,truthgit_no_review_gate
 Lab E,unresolved_conflict,merge_conflict_resolution_score,unresolved_conflict,merge-manual-review-04-unresolved,1.0,truthgit_no_review_gate
 Lab D,unresolved_conflict,merge_conflict_resolution_score,unresolved_conflict,merge-concurrent-update-05-unresolved,1.0,truthgit_no_review_gate
+Lab C,unresolved_conflict,merge_conflict_resolution_score,unresolved_conflict,merge-competing-branches-06-unresolved,1.0,truthgit_no_review_gate
+Lab C,Lab C,merge_conflict_resolution_score,Lab C,merge-temporal-coexistence-07-before,1.0,truthgit_no_review_gate
+Lab F,Lab F,merge_conflict_resolution_score,Lab F,merge-temporal-coexistence-07-after,1.0,truthgit_no_review_gate
+Lab C,unresolved_conflict,merge_conflict_resolution_score,unresolved_conflict,merge-manual-review-08-unresolved,1.0,truthgit_no_review_gate
+Lab B,unresolved_conflict,merge_conflict_resolution_score,unresolved_conflict,merge-concurrent-update-09-unresolved,1.0,truthgit_no_review_gate
+Lab A,unresolved_conflict,merge_conflict_resolution_score,unresolved_conflict,merge-competing-branches-10-unresolved,1.0,truthgit_no_review_gate
+Lab A,Lab A,merge_conflict_resolution_score,Lab A,merge-temporal-coexistence-11-before,1.0,truthgit_no_review_gate
+Lab D,Lab D,merge_conflict_resolution_score,Lab D,merge-temporal-coexistence-11-after,1.0,truthgit_no_review_gate
 Dublin,Dublin,current_truth_accuracy,Dublin,temporal-supersession-00-current,1.0,truthgit_no_trust_scoring
 Dublin,Seoul -> Rome -> Dublin,historical_truth_accuracy,Seoul -> Rome -> Dublin,temporal-supersession-00-history,1.0,truthgit_no_trust_scoring
 Dublin,residence-ledger-0-c,provenance_accuracy,residence-ledger-0-c,temporal-supersession-00-provenance,1.0,truthgit_no_trust_scoring
@@ -1037,21 +1240,50 @@ Paris,signed-registry-1,provenance_accuracy,signed-registry-1,exact-provenance-0
 Lisbon,signed-registry-2,provenance_accuracy,signed-registry-2,exact-provenance-02-source,1.0,truthgit_no_trust_scoring
 Dublin,signed-registry-3,provenance_accuracy,signed-registry-3,exact-provenance-03-source,1.0,truthgit_no_trust_scoring
 Oslo,signed-registry-4,provenance_accuracy,signed-registry-4,exact-provenance-04-source,1.0,truthgit_no_trust_scoring
-Paris,official-current-registry-0,provenance_accuracy,community-blog-0,provenance-current-justification-00-source,0.0,truthgit_no_trust_scoring
+Paris,official-current-registry-0,provenance_accuracy,official-current-registry-0,provenance-current-justification-00-source,1.0,truthgit_no_trust_scoring
 Madrid,verified-residency-file-1,provenance_accuracy,verified-residency-file-1,provenance-rollback-source-01-source,1.0,truthgit_no_trust_scoring
 Lab C,main-employment-contract-2,provenance_accuracy,main-employment-contract-2,provenance-branch-context-02-main-source,1.0,truthgit_no_trust_scoring
 Lab F,branch-grant-plan-2,provenance_accuracy,branch-grant-plan-2,provenance-branch-context-02-branch-source,1.0,truthgit_no_trust_scoring
-Oslo,official-current-registry-3,provenance_accuracy,community-blog-3,provenance-current-justification-03-source,0.0,truthgit_no_trust_scoring
-Paris,verified-residency-file-4,provenance_accuracy,verified-residency-file-4,provenance-rollback-source-04-source,1.0,truthgit_no_trust_scoring
-Lab F,main-employment-contract-5,provenance_accuracy,main-employment-contract-5,provenance-branch-context-05-main-source,1.0,truthgit_no_trust_scoring
-Lab C,branch-grant-plan-5,provenance_accuracy,branch-grant-plan-5,provenance-branch-context-05-branch-source,1.0,truthgit_no_trust_scoring
-Lima,official-current-registry-6,provenance_accuracy,community-blog-6,provenance-current-justification-06-source,0.0,truthgit_no_trust_scoring
+Lima,municipal-file-3,provenance_accuracy,municipal-file-3,provenance-same-object-rollback-03-source,1.0,truthgit_no_trust_scoring
+Lab F,main-personnel-file-4,provenance_accuracy,main-personnel-file-4,provenance-same-object-branch-04-main-source,1.0,truthgit_no_trust_scoring
+Lab F,branch-audit-confirmation-4,provenance_accuracy,branch-audit-confirmation-4,provenance-same-object-branch-04-branch-source,1.0,truthgit_no_trust_scoring
+Lab D,signed-winning-reorg-source-5,provenance_accuracy,rumor-reorg-source-5,provenance-merge-governing-source-05-source,0.0,truthgit_no_trust_scoring
+Lima,official-current-registry-6,provenance_accuracy,official-current-registry-6,provenance-current-justification-06-source,1.0,truthgit_no_trust_scoring
 Oslo,verified-residency-file-7,provenance_accuracy,verified-residency-file-7,provenance-rollback-source-07-source,1.0,truthgit_no_trust_scoring
 Lab C,main-employment-contract-8,provenance_accuracy,main-employment-contract-8,provenance-branch-context-08-main-source,1.0,truthgit_no_trust_scoring
 Lab F,branch-grant-plan-8,provenance_accuracy,branch-grant-plan-8,provenance-branch-context-08-branch-source,1.0,truthgit_no_trust_scoring
+Madrid,municipal-file-9,provenance_accuracy,municipal-file-9,provenance-same-object-rollback-09-source,1.0,truthgit_no_trust_scoring
+Lab F,main-personnel-file-10,provenance_accuracy,main-personnel-file-10,provenance-same-object-branch-10-main-source,1.0,truthgit_no_trust_scoring
+Lab F,branch-audit-confirmation-10,provenance_accuracy,branch-audit-confirmation-10,provenance-same-object-branch-10-branch-source,1.0,truthgit_no_trust_scoring
+Lab D,signed-winning-reorg-source-11,provenance_accuracy,rumor-reorg-source-11,provenance-merge-governing-source-11-source,0.0,truthgit_no_trust_scoring
+Madrid,official-current-registry-12,provenance_accuracy,official-current-registry-12,provenance-current-justification-12-source,1.0,truthgit_no_trust_scoring
+Seoul,verified-residency-file-13,provenance_accuracy,verified-residency-file-13,provenance-rollback-source-13-source,1.0,truthgit_no_trust_scoring
+Lab C,main-employment-contract-14,provenance_accuracy,main-employment-contract-14,provenance-branch-context-14-main-source,1.0,truthgit_no_trust_scoring
+Lab F,branch-grant-plan-14,provenance_accuracy,branch-grant-plan-14,provenance-branch-context-14-branch-source,1.0,truthgit_no_trust_scoring
+Oslo,municipal-file-15,provenance_accuracy,municipal-file-15,provenance-same-object-rollback-15-source,1.0,truthgit_no_trust_scoring
+Lab F,main-personnel-file-16,provenance_accuracy,main-personnel-file-16,provenance-same-object-branch-16-main-source,1.0,truthgit_no_trust_scoring
+Lab F,branch-audit-confirmation-16,provenance_accuracy,branch-audit-confirmation-16,provenance-same-object-branch-16-branch-source,1.0,truthgit_no_trust_scoring
+Lab D,signed-winning-reorg-source-17,provenance_accuracy,rumor-reorg-source-17,provenance-merge-governing-source-17-source,0.0,truthgit_no_trust_scoring
+Oslo,official-current-registry-18,provenance_accuracy,official-current-registry-18,provenance-current-justification-18-source,1.0,truthgit_no_trust_scoring
+Paris,verified-residency-file-19,provenance_accuracy,verified-residency-file-19,provenance-rollback-source-19-source,1.0,truthgit_no_trust_scoring
+Lab C,main-employment-contract-20,provenance_accuracy,main-employment-contract-20,provenance-branch-context-20-main-source,1.0,truthgit_no_trust_scoring
+Lab F,branch-grant-plan-20,provenance_accuracy,branch-grant-plan-20,provenance-branch-context-20-branch-source,1.0,truthgit_no_trust_scoring
+Seoul,municipal-file-21,provenance_accuracy,municipal-file-21,provenance-same-object-rollback-21-source,1.0,truthgit_no_trust_scoring
+Lab F,main-personnel-file-22,provenance_accuracy,main-personnel-file-22,provenance-same-object-branch-22-main-source,1.0,truthgit_no_trust_scoring
+Lab F,branch-audit-confirmation-22,provenance_accuracy,branch-audit-confirmation-22,provenance-same-object-branch-22-branch-source,1.0,truthgit_no_trust_scoring
+Lab D,signed-winning-reorg-source-23,provenance_accuracy,rumor-reorg-source-23,provenance-merge-governing-source-23-source,0.0,truthgit_no_trust_scoring
 Lab B,unresolved_conflict,merge_conflict_resolution_score,unresolved_conflict,merge-manual-review-00-unresolved,1.0,truthgit_no_trust_scoring
 Lab D,unresolved_conflict,merge_conflict_resolution_score,unresolved_conflict,merge-concurrent-update-01-unresolved,1.0,truthgit_no_trust_scoring
-Lab D,unresolved_conflict,merge_conflict_resolution_score,unresolved_conflict,merge-manual-review-02-unresolved,1.0,truthgit_no_trust_scoring
-Lab F,unresolved_conflict,merge_conflict_resolution_score,unresolved_conflict,merge-concurrent-update-03-unresolved,1.0,truthgit_no_trust_scoring
+Lab B,unresolved_conflict,merge_conflict_resolution_score,unresolved_conflict,merge-competing-branches-02-unresolved,1.0,truthgit_no_trust_scoring
+Lab E,Lab E,merge_conflict_resolution_score,Lab E,merge-temporal-coexistence-03-before,1.0,truthgit_no_trust_scoring
+Lab B,Lab B,merge_conflict_resolution_score,Lab B,merge-temporal-coexistence-03-after,1.0,truthgit_no_trust_scoring
 Lab F,unresolved_conflict,merge_conflict_resolution_score,unresolved_conflict,merge-manual-review-04-unresolved,1.0,truthgit_no_trust_scoring
 Lab B,unresolved_conflict,merge_conflict_resolution_score,unresolved_conflict,merge-concurrent-update-05-unresolved,1.0,truthgit_no_trust_scoring
+Lab F,unresolved_conflict,merge_conflict_resolution_score,unresolved_conflict,merge-competing-branches-06-unresolved,1.0,truthgit_no_trust_scoring
+Lab C,Lab C,merge_conflict_resolution_score,Lab C,merge-temporal-coexistence-07-before,1.0,truthgit_no_trust_scoring
+Lab F,Lab F,merge_conflict_resolution_score,Lab F,merge-temporal-coexistence-07-after,1.0,truthgit_no_trust_scoring
+Lab D,unresolved_conflict,merge_conflict_resolution_score,unresolved_conflict,merge-manual-review-08-unresolved,1.0,truthgit_no_trust_scoring
+Lab F,unresolved_conflict,merge_conflict_resolution_score,unresolved_conflict,merge-concurrent-update-09-unresolved,1.0,truthgit_no_trust_scoring
+Lab D,unresolved_conflict,merge_conflict_resolution_score,unresolved_conflict,merge-competing-branches-10-unresolved,1.0,truthgit_no_trust_scoring
+Lab A,Lab A,merge_conflict_resolution_score,Lab A,merge-temporal-coexistence-11-before,1.0,truthgit_no_trust_scoring
+Lab D,Lab D,merge_conflict_resolution_score,Lab D,merge-temporal-coexistence-11-after,1.0,truthgit_no_trust_scoring
