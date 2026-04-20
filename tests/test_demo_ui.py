@@ -31,6 +31,7 @@ def test_demo_manual_prompt_supersession_and_rollback(client: TestClient) -> Non
     assert first.status_code == 200
     first_payload = first.json()
     assert first_payload["commit"]["id"] is not None
+    assert "assistant_reply" in first_payload
     assert any(version["object_value"] == "Seoul" for version in first_payload["snapshot"]["versions"])
 
     second = client.post(
@@ -86,6 +87,7 @@ def test_demo_manual_prompt_branch_only_hypothetical(client: TestClient) -> None
     assert response.status_code == 200
     payload = response.json()
     assert payload["branch"]["name"] == "trip-plan"
+    assert "branch-specific hypothetical" in payload["assistant_reply"]
     assert any(
         version["object_value"] == "Tokyo"
         and version["status"] == "hypothetical"
@@ -116,4 +118,5 @@ def test_demo_llm_mode_falls_back_and_suggests_metadata_without_api_key(client: 
     assert payload["staged"]["status"] == "pending"
     assert payload["extraction"]["mode"] == "llm"
     assert payload["extraction"]["used_fallback"] is True
+    assert payload["assistant_reply"]
     assert any("OPENAI_API_KEY" in warning for warning in payload["warnings"])

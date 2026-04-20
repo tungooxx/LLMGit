@@ -139,10 +139,16 @@ class LLMClient:
                             "Use branch_name='main' for current durable facts. "
                             "Use a short branch name such as 'trip-plan' or 'what-if' for hypothetical, future, "
                             "temporary, planning, or counterfactual claims. "
+                            "If the user says 'during the conference week', 'trip plan', 'will stay', "
+                            "or asks you to suppose a scenario, use branch_name='trip-plan' unless they explicitly "
+                            "say it is current ground truth. "
                             "Choose trust_score from source wording only: around 0.85 for clear direct statements, "
                             "around 0.55 for uncertain or hearsay claims, and around 0.25 for suspicious, joke, "
                             "impossible, or low-trust claims. "
-                            "Return no claims for pure questions. Do not mutate memory."
+                            "Return no claims for pure questions. "
+                            "Write assistant_reply as a concise, natural chat response that explains whether the "
+                            "memory is being staged, committed, branched, or treated cautiously. "
+                            "Do not claim that memory was written directly; Python will validate and apply it."
                         ),
                     },
                     {"role": "user", "content": text},
@@ -278,6 +284,7 @@ def _fallback_memory_write_plan(
         branch_name=_fallback_branch_name(text, fallback_branch_name),
         trust_score=_fallback_trust_score(text, fallback_trust_score),
         rationale="Local fallback chose metadata from simple wording heuristics.",
+        assistant_reply=_fallback_assistant_reply(text, len(claims)),
     )
 
 
@@ -299,6 +306,17 @@ def _fallback_trust_score(text: str, fallback_trust_score: float) -> float:
     if any(token in lower for token in ("confirmed", "official", "verified")):
         return 0.85
     return max(0.0, min(1.0, fallback_trust_score))
+
+
+def _fallback_assistant_reply(text: str, claim_count: int) -> str:
+    lower = text.lower()
+    if claim_count == 0:
+        return "I did not find an explicit memory claim to stage."
+    if any(token in lower for token in ("conference", "trip", "what if", "hypothetical", "will stay")):
+        return "I will stage that as a branch-specific hypothetical memory so it does not overwrite main truth."
+    if any(token in lower for token in ("atlantis", "fake", "joke", "impossible", "rumor", "heard")):
+        return "I will stage that cautiously for review because the source sounds low-trust or uncertain."
+    return "I will stage that as a reviewable TruthGit memory update and preserve any previous version."
 
 
 def openai_strict_json_schema(model: Any) -> dict[str, Any]:

@@ -78,6 +78,7 @@ def manual_prompt(
             "commit": None,
             "versions": [],
             "timelines": [],
+            "assistant_reply": write_plan.assistant_reply,
             "warnings": sorted(
                 set(["No explicit atomic claim was extracted from that prompt.", *extraction_warnings])
             ),
@@ -116,6 +117,7 @@ def manual_prompt(
         "commit": _commit_payload(result.commit) if result else None,
         "versions": [_version_payload(db, version) for version in result.introduced_versions] if result else [],
         "timelines": affected_timelines,
+        "assistant_reply": _assistant_reply_with_outcome(write_plan.assistant_reply, result is not None, staged.id),
         "warnings": sorted(set(warnings)),
         "extraction": extraction_info,
         "snapshot": _demo_snapshot(db),
@@ -237,6 +239,16 @@ def _safe_branch_name(value: str) -> str:
     clean = "".join(character for character in clean if character.isalnum() or character == "-")
     clean = "-".join(part for part in clean.split("-") if part)
     return clean[:40] or "main"
+
+
+def _assistant_reply_with_outcome(reply: str, committed: bool, staged_id: str) -> str:
+    suffix = (
+        "The staged memory has been approved into a commit."
+        if committed
+        else f"I staged it for review as {staged_id}."
+    )
+    clean_reply = reply.strip() or "I prepared this as a reviewable TruthGit memory update."
+    return f"{clean_reply} {suffix}"
 
 
 def _resolve_demo_branch(db: Session, name: str) -> models.Branch:
@@ -743,7 +755,7 @@ _HTML = """
         lastStagedId = data.staged?.status === "pending" ? data.staged.id : null;
         lastCommitId = data.commit?.id || lastCommitId;
         renderSnapshot(data.snapshot);
-        appendMessage("system", summarizeManual(data), detailLine(data));
+        appendMessage("system", data.assistant_reply || summarizeManual(data), detailLine(data));
       } catch (error) {
         appendMessage("system", "Request failed.", String(error));
       }

@@ -60,6 +60,7 @@ class MemoryWritePlan(BaseModel):
     branch_name: str = "main"
     trust_score: float = Field(default=0.7, ge=0.0, le=1.0)
     rationale: str = "Use the default branch and trust policy."
+    assistant_reply: str = "I staged this as a reviewable TruthGit memory update."
 
 
 class SourceCreate(BaseModel):
