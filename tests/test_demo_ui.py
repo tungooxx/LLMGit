@@ -23,6 +23,7 @@ def test_demo_page_loads(client: TestClient) -> None:
     assert "use LLM" in response.text
     assert "LLM branch/trust" in response.text
     assert "ask current" in response.text
+    assert "Load Benchmark Case" in response.text
     assert "Benchmark Playback" not in response.text
 
 
@@ -121,6 +122,25 @@ def test_demo_manual_prompt_branch_only_hypothetical(client: TestClient) -> None
         and version["branch_name"] == "trip-plan"
         for version in payload["versions"]
     )
+
+
+def test_demo_loads_one_benchmark_case_into_graph(client: TestClient) -> None:
+    response = client.post("/demo/benchmark-case", json={})
+
+    assert response.status_code == 200
+    payload = response.json()
+    assert payload["benchmark_case"]["question_id"] == "demo-alice"
+    assert payload["benchmark_case"]["mode"] == "LongMemEval-style record_batch"
+    assert "Busan" in payload["benchmark_case"]["answer"]
+    assert payload["staged"]["status"] == "applied"
+    assert payload["staged"]["source_ref"] == "longmemeval:demo-alice:selected-history"
+    assert payload["commit"]["id"] is not None
+    assert len(payload["claims"]) == 2
+    versions = payload["snapshot"]["versions"]
+    assert any(version["object_value"] == "Busan" and version["status"] == "active" for version in versions)
+    assert any(version["object_value"] == "Seoul" and version["status"] == "superseded" for version in versions)
+    assert payload["snapshot"]["counts"]["commits"] == 1
+    assert payload["snapshot"]["counts"]["staged"] == 0
 
 
 def test_demo_answers_questions_from_memory_without_writing(client: TestClient) -> None:

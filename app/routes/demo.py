@@ -3,6 +3,7 @@
 from __future__ import annotations
 
 import re
+from datetime import date
 from typing import Any, Literal
 
 from fastapi import APIRouter, Depends, HTTPException
@@ -192,6 +193,79 @@ def reset_demo_state(
 
     if not request.confirm:
         raise HTTPException(status_code=400, detail="Reset requires confirm=true")
+    _reset_demo_tables(db)
+    db.commit()
+    return {"snapshot": _demo_snapshot(db)}
+
+
+@router.post("/demo/benchmark-case")
+def load_demo_benchmark_case(db: Session = Depends(get_db)) -> dict[str, Any]:
+    """Load one LongMemEval-style case through the staged commit pipeline."""
+
+    _reset_demo_tables(db)
+    branch = ensure_main_branch(db)
+    db.flush()
+    sessions = _demo_longmemeval_sessions()
+    claims = _demo_longmemeval_claims()
+    source_excerpt = "\n\n".join(_demo_session_text(session) for session in sessions)
+    source = SourceCreate(
+        source_type="document",
+        source_ref="longmemeval:demo-alice:selected-history",
+        excerpt=source_excerpt,
+        trust_score=0.75,
+    )
+    staged = stage_belief_changes(
+        db,
+        claims=claims,
+        branch_id=branch.id,
+        source=source,
+        proposed_commit_message="LongMemEval one-case selected-history ingest",
+        created_by="longmemeval-truthgit",
+        model_name="demo-longmemeval-question-blind",
+    )
+    result = approve_staged_commit(
+        db,
+        staged_commit_id=staged.id,
+        reviewer="longmemeval-truthgit",
+        notes="Automated one-case benchmark replay approval.",
+        commit_message=staged.proposed_commit_message,
+        model_name="demo-longmemeval-question-blind",
+    )
+    question = "Where does Alice live now?"
+    answer = LLMClient(get_settings()).answer_from_memory(question, _demo_memory_context(db, branch))
+    db.commit()
+    return {
+        "branch": _branch_payload(branch),
+        "benchmark_case": {
+            "question_id": "demo-alice",
+            "question": question,
+            "answer": answer,
+            "mode": "LongMemEval-style record_batch",
+            "steps": [
+                "select non-gold sessions",
+                "extract durable claims without seeing the future question",
+                "persist staged commit in SQLite",
+                "approve staged commit through deterministic TruthGit validation",
+                "answer from versioned belief memory",
+            ],
+        },
+        "sessions": sessions,
+        "claims": [claim.model_dump(mode="json") for claim in claims],
+        "staged": _staged_payload(staged),
+        "commit": _commit_payload(result.commit),
+        "versions": [_version_payload(db, version) for version in result.introduced_versions],
+        "assistant_reply": (
+            f"Loaded one LongMemEval-style case. TruthGit staged and approved "
+            f"{len(claims)} extracted claim(s) as commit #{result.commit.id}. Answer: {answer}"
+        ),
+        "warnings": sorted(set([*list(staged.warnings_json), *result.warnings])),
+        "snapshot": _demo_snapshot(db),
+    }
+
+
+def _reset_demo_tables(db: Session) -> None:
+    """Clear demo tables and recreate main without hard-deleting outside this SQLite DB."""
+
     for model in (
         models.AuditEvent,
         models.StagedCommit,
@@ -203,8 +277,69 @@ def reset_demo_state(
     ):
         db.execute(delete(model))
     ensure_main_branch(db)
-    db.commit()
-    return {"snapshot": _demo_snapshot(db)}
+
+
+def _demo_longmemeval_sessions() -> list[dict[str, Any]]:
+    """Return a small non-gold LongMemEval-style session history for visualization."""
+
+    return [
+        {
+            "session_index": 0,
+            "session_id": "demo-s1",
+            "date": "2026-03-01",
+            "turns": [
+                {"role": "user", "content": "Alice lives in Seoul."},
+                {"role": "assistant", "content": "Noted."},
+            ],
+        },
+        {
+            "session_index": 1,
+            "session_id": "demo-s2",
+            "date": "2026-04-01",
+            "turns": [
+                {"role": "user", "content": "Alice moved to Busan."},
+                {"role": "assistant", "content": "Updated."},
+            ],
+        },
+    ]
+
+
+def _demo_longmemeval_claims() -> list[ExtractedClaim]:
+    """Return the claims that a question-blind extractor should persist."""
+
+    return [
+        ExtractedClaim.model_validate(
+            {
+                "subject": "Alice",
+                "predicate": "lives_in",
+                "object": "Seoul",
+                "confidence": 0.82,
+                "valid_from": date(2026, 3, 1),
+                "source_quote": "Alice lives in Seoul.",
+                "notes": "demo benchmark extractor: session 0",
+            }
+        ),
+        ExtractedClaim.model_validate(
+            {
+                "subject": "Alice",
+                "predicate": "lives_in",
+                "object": "Busan",
+                "confidence": 0.88,
+                "valid_from": date(2026, 4, 1),
+                "source_quote": "Alice moved to Busan.",
+                "notes": "demo benchmark extractor: session 1",
+            }
+        ),
+    ]
+
+
+def _demo_session_text(session: dict[str, Any]) -> str:
+    """Render one demo session in the same compact shape as the benchmark source."""
+
+    lines = [f"[Session {session['session_index']} | {session.get('date') or 'unknown'}]"]
+    for turn in session["turns"]:
+        lines.append(f"{turn['role']}: {turn['content']}")
+    return "\n".join(lines)
 
 
 def _build_demo_write_plan(request: DemoPromptRequest) -> tuple[MemoryWritePlan, dict[str, Any], list[str]]:
@@ -761,6 +896,7 @@ _HTML = """
         <textarea id="manualText" placeholder="Type a memory update, for example: Alice lives in Seoul.">Alice lives in Seoul.</textarea>
         <div class="controls">
           <button class="primary" id="sendPrompt">Send</button>
+          <button class="warn" id="benchmarkCase">Load Benchmark Case</button>
           <button class="warn" id="approveStaged">Approve Staged</button>
           <button class="warn" id="rollbackLast">Rollback Last Commit</button>
           <button class="danger" id="resetDemo">Reset</button>
@@ -795,6 +931,7 @@ _HTML = """
     let lastCommitId = null;
 
     document.getElementById("sendPrompt").addEventListener("click", runManualPrompt);
+    document.getElementById("benchmarkCase").addEventListener("click", loadBenchmarkCase);
     document.getElementById("approveStaged").addEventListener("click", approveStaged);
     document.getElementById("rollbackLast").addEventListener("click", rollbackLast);
     document.getElementById("resetDemo").addEventListener("click", resetDemo);
@@ -852,6 +989,19 @@ _HTML = """
         appendMessage("system", `Approved staged commit ${approvedId}.`, `Created commit #${lastCommitId}.`);
       } catch (error) {
         appendMessage("system", "Approval failed.", String(error));
+      }
+    }
+
+    async function loadBenchmarkCase() {
+      try {
+        appendMessage("system", "Loading one LongMemEval-style case through TruthGit...");
+        const data = await postJson("/demo/benchmark-case", {});
+        lastStagedId = null;
+        lastCommitId = data.commit?.id || null;
+        renderSnapshot(data.snapshot);
+        appendMessage("system", data.assistant_reply, benchmarkDetail(data));
+      } catch (error) {
+        appendMessage("system", "Benchmark case failed.", String(error));
       }
     }
 
@@ -929,6 +1079,19 @@ _HTML = """
         parts.push(`${data.extraction.model_name}`);
         parts.push(`trust ${Number(data.extraction.trust_score).toFixed(2)}`);
         if (data.extraction.rationale) parts.push(data.extraction.rationale);
+      }
+      if (data.staged) parts.push(`staged ${data.staged.id}`);
+      if (data.commit) parts.push(`commit #${data.commit.id}`);
+      if (data.warnings?.length) parts.push(data.warnings.join(" "));
+      return parts.join(" | ");
+    }
+
+    function benchmarkDetail(data) {
+      const parts = [];
+      if (data.benchmark_case) {
+        parts.push(data.benchmark_case.mode);
+        parts.push(`question ${data.benchmark_case.question_id}`);
+        parts.push(data.benchmark_case.steps.join(" -> "));
       }
       if (data.staged) parts.push(`staged ${data.staged.id}`);
       if (data.commit) parts.push(`commit #${data.commit.id}`);
