@@ -1153,16 +1153,29 @@ _HTML = """
 
     function renderSnapshot(snapshot) {
       renderStats(snapshot?.counts || {});
-      renderLineage(snapshot?.versions || []);
+      renderLineage(snapshot?.versions || [], snapshot?.staged_commits || []);
       renderGraph(snapshot || {});
       renderVersions(snapshot?.versions || []);
       renderAudit(snapshot?.staged_commits || [], snapshot?.audit || []);
     }
 
-    function renderLineage(rows) {
+    function renderLineage(rows, stagedRows = []) {
       const container = document.getElementById("lineageStrip");
       const versions = [...rows].sort((left, right) => Number(left.id) - Number(right.id));
       if (!versions.length) {
+        const pending = stagedRows.filter(row => row.status === "pending");
+        if (pending.length) {
+          container.innerHTML = pending.map(row => `
+            <div class="lineage-card hypothetical">
+              <b>staged write</b>
+              <small>${escapeHtml(row.source_ref || "pending source")}</small>
+              <strong>review required</strong>
+              <small>${escapeHtml((row.risk_reasons || []).join(", ") || "manual approval needed")}</small>
+              <small>${escapeHtml(row.id)}</small>
+            </div>
+          `).join("");
+          return;
+        }
         container.innerHTML = `<span class="lineage-empty">No belief lineage yet. Click Load Benchmark Case or send a memory update.</span>`;
         return;
       }
@@ -1195,6 +1208,7 @@ _HTML = """
       const svg = document.getElementById("gitGraph");
       const commits = [...(snapshot.commits || [])].sort((left, right) => Number(left.id) - Number(right.id));
       const versions = [...(snapshot.versions || [])].sort((left, right) => Number(left.id) - Number(right.id));
+      const pendingStaged = [...(snapshot.staged_commits || [])].filter(row => row.status === "pending");
       const branches = snapshot.branches || [];
       const branchById = new Map(branches.map(branch => [branch.id, branch]));
       const commitX = new Map(commits.map((commit, index) => [commit.id, 118 + index * 230]));
@@ -1204,6 +1218,17 @@ _HTML = """
       svg.setAttribute("width", width);
       svg.setAttribute("height", height);
       if (!commits.length && !versions.length) {
+        if (pendingStaged.length) {
+          svg.innerHTML = `
+            <text x="40" y="56" fill="#475467" font-size="15" font-weight="700">Pending staged write awaiting approval</text>
+            <rect x="40" y="82" width="390" height="94" rx="10" fill="#f4f0ff" stroke="#6d3fc4" stroke-width="1.5"></rect>
+            <text x="62" y="113" fill="#1f2933" font-size="14" font-weight="800">review required</text>
+            <text x="62" y="137" fill="#667085" font-size="12">${escapeSvg(shorten(pendingStaged[0].source_ref || "staged memory write", 46))}</text>
+            <text x="62" y="159" fill="#667085" font-size="12">${escapeSvg(shorten((pendingStaged[0].risk_reasons || []).join(", ") || "manual approval needed", 48))}</text>
+            <text x="452" y="137" fill="#667085" font-size="14">Click Approve Staged to create the first commit.</text>
+          `;
+          return;
+        }
         svg.innerHTML = `<text x="40" y="72" fill="#667085" font-size="15">No commits yet. Send a prompt to create the first memory commit.</text>`;
         return;
       }
