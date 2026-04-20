@@ -57,6 +57,8 @@ LongMemEval setup:
 - adapter: `experiments/public_benchmarks/longmemeval.py`
 - instructions: `docs/public_benchmarks/longmemeval.md`
 - runner: `scripts/run_longmemeval.sh`
+- full generator/evaluator: `scripts/run_longmemeval_full.ps1` or `scripts/run_longmemeval_full.sh`
+- TruthGit generator/evaluator: `scripts/run_longmemeval_truthgit.ps1` or `scripts/run_longmemeval_truthgit.sh`
 - default data file: `data/longmemeval_s_cleaned.json`
 
 Run after downloading the official cleaned split:
@@ -66,6 +68,31 @@ LONGMEMEVAL_DATA=data/longmemeval_s_cleaned.json bash scripts/run_longmemeval.sh
 ```
 
 This produces prompt JSONL and a dataset manifest under `experiments/public_results/longmemeval/`. It does not alter the frozen TruthGit result files.
+
+Real public benchmark run:
+
+```powershell
+$env:OPENAI_API_KEY = "..."
+$env:OPENAI_MODEL = "gpt-4o-mini"
+.\scripts\run_longmemeval_full.ps1
+```
+
+Run `.\scripts\run_longmemeval_full.ps1 -Limit 3` first as a smoke test. The full run generates non-leaking hypotheses, evaluates with the official-style GPT-4o judge prompt, and writes `*.summary.json` under `experiments/public_results/longmemeval/`.
+
+Real TruthGit public benchmark run:
+
+```powershell
+$env:OPENAI_API_KEY = "..."
+$env:OPENAI_MODEL = "gpt-4o-mini"
+.\scripts\run_longmemeval_truthgit.ps1 -Limit 3 -Trace
+.\scripts\run_longmemeval_truthgit.ps1
+```
+
+This path creates a fresh TruthGit store per LongMemEval record, extracts claims from selected sessions, persists staged commits, approves them into commits, stores belief versions/sources/audit events, answers from TruthGit memory, and evaluates with the same LongMemEval judge path.
+
+LongMemEval reporting rule: `-Limit` runs are adapter smoke tests, not final public scores. If failures are inspected and code is changed, rerun on a fresh held-out sample or the full split before reporting. Generation must not use `answer`, `answer_session_ids`, `has_answer`, or judge labels.
+
+Predicate labels are open model-generated relation names. The deterministic layer only normalizes obvious aliases for stable keys; it does not impose a closed predicate ontology on LongMemEval extraction.
 
 ## Final Result Table
 

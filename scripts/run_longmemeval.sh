@@ -41,10 +41,14 @@ cat <<EOF
 LongMemEval public-benchmark inputs are ready.
 
 Next:
-  1. Generate hypotheses from $OUTPUT_DIR/${SPLIT_LABEL}_prompts.jsonl.
-  2. Save JSONL lines with: {"question_id": "...", "hypothesis": "..."}.
-  3. Use the official LongMemEval evaluator:
+  1. Smoke test the real generator/evaluator:
+     LONGMEMEVAL_LIMIT=3 bash scripts/run_longmemeval_full.sh
+  2. Run the full generator/evaluator:
+     bash scripts/run_longmemeval_full.sh
+  3. Keep the generated hypothesis JSONL for the official upstream evaluator:
      https://github.com/xiaowu0162/LongMemEval
+  4. Run TruthGit itself on LongMemEval:
+     LONGMEMEVAL_LIMIT=3 bash scripts/run_longmemeval_truthgit.sh
 
 This public benchmark is supplementary. The frozen TruthGit synthetic benchmark remains the main table.
 EOF

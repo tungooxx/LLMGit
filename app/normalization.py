@@ -8,6 +8,8 @@ from datetime import date
 from typing import Any
 
 
+# Predicates are open, model-generated relation labels. This alias map is only a
+# stability layer for obvious lexical variants, not a closed ontology.
 PREDICATE_ALIASES: dict[str, str] = {
     "live in": "lives_in",
     "lives in": "lives_in",
@@ -64,7 +66,7 @@ def canonical_text(value: str) -> str:
 
 
 def normalize_predicate(predicate: str) -> str:
-    """Map predicate aliases to canonical snake-case predicates."""
+    """Normalize an open model-generated predicate label."""
 
     key = canonical_text(predicate).replace("_", " ")
     if key in PREDICATE_ALIASES:
