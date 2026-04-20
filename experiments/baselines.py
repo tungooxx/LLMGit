@@ -313,8 +313,19 @@ class TruthGitSystem:
                 branch_name=question.branch_name,
             )
         current = crud.get_current_versions(db, belief_id=belief.id, branch_id=branch_id)
-        chosen = self._choose_current(db, current)
-        historical_versions = crud.list_belief_versions(db, belief.id)
+        historical_versions = [
+            version
+            for version in sorted(
+                crud.list_belief_versions(db, belief.id),
+                key=lambda version: (_date_rank(version.valid_from), version.id),
+            )
+            if version.status != "retracted"
+        ]
+        chosen = (
+            self._choose_as_of(db, historical_versions, question.as_of)
+            if question.as_of is not None
+            else self._choose_current(db, current)
+        )
         source_ref = self._source_ref(chosen.source_id) if chosen is not None else None
         related_warnings = self.warnings_by_event.get(question.related_event_id or "", [])
         answer_text = chosen.object_value if chosen else "unknown"
@@ -373,6 +384,17 @@ class TruthGitSystem:
                 ),
             )
         return max(versions, key=lambda version: (_date_rank(version.valid_from), version.id))
+
+    def _choose_as_of(self, db: Session, versions: list[object], as_of: object | None) -> object | None:
+        eligible = [
+            version
+            for version in versions
+            if _date_rank(version.valid_from) <= _date_rank(as_of)
+            and (version.valid_to is None or _date_rank(version.valid_to) >= _date_rank(as_of))
+        ]
+        if not eligible:
+            return None
+        return self._choose_current(db, eligible)
 
 
 def primary_systems() -> list[MemorySystem]:
