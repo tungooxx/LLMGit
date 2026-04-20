@@ -50,6 +50,9 @@ class MemorySystem(Protocol):
     def answer(self, question: BenchmarkQuestion) -> SystemAnswer:
         """Answer one structured benchmark question."""
 
+    def memory_context(self, question: BenchmarkQuestion, *, max_items: int = 20) -> dict[str, object]:
+        """Return the context this memory system would expose to a shared reader."""
+
 
 @dataclass
 class MemoryFact:
@@ -101,6 +104,18 @@ class NaiveChatHistoryBaseline:
         historical = [fact.object_value for fact in matches]
         return _answer_from_fact(self.name, question, chosen, historical)
 
+    def memory_context(self, question: BenchmarkQuestion, *, max_items: int = 20) -> dict[str, object]:
+        matches = [
+            fact
+            for fact in self.facts
+            if fact.subject == question.subject and fact.predicate == question.predicate
+        ]
+        return {
+            "memory_system": self.name,
+            "retrieval_policy": "flat chronological subject+predicate history; no rollback, merge, branch, or warning state",
+            "facts": [_fact_context_row(fact) for fact in matches[-max_items:]],
+        }
+
 
 class SimpleRagBaseline:
     """Baseline that retrieves by subject/predicate and source trust only."""
@@ -131,6 +146,25 @@ class SimpleRagBaseline:
             ]
         chosen = max(matches, key=lambda fact: (fact.trust_score, fact.event_id), default=None)
         return _answer_from_fact(self.name, question, chosen, [fact.object_value for fact in matches])
+
+    def memory_context(self, question: BenchmarkQuestion, *, max_items: int = 20) -> dict[str, object]:
+        matches = [
+            fact
+            for fact in self.facts
+            if fact.subject.lower() in question.prompt.lower() and fact.predicate == question.predicate
+        ]
+        if not matches:
+            matches = [
+                fact
+                for fact in self.facts
+                if fact.subject == question.subject and fact.predicate == question.predicate
+            ]
+        ranked = sorted(matches, key=lambda fact: (fact.trust_score, fact.event_id), reverse=True)
+        return {
+            "memory_system": self.name,
+            "retrieval_policy": "lexical subject/predicate retrieval ranked by source trust",
+            "facts": [_fact_context_row(fact) for fact in ranked[:max_items]],
+        }
 
 
 class EmbeddingRagBaseline:
@@ -174,6 +208,18 @@ class EmbeddingRagBaseline:
             default=None,
         )
         return _answer_from_fact(self.name, question, chosen, [fact.object_value for fact in matches])
+
+    def memory_context(self, question: BenchmarkQuestion, *, max_items: int = 20) -> dict[str, object]:
+        query = (
+            f"{question.prompt} {question.subject} {question.predicate} "
+            f"{question.branch_name}"
+        )
+        ranked = self._rank(query) if self.facts else []
+        return {
+            "memory_system": self.name,
+            "retrieval_policy": "local TF-IDF cosine retrieval over flat memory chunks",
+            "facts": [_fact_context_row(fact) for fact in ranked[: min(max_items, self.top_k)]],
+        }
 
     def _rank(self, query: str) -> list[MemoryFact]:
         docs = [fact.document for fact in self.facts]
@@ -348,6 +394,38 @@ class TruthGitSystem:
             branch_name=question.branch_name,
         )
 
+    def memory_context(self, question: BenchmarkQuestion, *, max_items: int = 20) -> dict[str, object]:
+        db = self._db()
+        branch_id = self._ensure_branch(question.branch_name if self.support_branches else "main")
+        belief = crud.get_belief_by_subject_predicate(
+            db,
+            subject=question.subject,
+            predicate=question.predicate,
+        )
+        if belief is None:
+            versions: list[object] = []
+            current: list[object] = []
+        else:
+            versions = sorted(
+                crud.list_belief_versions(db, belief.id),
+                key=lambda version: (_date_rank(version.valid_from), version.id),
+            )
+            current = crud.get_current_versions(db, belief_id=belief.id, branch_id=branch_id)
+        return {
+            "memory_system": self.name,
+            "retrieval_policy": "TruthGit belief versions with branch, status, provenance, rollback, conflict, and warning state",
+            "branch_name": question.branch_name,
+            "current_versions": [
+                _version_context_row(db, version)
+                for version in current[:max_items]
+            ],
+            "belief_timeline": [
+                _version_context_row(db, version)
+                for version in versions[:max_items]
+            ],
+            "warnings_by_event": dict(self.warnings_by_event),
+        }
+
     def close(self) -> None:
         if self.db is not None:
             self.db.close()
@@ -482,6 +560,46 @@ def _answer_from_fact(
         ),
         branch_name=question.branch_name,
     )
+
+
+def _fact_context_row(fact: MemoryFact) -> dict[str, object]:
+    return {
+        "event_id": fact.event_id,
+        "subject": fact.subject,
+        "predicate": fact.predicate,
+        "object_value": fact.object_value,
+        "branch_name": fact.branch_name,
+        "source_ref": fact.source_ref,
+        "trust_score": fact.trust_score,
+        "confidence": fact.confidence,
+        "valid_from": fact.valid_from,
+        "active": fact.active,
+        "text": fact.text,
+    }
+
+
+def _version_context_row(db: Session, version: object) -> dict[str, object]:
+    belief = crud.get_belief(db, version.belief_id)
+    source = db.get(models.Source, version.source_id)
+    branch = db.get(models.Branch, version.branch_id)
+    return {
+        "belief_version_id": version.id,
+        "belief_id": version.belief_id,
+        "subject": belief.subject if belief else None,
+        "predicate": belief.predicate if belief else None,
+        "object_value": version.object_value,
+        "status": version.status,
+        "branch_id": version.branch_id,
+        "branch_name": branch.name if branch else None,
+        "commit_id": version.commit_id,
+        "source_ref": source.source_ref if source else None,
+        "source_trust_score": source.trust_score if source else None,
+        "confidence": version.confidence,
+        "valid_from": version.valid_from,
+        "valid_to": version.valid_to,
+        "supersedes_version_id": version.supersedes_version_id,
+        "contradiction_group": version.contradiction_group,
+    }
 
 
 def _tokens(text: str) -> list[str]:

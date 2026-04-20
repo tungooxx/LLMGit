@@ -249,13 +249,17 @@ The `experiments/` package adds a deterministic synthetic benchmark for research
 - two-competing-branch merge questions
 - temporal coexistence merge questions
 
-Run the first paper table with one backbone label, `gpt-4o-mini`:
+Run the structural memory correctness table:
 
 ```powershell
 python -m experiments.run_benchmark `
   --output-dir experiments\results `
   --backbone gpt-4o-mini
 ```
+
+`--backbone` is a metadata label in this structural runner. The loop is deterministic:
+each system ingests events, its adapter answers structured questions, and the scorer
+checks exact state fields. This table is not a live LLM reasoning result.
 
 Run the ablation table:
 
@@ -272,6 +276,34 @@ This writes:
 - `experiments/results/metric_summary.csv`
 - `experiments/results/question_scores.csv`
 - `experiments/results/predictions.csv`
+
+Run the separate model-in-the-loop table, where every system exposes retrieved
+memory context and the same reader model parses that context into a structured
+answer:
+
+```powershell
+$env:OPENAI_API_KEY = "..."
+$env:OPENAI_MODEL = "gpt-4o-mini"
+python -m experiments.reader_benchmark `
+  --output-dir experiments\results `
+  --reader openai `
+  --reader-model gpt-4o-mini
+```
+
+For no-network smoke tests of the runner itself:
+
+```powershell
+python -m experiments.reader_benchmark `
+  --output-dir experiments\results `
+  --reader heuristic
+```
+
+This writes:
+
+- `experiments/results/reader_benchmark_results.json`
+- `experiments/results/reader_metric_summary.csv`
+- `experiments/results/reader_question_scores.csv`
+- `experiments/results/reader_predictions.csv`
 
 Plot the metric summary:
 
@@ -363,9 +395,9 @@ The synthetic benchmark feeds each system the same sequence of world-changing ev
 
 TruthGit is evaluated through its real deterministic service layer: `Source`, `Branch`, `Commit`, `Belief`, `BeliefVersion`, and `AuditEvent` records are created in SQLite, and answers are read from active branch state or lineage history. Baselines keep simplified in-memory records so the comparison isolates the value of version-control semantics.
 
-### Current Benchmark Interpretation
+### Structural Benchmark Interpretation
 
-The current table uses `gpt-4o-mini` as the backbone label and deterministic benchmark adapters for all memory systems. The strongest result is structural: TruthGit reaches 1.0 on current truth, exact ordered history, exact current provenance, rollback recovery, branch isolation, low-trust warning, and merge conflict resolution, while the flat and RAG baselines fail the columns that require explicit version-control state.
+The current table uses deterministic benchmark adapters for all memory systems. The strongest result is structural: TruthGit reaches 1.0 on current truth, exact ordered history, exact current provenance, rollback recovery, branch isolation, low-trust warning, and merge conflict resolution, while the flat and RAG baselines fail the columns that require explicit version-control state. This should be described as a structural memory correctness benchmark, not as a broad live LLM benchmark.
 
 | System | Current | History | Provenance | Rollback | Branch | Merge | Low-trust |
 | --- | ---: | ---: | ---: | ---: | ---: | ---: | ---: |

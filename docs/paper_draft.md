@@ -5,7 +5,7 @@
 This draft freezes the final Benchmark v3 phase 2 experiment setup:
 
 - benchmark version: `truthgit-benchmark-v3-phase2-final`
-- backbone label: `gpt-4o-mini`
+- structural table backbone label: `gpt-4o-mini` metadata only
 - benchmark logic commit: `6b5e6d5478baa67eb0c767fcfad162d3a2b4919f`
 - prompt template: `experiments/prompt_templates/final_answer_prompt.txt`
 - primary result table: `experiments/results/metric_summary.csv`
@@ -15,7 +15,7 @@ The benchmark should not be changed after this freeze unless an obvious implemen
 
 ## Abstract
 
-Long-running LLM agents operate in changing worlds: facts become stale, sources conflict, hypothetical plans should not overwrite current truth, and bad memory writes must be reversible. Retrieval-augmented generation and chat-history memory can recall prior text, but they do not directly represent which belief is current, which source governs it, why a previous belief was superseded, or whether a branch-local claim should remain hypothetical. TruthGit is a research prototype that stores memory as version-controlled atomic beliefs. Each belief version records provenance, branch, commit lineage, status, temporal validity, supersession, contradiction groups, and audit events. In a synthetic changing-world benchmark with 86 cases and 161 structured questions, TruthGit reaches 1.0 across current truth, ordered history, provenance, rollback recovery, branch isolation, merge conflict resolution, and low-trust warning metrics. Naive chat history, simple RAG, and TF-IDF embedding RAG fail on columns that require explicit state management rather than fact retrieval.
+Long-running LLM agents operate in changing worlds: facts become stale, sources conflict, hypothetical plans should not overwrite current truth, and bad memory writes must be reversible. Retrieval-augmented generation and chat-history memory can recall prior text, but they do not directly represent which belief is current, which source governs it, why a previous belief was superseded, or whether a branch-local claim should remain hypothetical. TruthGit is a research prototype that stores memory as version-controlled atomic beliefs. Each belief version records provenance, branch, commit lineage, status, temporal validity, supersession, contradiction groups, and audit events. In a deterministic synthetic changing-world structural benchmark with 86 cases and 161 structured questions, TruthGit reaches 1.0 across current truth, ordered history, provenance, rollback recovery, branch isolation, merge conflict resolution, and low-trust warning metrics. Naive chat history, simple RAG, and TF-IDF embedding RAG fail on columns that require explicit state management rather than fact retrieval. We report this as a structural memory correctness result, not as a broad live LLM benchmark result.
 
 ## Problem
 
@@ -110,7 +110,9 @@ Metrics:
 - `merge_conflict_resolution_score`
 - `low_trust_warning_rate`
 
-The frozen run uses `gpt-4o-mini` as the backbone label. The current benchmark implementation uses deterministic adapters rather than live model calls, so the table isolates memory-structure behavior from sampling variance. The prompt template is frozen for reproducibility and for future LLM-backed runs.
+The frozen run uses `gpt-4o-mini` only as a metadata label. The structural benchmark implementation uses deterministic adapters rather than live model calls, so the table isolates memory-structure behavior from sampling variance. The prompt template is frozen for reproducibility and for model-in-the-loop runs.
+
+We also include a separate model-in-the-loop runner. In that setting, each memory system ingests the same events, exposes retrieved memory context, and the same reader model, for example `gpt-4o-mini`, parses that context into a structured answer. Those results must be reported as a second table, separate from the structural correctness table.
 
 ### Public Benchmark Extension: LongMemEval
 
@@ -120,7 +122,7 @@ LongMemEval should be reported as a separate supplementary table, not mixed into
 
 The adapter and setup notes live in `docs/public_benchmarks/longmemeval.md` and `experiments/public_benchmarks/longmemeval.py`.
 
-## Results
+## Structural Results
 
 | System | Current | History | Provenance | Rollback | Branch | Merge | Low-trust |
 | --- | ---: | ---: | ---: | ---: | ---: | ---: | ---: |
@@ -133,7 +135,7 @@ Retrieval baselines can often recover the current object. Simple RAG and embeddi
 
 The gap appears when the question requires structured memory state. History requires exact ordered timelines and date-aware slices. Provenance requires the exact source currently governing the belief. Rollback requires retraction and restoration semantics. Branch isolation requires branch-local belief visibility. Merge conflict requires contradiction groups, branch lineage, and temporal windows. Low-trust warning requires a review gate.
 
-TruthGit wins because the information needed to answer these questions is represented explicitly in the database rather than inferred from retrieved text.
+TruthGit wins this structural benchmark because the information needed to answer these questions is represented explicitly in the database rather than inferred from retrieved text.
 
 ## Ablations
 
@@ -151,7 +153,7 @@ Branches protect hypothetical isolation and branch-specific provenance. Rollback
 
 ## Limitations
 
-The benchmark is synthetic and deterministic. It is useful for isolating memory-state mechanics, but it is not a replacement for real deployed-agent evaluation. The tasks use structured expectations rather than human preference judgments. The embedding baseline is local TF-IDF, not a production neural retriever with reranking and temporal post-processing. The final table uses deterministic adapters and a frozen backbone label rather than live sampled LLM answers. TruthGit's merge and trust policies are hand-written. Same-object corroboration is represented as a new governing belief version; a fuller system should keep all corroborating evidence as support sets.
+The benchmark is synthetic and deterministic. It is useful for isolating memory-state mechanics, but it is not a replacement for real deployed-agent evaluation. The tasks use structured expectations rather than human preference judgments. The embedding baseline is local TF-IDF, not a production neural retriever with reranking and temporal post-processing. The main table uses deterministic adapters and a frozen metadata label rather than live sampled LLM answers. TruthGit's merge and trust policies are hand-written. Same-object corroboration is represented as a new governing belief version; a fuller system should keep all corroborating evidence as support sets.
 
 The benchmark also assumes extraction has already produced clean atomic claims. Real agents will make extraction errors, over-split claims, miss temporal qualifiers, and face vague or deceptive source text. Future evaluation should include live extraction noise, adversarial prompts, and human review data.
 

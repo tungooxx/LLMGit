@@ -62,6 +62,8 @@ def test_benchmark_run_exports_all_system_scores() -> None:
     assert len(results["predictions"]) == question_count * 4
     assert len(results["question_scores"]) == question_count * 4
     assert results["metadata"]["backbone"] == BACKBONE
+    assert results["metadata"]["evaluation_mode"] == "structural_memory_correctness"
+    assert "does not call an LLM reader" in results["metadata"]["backbone_note"]
     assert results["metadata"]["benchmark_version"] == BENCHMARK_VERSION
     assert results["metadata"]["prompt_template_path"] == PROMPT_TEMPLATE_PATH.as_posix()
     assert isinstance(results["metadata"]["prompt_template_sha256"], str)

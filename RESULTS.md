@@ -7,7 +7,7 @@ This file freezes the final experiment setup for the TruthGit submission draft.
 | Item | Value |
 | --- | --- |
 | Benchmark version | `truthgit-benchmark-v3-phase2-final` |
-| Backbone label | `gpt-4o-mini` |
+| Structural table backbone label | `gpt-4o-mini` metadata only |
 | Benchmark logic commit | `6b5e6d5478baa67eb0c767fcfad162d3a2b4919f` |
 | Prompt template | `experiments/prompt_templates/final_answer_prompt.txt` |
 | Manifest | `experiments/results/final_manifest.json` |
@@ -16,11 +16,11 @@ This file freezes the final experiment setup for the TruthGit submission draft.
 | Qualitative case study | `docs/case_study_project_assistant.md` |
 | Metric figure | `experiments/results/metric_summary.png` |
 
-The benchmark generator and scoring rules are frozen at this version. Do not change them unless an implementation bug is found.
+The benchmark generator and scoring rules are frozen at this version. Do not change them unless an implementation bug is found. The main frozen table is a structural memory correctness benchmark, not a live LLM reasoning benchmark.
 
 ## Exact Commands
 
-Run the full reproduction script:
+Run the structural reproduction script:
 
 ```bash
 bash scripts/reproduce_final.sh
@@ -36,12 +36,22 @@ python -m experiments.plot_results --summary-csv experiments/results/metric_summ
 python scripts/write_final_manifest.py
 ```
 
+Optional model-in-the-loop table, requiring `OPENAI_API_KEY`:
+
+```bash
+python -m experiments.reader_benchmark --output-dir experiments/results --reader openai --reader-model gpt-4o-mini
+```
+
 ## Expected Output Files
 
 - `experiments/results/benchmark_results.json`
 - `experiments/results/metric_summary.csv`
 - `experiments/results/question_scores.csv`
 - `experiments/results/predictions.csv`
+- `experiments/results/reader_benchmark_results.json`
+- `experiments/results/reader_metric_summary.csv`
+- `experiments/results/reader_question_scores.csv`
+- `experiments/results/reader_predictions.csv`
 - `experiments/results/metric_summary.png`
 - `experiments/results/final_manifest.json`
 - `docs/figures/truthgit_qualitative_lineage.svg`
@@ -94,7 +104,7 @@ LongMemEval reporting rule: `-Limit` runs are adapter smoke tests, not final pub
 
 Predicate labels are open model-generated relation names. The deterministic layer only normalizes obvious aliases for stable keys; it does not impose a closed predicate ontology on LongMemEval extraction.
 
-## Final Result Table
+## Structural Memory Correctness Table
 
 | System | Current | History | Provenance | Rollback | Branch | Merge | Low-trust |
 | --- | ---: | ---: | ---: | ---: | ---: | ---: | ---: |
@@ -106,6 +116,8 @@ Predicate labels are open model-generated relation names. The deterministic laye
 ## Final Interpretation
 
 The retrieval baselines can often recover the current fact, but they fail when the question requires changing-world state management: exact history, exact current provenance, rollback recovery, branch isolation, merge conflict state, and low-trust review warnings.
+
+Report this as a structural systems result. The deterministic runner calls `system.ingest_event(event)` and `system.answer(question)`; it does not call `gpt-4o-mini` in the scoring loop. The separate model-in-the-loop runner is `python -m experiments.reader_benchmark`, which feeds each system's retrieved memory context to the same reader model and writes `reader_*` result files.
 
 The ablations show that each TruthGit mechanism protects a separate capability:
 
