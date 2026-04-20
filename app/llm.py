@@ -136,6 +136,9 @@ class LLMClient:
                         "content": (
                             "Extract explicit atomic factual claims for TruthGit memory. "
                             "Also choose safe metadata for reviewable staging. "
+                            "Use concise model-generated snake_case predicates; examples are not a closed list. "
+                            "For current residence or where someone lives, prefer predicate lives_in. "
+                            "For temporary travel lodging, prefer predicate stays_in. "
                             "Use branch_name='main' for current durable facts. "
                             "Use a short branch name such as 'trip-plan' or 'what-if' for hypothetical, future, "
                             "temporary, planning, or counterfactual claims. "
