@@ -20,6 +20,7 @@ def add_audit_event(
     event_type: str,
     entity_type: str,
     entity_id: int,
+    entity_key: str | None = None,
     payload: dict[str, Any] | None = None,
 ) -> models.AuditEvent:
     """Append an audit event."""
@@ -28,6 +29,7 @@ def add_audit_event(
         event_type=event_type,
         entity_type=entity_type,
         entity_id=entity_id,
+        entity_key=entity_key,
         payload_json=payload or {},
     )
     db.add(event)

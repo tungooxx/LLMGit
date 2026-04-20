@@ -129,11 +129,15 @@ class AuditEvent(Base):
     """Append-only event log for TruthGit operations."""
 
     __tablename__ = "audit_events"
-    __table_args__ = (Index("ix_audit_events_entity", "entity_type", "entity_id"),)
+    __table_args__ = (
+        Index("ix_audit_events_entity", "entity_type", "entity_id"),
+        Index("ix_audit_events_entity_key", "entity_type", "entity_key"),
+    )
 
     id: Mapped[int] = mapped_column(primary_key=True)
     event_type: Mapped[str] = mapped_column(String(80), index=True)
     entity_type: Mapped[str] = mapped_column(String(80))
     entity_id: Mapped[int] = mapped_column()
+    entity_key: Mapped[str | None] = mapped_column(String(120), nullable=True)
     payload_json: Mapped[dict[str, Any]] = mapped_column(JSON, default=dict)
     created_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), default=utc_now)

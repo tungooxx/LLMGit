@@ -33,7 +33,7 @@ TruthGit has two memory layers:
 - `Belief`: stable subject+predicate identity, using `canonical_key`.
 - `BeliefVersion`: the actual claim object, confidence, temporal window, status, source, lineage, contradiction group, and metadata.
 - `StagedCommit`: reviewable proposed memory write containing extracted claims, source metadata, risk reasons, reviewer notes, and the applied commit id once approved.
-- `AuditEvent`: append-only operation log.
+- `AuditEvent`: append-only operation log with integer `entity_id` plus optional string `entity_key` for UUID-backed entities such as staged commits.
 
 ## Belief Versioning
 
@@ -210,9 +210,9 @@ RAG usually answers from retrieved chunks and leaves truth state implicit. Truth
 - conflicts are explainable from structured provenance
 - audit logs show every durable mutation
 
-## Changing-World Benchmark
+## Changing-World Benchmark V2
 
-The `experiments/` package adds a deterministic synthetic benchmark for research comparisons. It generates cases with:
+The `experiments/` package adds a deterministic synthetic benchmark for research comparisons. Benchmark v2 generates 50 changing-world cases and 104 structured questions with:
 
 - superseded facts
 - conflicting sources
@@ -220,11 +220,26 @@ The `experiments/` package adds a deterministic synthetic benchmark for research
 - rollback-needed bad commits
 - provenance questions
 - timeline questions
+- poisoning and low-trust source cases
+- branch leakage cases
+- harder temporal supersession chains
+- exact source-tracking questions
 
-Run the benchmark:
+Run the first paper table with one backbone label, `gpt-4o-mini`:
 
 ```powershell
-python -m experiments.run_benchmark --output-dir experiments\results
+python -m experiments.run_benchmark `
+  --output-dir experiments\results `
+  --backbone gpt-4o-mini
+```
+
+Run the ablation table:
+
+```powershell
+python -m experiments.run_benchmark `
+  --output-dir experiments\results `
+  --backbone gpt-4o-mini `
+  --include-ablations
 ```
 
 This writes:
@@ -246,7 +261,15 @@ Compared systems:
 
 - `naive_chat_history`: flat append-only memory with no durable revision semantics.
 - `simple_rag`: retrieves the highest lexical/trust matching chunk but has no branch, rollback, or lineage model.
+- `embedding_rag`: local TF-IDF embedding baseline with cosine retrieval over memory chunks.
 - `truthgit`: uses the real branch, commit, conflict, merge, rollback, and audit engines.
+
+Ablations:
+
+- `truthgit_no_branches`
+- `truthgit_no_rollback`
+- `truthgit_no_review_gate`
+- `truthgit_no_trust_scoring`
 
 Metrics:
 

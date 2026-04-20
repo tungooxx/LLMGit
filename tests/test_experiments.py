@@ -9,6 +9,7 @@ def test_default_benchmark_covers_required_metrics() -> None:
     cases = default_benchmark()
     metrics = {question.metric for case in cases for question in case.questions}
 
+    assert len(cases) == 50
     assert "current_truth_accuracy" in metrics
     assert "historical_truth_accuracy" in metrics
     assert "provenance_accuracy" in metrics
@@ -24,9 +25,20 @@ def test_benchmark_run_exports_all_system_scores() -> None:
     systems = {row["system_name"] for row in summary}
     question_count = sum(len(case.questions) for case in default_benchmark())
 
-    assert systems == {"naive_chat_history", "simple_rag", "truthgit"}
-    assert len(results["predictions"]) == question_count * 3
-    assert len(results["question_scores"]) == question_count * 3
+    assert systems == {"naive_chat_history", "simple_rag", "embedding_rag", "truthgit"}
+    assert len(results["predictions"]) == question_count * 4
+    assert len(results["question_scores"]) == question_count * 4
+    assert results["metadata"]["backbone"] == "gpt-4o-mini"
+
+
+def test_benchmark_can_include_truthgit_ablations() -> None:
+    results = run_benchmark(default_benchmark(), include_ablations=True)
+    systems = {row["system_name"] for row in results["metric_summary"]}
+
+    assert "truthgit_no_branches" in systems
+    assert "truthgit_no_rollback" in systems
+    assert "truthgit_no_review_gate" in systems
+    assert "truthgit_no_trust_scoring" in systems
 
 
 def test_truthgit_scores_branch_and_rollback() -> None:
