@@ -2,6 +2,7 @@
 
 from __future__ import annotations
 
+import re
 from typing import Any, Literal
 
 from fastapi import APIRouter, Depends, HTTPException
@@ -59,6 +60,34 @@ def manual_prompt(
     db: Session = Depends(get_db),
 ) -> dict[str, Any]:
     """Run deterministic extraction, staging, optional approval, and return memory state."""
+
+    if _is_demo_question(request.message):
+        branch = _resolve_demo_branch(db, request.branch_name)
+        answer = LLMClient(get_settings()).answer_from_memory(
+            request.message,
+            _demo_memory_context(db, branch),
+        )
+        db.commit()
+        return {
+            "branch": _branch_payload(branch),
+            "claims": [],
+            "staged": None,
+            "commit": None,
+            "versions": [],
+            "timelines": [],
+            "assistant_reply": answer,
+            "warnings": [],
+            "extraction": {
+                "mode": request.extraction_mode,
+                "auto_metadata": request.auto_metadata,
+                "model_name": get_settings().openai_model if request.extraction_mode == "llm" else "deterministic-demo",
+                "branch_name": branch.name,
+                "trust_score": request.trust_score,
+                "rationale": "Detected a question; answered from TruthGit memory without staging a write.",
+                "used_fallback": False,
+            },
+            "snapshot": _demo_snapshot(db),
+        }
 
     write_plan, extraction_info, extraction_warnings = _build_demo_write_plan(request)
     branch = _resolve_demo_branch(db, write_plan.branch_name)
@@ -226,6 +255,17 @@ def _build_demo_write_plan(request: DemoPromptRequest) -> tuple[MemoryWritePlan,
         "used_fallback": used_fallback,
     }
     return plan, info, warnings
+
+
+def _is_demo_question(message: str) -> bool:
+    """Return True when a demo message should be answered, not staged."""
+
+    stripped = message.strip()
+    if not stripped:
+        return False
+    if stripped.endswith("?"):
+        return True
+    return bool(re.match(r"^(why|what|where|when|how|who|which|do you|can you|tell me)\b", stripped, re.I))
 
 
 def _sanitize_demo_write_plan(plan: MemoryWritePlan, *, fallback_branch_name: str) -> MemoryWritePlan:

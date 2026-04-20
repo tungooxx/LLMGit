@@ -133,6 +133,53 @@ def test_demo_answers_questions_from_memory_without_writing(client: TestClient) 
     assert "Seoul" in payload["assistant_reply"]
 
 
+def test_demo_why_question_does_not_stage_duplicate_memory(client: TestClient) -> None:
+    reset = client.post("/demo/reset", json={"confirm": True})
+    assert reset.status_code == 200
+
+    for message in ("Alice lives in Seoul.", "Alice moved to Busan in March 2026."):
+        response = client.post(
+            "/demo/manual",
+            json={
+                "message": message,
+                "branch_name": "main",
+                "trust_score": 0.8,
+                "auto_approve": True,
+                "extraction_mode": "local",
+            },
+        )
+        assert response.status_code == 200
+
+    before = client.get("/viz/data")
+    assert before.status_code == 200
+    before_counts = before.json()["counts"]
+
+    answer = client.post(
+        "/demo/manual",
+        json={
+            "message": "Why do you think Alice lives in Busan if earlier she lived in Seoul?",
+            "branch_name": "main",
+            "trust_score": 0.8,
+            "auto_approve": True,
+            "extraction_mode": "llm",
+            "auto_metadata": True,
+        },
+    )
+
+    assert answer.status_code == 200
+    payload = answer.json()
+    assert payload["claims"] == []
+    assert payload["staged"] is None
+    assert payload["commit"] is None
+    assert "Busan" in payload["assistant_reply"]
+
+    after = client.get("/viz/data")
+    assert after.status_code == 200
+    after_counts = after.json()["counts"]
+    assert after_counts["commits"] == before_counts["commits"]
+    assert after_counts["versions"] == before_counts["versions"]
+
+
 def test_demo_llm_mode_falls_back_and_suggests_metadata_without_api_key(client: TestClient) -> None:
     reset = client.post("/demo/reset", json={"confirm": True})
     assert reset.status_code == 200
