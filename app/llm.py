@@ -11,7 +11,7 @@ from openai import OpenAI, OpenAIError
 
 from app.config import Settings, get_settings
 from app.normalization import deterministic_extract_simple_claims
-from app.schemas import AnswerPlan, ExtractedClaim, ExtractedClaimList
+from app.schemas import AnswerPlan, ExtractedClaim, ExtractedClaimList, MemoryWritePlan
 
 logger = logging.getLogger(__name__)
 
@@ -112,6 +112,62 @@ class LLMClient:
                 explanation_style="concise",
             )
 
+    def plan_memory_write(
+        self,
+        text: str,
+        *,
+        fallback_branch_name: str = "main",
+        fallback_trust_score: float = 0.7,
+    ) -> MemoryWritePlan:
+        """Extract claims and propose bounded memory-write metadata."""
+
+        if self.client is None:
+            return _fallback_memory_write_plan(
+                text,
+                fallback_branch_name=fallback_branch_name,
+                fallback_trust_score=fallback_trust_score,
+            )
+        try:
+            response = self.client.responses.create(
+                model=self.settings.openai_model,
+                input=[
+                    {
+                        "role": "system",
+                        "content": (
+                            "Extract explicit atomic factual claims for TruthGit memory. "
+                            "Also choose safe metadata for reviewable staging. "
+                            "Use branch_name='main' for current durable facts. "
+                            "Use a short branch name such as 'trip-plan' or 'what-if' for hypothetical, future, "
+                            "temporary, planning, or counterfactual claims. "
+                            "Choose trust_score from source wording only: around 0.85 for clear direct statements, "
+                            "around 0.55 for uncertain or hearsay claims, and around 0.25 for suspicious, joke, "
+                            "impossible, or low-trust claims. "
+                            "Return no claims for pure questions. Do not mutate memory."
+                        ),
+                    },
+                    {"role": "user", "content": text},
+                ],
+                text={
+                    "format": {
+                        "type": "json_schema",
+                        "name": "MemoryWritePlan",
+                        "schema": openai_strict_json_schema(MemoryWritePlan),
+                        "strict": True,
+                    }
+                },
+            )
+            output_text = getattr(response, "output_text", None) or _response_text(response)
+            return MemoryWritePlan.model_validate_json(output_text)
+        except (OpenAIError, ValueError, TypeError) as exc:
+            if self.settings.app_env == "production":
+                raise
+            logger.warning("Falling back to deterministic memory-write planning: %s", exc)
+            return _fallback_memory_write_plan(
+                text,
+                fallback_branch_name=fallback_branch_name,
+                fallback_trust_score=fallback_trust_score,
+            )
+
     def run_tool_loop(
         self,
         *,
@@ -206,6 +262,43 @@ def claims_from_dicts(claims: list[dict[str, Any]]) -> list[ExtractedClaim]:
     """Build extracted claims from dictionaries."""
 
     return [ExtractedClaim.model_validate(claim) for claim in claims]
+
+
+def _fallback_memory_write_plan(
+    text: str,
+    *,
+    fallback_branch_name: str,
+    fallback_trust_score: float,
+) -> MemoryWritePlan:
+    """Build a local write plan when OpenAI is unavailable."""
+
+    claims = claims_from_dicts(deterministic_extract_simple_claims(text))
+    return MemoryWritePlan(
+        claims=claims,
+        branch_name=_fallback_branch_name(text, fallback_branch_name),
+        trust_score=_fallback_trust_score(text, fallback_trust_score),
+        rationale="Local fallback chose metadata from simple wording heuristics.",
+    )
+
+
+def _fallback_branch_name(text: str, fallback_branch_name: str) -> str:
+    lower = text.lower()
+    if any(token in lower for token in ("conference", "trip", "vacation", "itinerary")):
+        return "trip-plan"
+    if any(token in lower for token in ("what if", "hypothetical", "suppose", "maybe later", "will stay")):
+        return "what-if"
+    return fallback_branch_name.strip() or "main"
+
+
+def _fallback_trust_score(text: str, fallback_trust_score: float) -> float:
+    lower = text.lower()
+    if any(token in lower for token in ("atlantis", "fake", "joke", "impossible", "poison")):
+        return 0.25
+    if any(token in lower for token in ("rumor", "heard", "maybe", "not sure", "unverified")):
+        return 0.45
+    if any(token in lower for token in ("confirmed", "official", "verified")):
+        return 0.85
+    return max(0.0, min(1.0, fallback_trust_score))
 
 
 def openai_strict_json_schema(model: Any) -> dict[str, Any]:

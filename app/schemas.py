@@ -53,6 +53,15 @@ class AnswerPlan(BaseModel):
     explanation_style: str = "concise"
 
 
+class MemoryWritePlan(BaseModel):
+    """Structured write plan for reviewable memory ingestion."""
+
+    claims: list[ExtractedClaim] = Field(default_factory=list)
+    branch_name: str = "main"
+    trust_score: float = Field(default=0.7, ge=0.0, le=1.0)
+    rationale: str = "Use the default branch and trust policy."
+
+
 class SourceCreate(BaseModel):
     source_type: SourceType = "user_message"
     source_ref: str | None = None

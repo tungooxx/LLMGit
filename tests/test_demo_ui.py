@@ -10,6 +10,8 @@ def test_demo_page_loads(client: TestClient) -> None:
     assert "TruthGit Memory Chat" in response.text
     assert "Memory Chat" in response.text
     assert "Git Graph" in response.text
+    assert "use LLM" in response.text
+    assert "LLM branch/trust" in response.text
     assert "Benchmark Playback" not in response.text
 
 
@@ -90,3 +92,28 @@ def test_demo_manual_prompt_branch_only_hypothetical(client: TestClient) -> None
         and version["branch_name"] == "trip-plan"
         for version in payload["versions"]
     )
+
+
+def test_demo_llm_mode_falls_back_and_suggests_metadata_without_api_key(client: TestClient) -> None:
+    reset = client.post("/demo/reset", json={"confirm": True})
+    assert reset.status_code == 200
+
+    response = client.post(
+        "/demo/manual",
+        json={
+            "message": "During the conference week, Alice will stay in Tokyo.",
+            "branch_name": "main",
+            "trust_score": 0.7,
+            "auto_approve": False,
+            "extraction_mode": "llm",
+            "auto_metadata": True,
+        },
+    )
+
+    assert response.status_code == 200
+    payload = response.json()
+    assert payload["branch"]["name"] == "trip-plan"
+    assert payload["staged"]["status"] == "pending"
+    assert payload["extraction"]["mode"] == "llm"
+    assert payload["extraction"]["used_fallback"] is True
+    assert any("OPENAI_API_KEY" in warning for warning in payload["warnings"])

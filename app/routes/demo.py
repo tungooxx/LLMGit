@@ -2,7 +2,7 @@
 
 from __future__ import annotations
 
-from typing import Any
+from typing import Any, Literal
 
 from fastapi import APIRouter, Depends, HTTPException
 from fastapi.responses import HTMLResponse
@@ -12,9 +12,11 @@ from sqlalchemy.orm import Session
 
 from app import crud, models
 from app.commit_engine import create_branch, ensure_main_branch, rollback_commit
+from app.config import get_settings
 from app.db import get_db
+from app.llm import LLMClient
 from app.normalization import deterministic_extract_simple_claims
-from app.schemas import ExtractedClaim, SourceCreate
+from app.schemas import ExtractedClaim, MemoryWritePlan, SourceCreate
 from app.tools import approve_staged_commit, stage_belief_changes
 
 router = APIRouter(tags=["demo"])
@@ -27,6 +29,8 @@ class DemoPromptRequest(BaseModel):
     branch_name: str = "main"
     trust_score: float = Field(default=0.7, ge=0.0, le=1.0)
     auto_approve: bool = False
+    extraction_mode: Literal["llm", "local"] = "llm"
+    auto_metadata: bool = True
 
 
 class DemoRollbackRequest(BaseModel):
@@ -56,14 +60,14 @@ def manual_prompt(
 ) -> dict[str, Any]:
     """Run deterministic extraction, staging, optional approval, and return memory state."""
 
-    branch = _resolve_demo_branch(db, request.branch_name)
-    claim_dicts = deterministic_extract_simple_claims(request.message)
-    claims = [ExtractedClaim.model_validate(claim) for claim in claim_dicts]
+    write_plan, extraction_info, extraction_warnings = _build_demo_write_plan(request)
+    branch = _resolve_demo_branch(db, write_plan.branch_name)
+    claims = write_plan.claims
     source = SourceCreate(
-        source_type="manual",
-        source_ref=f"demo-ui:{request.branch_name}",
+        source_type="user_message" if request.extraction_mode == "llm" else "manual",
+        source_ref=f"demo-ui:{request.extraction_mode}:{branch.name}",
         excerpt=request.message,
-        trust_score=request.trust_score,
+        trust_score=write_plan.trust_score,
     )
     if not claims:
         db.commit()
@@ -74,7 +78,10 @@ def manual_prompt(
             "commit": None,
             "versions": [],
             "timelines": [],
-            "warnings": ["No explicit claim matched the local demo extractor."],
+            "warnings": sorted(
+                set(["No explicit atomic claim was extracted from that prompt.", *extraction_warnings])
+            ),
+            "extraction": extraction_info,
             "snapshot": _demo_snapshot(db),
         }
 
@@ -85,9 +92,9 @@ def manual_prompt(
         source=source,
         proposed_commit_message="Demo prompt memory update",
         created_by="demo-ui",
-        model_name="deterministic-demo",
+        model_name=extraction_info["model_name"],
     )
-    warnings = list(staged.warnings_json)
+    warnings = [*extraction_warnings, *list(staged.warnings_json)]
     result = None
     if request.auto_approve:
         result = approve_staged_commit(
@@ -96,7 +103,7 @@ def manual_prompt(
             reviewer="demo-ui",
             notes="Approved from professor demo panel.",
             commit_message=staged.proposed_commit_message,
-            model_name="deterministic-demo",
+            model_name=extraction_info["model_name"],
         )
         warnings.extend(result.warnings)
     db.commit()
@@ -110,6 +117,7 @@ def manual_prompt(
         "versions": [_version_payload(db, version) for version in result.introduced_versions] if result else [],
         "timelines": affected_timelines,
         "warnings": sorted(set(warnings)),
+        "extraction": extraction_info,
         "snapshot": _demo_snapshot(db),
     }
 
@@ -162,6 +170,73 @@ def reset_demo_state(
     ensure_main_branch(db)
     db.commit()
     return {"snapshot": _demo_snapshot(db)}
+
+
+def _build_demo_write_plan(request: DemoPromptRequest) -> tuple[MemoryWritePlan, dict[str, Any], list[str]]:
+    """Return claims plus branch/trust metadata for the demo prompt."""
+
+    settings = get_settings()
+    warnings: list[str] = []
+    model_name = "deterministic-demo"
+    used_fallback = False
+
+    if request.extraction_mode == "llm":
+        llm = LLMClient(settings)
+        used_fallback = llm.client is None
+        if request.auto_metadata:
+            plan = llm.plan_memory_write(
+                request.message,
+                fallback_branch_name=request.branch_name,
+                fallback_trust_score=request.trust_score,
+            )
+        else:
+            extracted = llm.extract_claims(request.message)
+            plan = MemoryWritePlan(
+                claims=extracted.claims,
+                branch_name=request.branch_name,
+                trust_score=request.trust_score,
+                rationale="LLM extracted claims; branch and trust came from demo controls.",
+            )
+        model_name = settings.openai_model if not used_fallback else "deterministic-demo-fallback"
+        if used_fallback:
+            warnings.append("LLM mode requested, but OPENAI_API_KEY is not configured; used local fallback.")
+    else:
+        claims = [ExtractedClaim.model_validate(claim) for claim in deterministic_extract_simple_claims(request.message)]
+        plan = MemoryWritePlan(
+            claims=claims,
+            branch_name=request.branch_name,
+            trust_score=request.trust_score,
+            rationale="Local deterministic demo extractor; branch and trust came from demo controls.",
+        )
+
+    if not request.auto_metadata:
+        plan = plan.model_copy(update={"branch_name": request.branch_name, "trust_score": request.trust_score})
+    plan = _sanitize_demo_write_plan(plan, fallback_branch_name=request.branch_name)
+    info = {
+        "mode": request.extraction_mode,
+        "auto_metadata": request.auto_metadata,
+        "model_name": model_name,
+        "branch_name": plan.branch_name,
+        "trust_score": plan.trust_score,
+        "rationale": plan.rationale,
+        "used_fallback": used_fallback,
+    }
+    return plan, info, warnings
+
+
+def _sanitize_demo_write_plan(plan: MemoryWritePlan, *, fallback_branch_name: str) -> MemoryWritePlan:
+    """Clamp model-suggested metadata before it can affect durable memory."""
+
+    branch_name = _safe_branch_name(plan.branch_name or fallback_branch_name)
+    trust_score = max(0.0, min(1.0, plan.trust_score))
+    return plan.model_copy(update={"branch_name": branch_name, "trust_score": trust_score})
+
+
+def _safe_branch_name(value: str) -> str:
+    clean = value.strip().lower().replace("_", "-")
+    clean = "".join(character for character in clean if character.isalnum() or character == "-")
+    clean = "-".join(part for part in clean.split("-") if part)
+    return clean[:40] or "main"
 
 
 def _resolve_demo_branch(db: Session, name: str) -> models.Branch:
@@ -379,7 +454,7 @@ _HTML = """
     }
     .grid3 {
       display: grid;
-      grid-template-columns: minmax(150px, 1fr) 112px 180px;
+      grid-template-columns: repeat(auto-fit, minmax(130px, 1fr));
       gap: 10px;
       align-items: end;
     }
@@ -582,8 +657,10 @@ _HTML = """
       <h2>Memory Chat</h2>
       <div class="settings">
         <div class="grid3">
-          <label>Branch <input id="manualBranch" value="main"></label>
+          <label>Branch fallback <input id="manualBranch" value="main"></label>
           <label>Trust <input id="manualTrust" type="number" min="0" max="1" step="0.01" value="0.8"></label>
+          <label class="check"><input id="useLlm" type="checkbox" checked> use LLM</label>
+          <label class="check"><input id="autoMetadata" type="checkbox" checked> LLM branch/trust</label>
           <label class="check"><input id="autoApprove" type="checkbox" checked> approve after staging</label>
         </div>
         <div class="quick">
@@ -657,7 +734,9 @@ _HTML = """
         message,
         branch_name: document.getElementById("manualBranch").value,
         trust_score: Number(document.getElementById("manualTrust").value),
-        auto_approve: document.getElementById("autoApprove").checked
+        auto_approve: document.getElementById("autoApprove").checked,
+        extraction_mode: document.getElementById("useLlm").checked ? "llm" : "local",
+        auto_metadata: document.getElementById("autoMetadata").checked
       };
       try {
         const data = await postJson("/demo/manual", payload);
@@ -755,12 +834,18 @@ _HTML = """
     function summarizeManual(data) {
       const claims = data.claims.map(claim => `${claim.subject} ${claim.predicate} ${claim.object_value || claim.object || ""}`.trim());
       if (!claims.length) return "No atomic claim was extracted from that prompt.";
-      if (data.commit) return `Committed ${claims.length} claim(s) on ${data.branch.name}.`;
-      return `Staged ${claims.length} claim(s) for review on ${data.branch.name}.`;
+      const prefix = data.extraction?.mode === "llm" ? "LLM planned" : "Local extractor staged";
+      if (data.commit) return `${prefix} and committed ${claims.length} claim(s) on ${data.branch.name}.`;
+      return `${prefix} ${claims.length} claim(s) for review on ${data.branch.name}.`;
     }
 
     function detailLine(data) {
       const parts = [];
+      if (data.extraction) {
+        parts.push(`${data.extraction.model_name}`);
+        parts.push(`trust ${Number(data.extraction.trust_score).toFixed(2)}`);
+        if (data.extraction.rationale) parts.push(data.extraction.rationale);
+      }
       if (data.staged) parts.push(`staged ${data.staged.id}`);
       if (data.commit) parts.push(`commit #${data.commit.id}`);
       if (data.warnings?.length) parts.push(data.warnings.join(" "));
