@@ -2,6 +2,7 @@ from __future__ import annotations
 
 from experiments.benchmark import default_benchmark
 from experiments.baselines import SystemAnswer
+from experiments.final_config import BACKBONE, BENCHMARK_VERSION, PROMPT_TEMPLATE_PATH
 from experiments.metrics import aggregate_scores, score_answer
 from experiments.run_benchmark import run_benchmark
 
@@ -60,7 +61,10 @@ def test_benchmark_run_exports_all_system_scores() -> None:
     assert systems == {"naive_chat_history", "simple_rag", "embedding_rag", "truthgit"}
     assert len(results["predictions"]) == question_count * 4
     assert len(results["question_scores"]) == question_count * 4
-    assert results["metadata"]["backbone"] == "gpt-4o-mini"
+    assert results["metadata"]["backbone"] == BACKBONE
+    assert results["metadata"]["benchmark_version"] == BENCHMARK_VERSION
+    assert results["metadata"]["prompt_template_path"] == PROMPT_TEMPLATE_PATH.as_posix()
+    assert isinstance(results["metadata"]["prompt_template_sha256"], str)
 
 
 def test_benchmark_can_include_truthgit_ablations() -> None:

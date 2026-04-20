@@ -1,6 +1,10 @@
 {
   "metadata": {
+    "benchmark_version": "truthgit-benchmark-v3-phase2-final",
     "backbone": "gpt-4o-mini",
+    "prompt_template_path": "experiments/prompt_templates/final_answer_prompt.txt",
+    "prompt_template_sha256": "11b504dd42bb621f614d3c25c0b94c74db30e323fffc62c7bce4a6b9a9399853",
+    "benchmark_logic_commit_sha": "6b5e6d5478baa67eb0c767fcfad162d3a2b4919f",
     "include_ablations": true,
     "case_count": 86,
     "question_count": 161

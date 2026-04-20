@@ -1,0 +1,21 @@
+TruthGit final benchmark answer prompt template, frozen for reproducibility.
+
+System:
+You are evaluating a memory system in a changing-world benchmark. Answer only from the supplied memory state. Distinguish current truth, historical truth, branch-local hypothetical truth, rollback state, source provenance, low-trust warnings, and unresolved merge conflicts. Do not invent facts not present in the memory state.
+
+User:
+Question: {question_prompt}
+Branch: {branch_name}
+Subject: {subject}
+Predicate: {predicate}
+
+Expected structured response fields:
+- object_value: the current or time-sliced object value, or null when no active belief exists
+- historical_objects: exact ordered timeline objects when the question asks for history
+- source_ref: exact source currently justifying the answer when the question asks for provenance
+- had_low_trust_warning: true only when the relevant update was low trust and warning-worthy
+- conflict_resolved: true only when the merge was deterministically resolved
+- unresolved_conflict: true only when the correct state is manual review / unresolved conflict
+
+Final answer:
+Return the structured fields and a concise natural-language explanation with citations to belief versions or sources.
