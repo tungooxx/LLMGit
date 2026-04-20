@@ -10,7 +10,7 @@ def test_default_benchmark_covers_required_metrics() -> None:
     cases = default_benchmark()
     metrics = {question.metric for case in cases for question in case.questions}
 
-    assert len(cases) == 50
+    assert len(cases) >= 60
     assert "current_truth_accuracy" in metrics
     assert "historical_truth_accuracy" in metrics
     assert "provenance_accuracy" in metrics
@@ -25,6 +25,29 @@ def test_default_benchmark_covers_required_metrics() -> None:
         if question.metric == "historical_truth_accuracy" and question.as_of is not None
     ]
     assert 5 <= len(time_slice_questions) <= 10
+    unresolved_merge_questions = [
+        question
+        for case in cases
+        for question in case.questions
+        if question.metric == "merge_conflict_resolution_score"
+        and question.expected_unresolved_conflict
+    ]
+    branch_provenance_questions = [
+        question
+        for case in cases
+        for question in case.questions
+        if question.metric == "provenance_accuracy" and question.branch_name != "main"
+    ]
+    rollback_provenance_questions = [
+        question
+        for case in cases
+        for question in case.questions
+        if question.metric == "provenance_accuracy"
+        and "rollback-source" in question.question_id
+    ]
+    assert len(unresolved_merge_questions) >= 6
+    assert branch_provenance_questions
+    assert rollback_provenance_questions
 
 
 def test_benchmark_run_exports_all_system_scores() -> None:
@@ -102,6 +125,35 @@ def test_historical_scoring_supports_time_slice_questions() -> None:
             system_name="test",
             answer_text="",
             object_value=question.forbidden_object_value,
+        ),
+    ) == 0.0
+
+
+def test_merge_scoring_supports_unresolved_conflicts() -> None:
+    question = next(
+        question
+        for case in default_benchmark()
+        for question in case.questions
+        if question.expected_unresolved_conflict
+    )
+
+    assert score_answer(
+        question,
+        SystemAnswer(
+            question_id=question.question_id,
+            system_name="test",
+            answer_text="manual review required",
+            unresolved_conflict=True,
+        ),
+    ) == 1.0
+    assert score_answer(
+        question,
+        SystemAnswer(
+            question_id=question.question_id,
+            system_name="test",
+            answer_text="resolved",
+            object_value="Lab A",
+            unresolved_conflict=False,
         ),
     ) == 0.0
 

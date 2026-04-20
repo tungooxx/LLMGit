@@ -35,6 +35,8 @@ def score_answer(question: BenchmarkQuestion, answer: SystemAnswer) -> float:
     if question.metric == "branch_isolation_score":
         return _truth_match(question, answer)
     if question.metric == "merge_conflict_resolution_score":
+        if question.expected_unresolved_conflict:
+            return 1.0 if answer.unresolved_conflict else 0.0
         return 1.0 if _truth_match(question, answer) == 1.0 and answer.conflict_resolved else 0.0
     if question.metric == "low_trust_warning_rate":
         return 1.0 if answer.had_low_trust_warning == question.expected_low_trust_warning else 0.0
@@ -53,16 +55,8 @@ def score_questions(
     scores: list[QuestionScore] = []
     for question in questions:
         answer = answer_by_id[question.question_id]
-        expected = (
-            " -> ".join(question.expected_historical_objects)
-            if question.metric == "historical_truth_accuracy" and question.expected_historical_objects
-            else question.expected_object_value or question.expected_source_ref
-        )
-        observed = (
-            " -> ".join(answer.historical_objects)
-            if question.metric == "historical_truth_accuracy" and question.expected_historical_objects
-            else answer.object_value or answer.source_ref
-        )
+        expected = _expected_value(question)
+        observed = _observed_value(question, answer)
         scores.append(
             QuestionScore(
                 system_name=system_name,
@@ -100,6 +94,26 @@ def scores_to_dicts(scores: list[QuestionScore]) -> list[dict[str, object]]:
     """Serialize question scores."""
 
     return [asdict(score) for score in scores]
+
+
+def _expected_value(question: BenchmarkQuestion) -> str | None:
+    if question.metric == "historical_truth_accuracy" and question.expected_historical_objects:
+        return " -> ".join(question.expected_historical_objects)
+    if question.metric == "provenance_accuracy":
+        return question.expected_source_ref
+    if question.metric == "merge_conflict_resolution_score" and question.expected_unresolved_conflict:
+        return "unresolved_conflict"
+    return question.expected_object_value or question.expected_source_ref
+
+
+def _observed_value(question: BenchmarkQuestion, answer: SystemAnswer) -> str | None:
+    if question.metric == "historical_truth_accuracy" and question.expected_historical_objects:
+        return " -> ".join(answer.historical_objects)
+    if question.metric == "provenance_accuracy":
+        return answer.source_ref
+    if question.metric == "merge_conflict_resolution_score" and question.expected_unresolved_conflict:
+        return "unresolved_conflict" if answer.unresolved_conflict else answer.object_value
+    return answer.object_value or answer.source_ref
 
 
 def _truth_match(question: BenchmarkQuestion, answer: SystemAnswer) -> float:
