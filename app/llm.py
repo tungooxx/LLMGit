@@ -30,7 +30,7 @@ class LLMClient:
             return ExtractedClaimList.model_validate(
                 {"claims": deterministic_extract_simple_claims(text)}
             )
-        schema = ExtractedClaimList.model_json_schema()
+        schema = openai_strict_json_schema(ExtractedClaimList)
         try:
             response = self.client.responses.create(
                 model=self.settings.openai_model,
@@ -94,7 +94,7 @@ class LLMClient:
                     "format": {
                         "type": "json_schema",
                         "name": "AnswerPlan",
-                        "schema": AnswerPlan.model_json_schema(),
+                        "schema": openai_strict_json_schema(AnswerPlan),
                         "strict": True,
                     }
                 },
@@ -206,3 +206,26 @@ def claims_from_dicts(claims: list[dict[str, Any]]) -> list[ExtractedClaim]:
     """Build extracted claims from dictionaries."""
 
     return [ExtractedClaim.model_validate(claim) for claim in claims]
+
+
+def openai_strict_json_schema(model: Any) -> dict[str, Any]:
+    """Return an OpenAI strict-structured-output compatible JSON schema."""
+
+    schema = model.model_json_schema()
+    _stricten_schema_node(schema)
+    return schema
+
+
+def _stricten_schema_node(node: Any) -> None:
+    if isinstance(node, dict):
+        node.pop("default", None)
+        node.pop("format", None)
+        if node.get("type") == "object" or "properties" in node:
+            properties = node.get("properties") or {}
+            node["additionalProperties"] = False
+            node["required"] = list(properties.keys())
+        for value in node.values():
+            _stricten_schema_node(value)
+    elif isinstance(node, list):
+        for item in node:
+            _stricten_schema_node(item)

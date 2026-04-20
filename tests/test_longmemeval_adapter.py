@@ -5,8 +5,13 @@ from pathlib import Path
 
 from experiments.public_benchmarks.longmemeval import (
     build_prompt,
+    build_answer_check_prompt,
+    evaluate_hypotheses,
+    generate_hypotheses,
     inspect_records,
     load_records,
+    select_records,
+    summarize_eval_log,
     write_prompt_jsonl,
 )
 
@@ -36,14 +41,89 @@ def test_longmemeval_prompt_jsonl(tmp_path: Path) -> None:
     written = json.loads(output_path.read_text(encoding="utf-8").splitlines()[0])
 
     assert "Question date: 2026-04-20" in prompt
-    assert "user [evidence]: The review moved to May 19." in prompt
+    assert "The review moved to May 19." in prompt
+    assert "has_answer" not in prompt
+    assert "[evidence]" not in prompt
+    assert "answer" not in written
+    assert "has_answer" not in written["prompt"]
     assert written["question_id"] == "q1"
     assert "Answer:" in written["prompt"]
 
 
-def _sample_record() -> dict[str, object]:
+def test_longmemeval_optional_evidence_markers_for_debug_only(tmp_path: Path) -> None:
+    data_path = tmp_path / "longmemeval_sample.json"
+    data_path.write_text(json.dumps([_sample_record()]), encoding="utf-8")
+    records = load_records(data_path)
+
+    prompt = build_prompt(records[0], history_format="nl", include_evidence_markers=True)
+
+    assert "user [evidence]: The review moved to May 19." in prompt
+
+
+def test_longmemeval_select_records_supports_seeded_heldout_samples(tmp_path: Path) -> None:
+    data_path = tmp_path / "longmemeval_sample.json"
+    payload = [_sample_record(question_id=f"q{i}") for i in range(8)]
+    data_path.write_text(json.dumps(payload), encoding="utf-8")
+    records = load_records(data_path)
+
+    first = select_records(records, sample_size=3, sample_seed=13)
+    second = select_records(records, sample_size=3, sample_seed=13)
+
+    assert [record.question_id for record in first] == [record.question_id for record in second]
+    assert [record.question_id for record in first] != ["q0", "q1", "q2"]
+
+
+def test_longmemeval_generate_hypotheses_with_fake_answerer(tmp_path: Path) -> None:
+    data_path = tmp_path / "longmemeval_sample.json"
+    output_path = tmp_path / "hypotheses.jsonl"
+    data_path.write_text(json.dumps([_sample_record()]), encoding="utf-8")
+    records = load_records(data_path)
+
+    stats = generate_hypotheses(
+        records=records,
+        output_jsonl=output_path,
+        model="fake-model",
+        answer_fn=lambda _prompt, _record: "May 19",
+        resume=False,
+    )
+    row = json.loads(output_path.read_text(encoding="utf-8").splitlines()[0])
+
+    assert stats.generated_count == 1
+    assert row["question_id"] == "q1"
+    assert row["hypothesis"] == "May 19"
+    assert row["prompt_mode"]["evidence_markers"] is False
+
+
+def test_longmemeval_evaluate_and_summarize_with_fake_judge(tmp_path: Path) -> None:
+    data_path = tmp_path / "longmemeval_sample.json"
+    hypotheses_path = tmp_path / "hypotheses.jsonl"
+    eval_log = tmp_path / "hypotheses.eval"
+    data_path.write_text(json.dumps([_sample_record()]), encoding="utf-8")
+    records = load_records(data_path)
+    hypotheses_path.write_text(
+        json.dumps({"question_id": "q1", "hypothesis": "May 19"}, ensure_ascii=False) + "\n",
+        encoding="utf-8",
+    )
+
+    stats = evaluate_hypotheses(
+        records=records,
+        hypotheses_jsonl=hypotheses_path,
+        output_log=eval_log,
+        judge_model="gpt-4o",
+        judge_fn=lambda _prompt, _record, hypothesis: hypothesis == "May 19",
+    )
+    summarized = summarize_eval_log(eval_log=eval_log, records=records)
+    prompt = build_answer_check_prompt(records[0], "May 19")
+
+    assert "Correct Answer: May 19" in prompt
+    assert stats.overall_accuracy == 1.0
+    assert stats.by_task["knowledge-update"]["accuracy"] == 1.0
+    assert summarized.task_averaged_accuracy == 1.0
+
+
+def _sample_record(question_id: str = "q1") -> dict[str, object]:
     return {
-        "question_id": "q1",
+        "question_id": question_id,
         "question_type": "knowledge-update",
         "question": "When is the launch review?",
         "answer": "May 19",

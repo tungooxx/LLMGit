@@ -21,6 +21,8 @@ truthgit.db
 
 # Generated experiment outputs
 experiments/results/
+experiments/public_results/
+data/*.json
 
 # OS/editor files
 .DS_Store

@@ -87,6 +87,14 @@ start http://127.0.0.1:8000/viz
 
 `/viz` shows staged writes, branch state, belief versions, provenance sources, contradiction groups, and the audit timeline from the live SQLite database.
 
+Open the professor demo UI:
+
+```powershell
+start http://127.0.0.1:8000/demo
+```
+
+`/demo` plays the changing-world benchmark as a live event stream, shows TruthGit metric cards as questions are scored, and includes a manual prompt panel for staging, approving, superseding, branching, and rolling back beliefs during a live walkthrough.
+
 ## Example API Calls
 
 ### 1. Add A Belief
@@ -276,6 +284,48 @@ python -m experiments.plot_results `
 The frozen paper draft for the final Benchmark v3 phase 2 table is in `docs/paper_draft.md`.
 The final reproducibility pack is in `RESULTS.md`; it locks the benchmark version, backbone label, prompt template, benchmark logic commit, expected result files, and figure paths.
 LongMemEval is added as the first public benchmark track in `docs/public_benchmarks/longmemeval.md`; it is supplementary and does not change the frozen TruthGit main table.
+
+Run a real LongMemEval-S smoke test before attempting the full public table:
+
+```powershell
+$env:OPENAI_API_KEY = "..."
+$env:OPENAI_MODEL = "gpt-4o-mini"
+.\scripts\run_longmemeval_full.ps1 -Limit 3
+```
+
+Run the full 500-question public benchmark:
+
+```powershell
+.\scripts\run_longmemeval_full.ps1
+```
+
+This downloads the official cleaned LongMemEval-S file if needed, generates non-leaking hypothesis JSONL, evaluates with the official-style GPT-4o answer-check prompt, and writes results under `experiments/public_results/longmemeval/`.
+
+Run TruthGit itself on LongMemEval-S:
+
+```powershell
+$env:OPENAI_API_KEY = "..."
+$env:OPENAI_MODEL = "gpt-4o-mini"
+.\scripts\run_longmemeval_truthgit.ps1 -Limit 3 -Trace
+```
+
+Then run the full TruthGit public benchmark:
+
+```powershell
+.\scripts\run_longmemeval_truthgit.ps1
+```
+
+This path ingests selected LongMemEval sessions through TruthGit staged commits, approval, commits, belief versions, sources, and audit events before answering. It is the public benchmark path to compare against reported Hindsight, TiMem, LightMem, and Zep LongMemEval numbers.
+
+Treat small `-Limit` LongMemEval runs as development smoke tests only. If a run is inspected and the adapter is changed afterward, that run is no longer a fair benchmark score. A fair public number requires frozen code/prompts and a held-out or full-split run with the exact command, model, split, limit, and commit SHA reported.
+
+Predicates are open model-generated relation labels. Python normalizes spelling and a few obvious aliases for stable belief keys, but TruthGit does not require a predefined predicate ontology for LongMemEval extraction.
+
+Use a seeded held-out sample after tuning:
+
+```powershell
+.\scripts\run_longmemeval_truthgit.ps1 -SampleSize 50 -SampleSeed 20260420 -NoResume
+```
 
 Compared systems:
 
