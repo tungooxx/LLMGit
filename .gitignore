@@ -1,0 +1,29 @@
+# Python
+__pycache__/
+*.py[cod]
+*.pyo
+.pytest_cache/
+.mypy_cache/
+.ruff_cache/
+
+# Virtual environments
+.venv/
+venv/
+env/
+
+# Local environment and runtime state
+.env
+truthgit.db
+*.sqlite
+*.sqlite3
+*.db
+*.log
+
+# Generated experiment outputs
+experiments/results/
+
+# OS/editor files
+.DS_Store
+Thumbs.db
+.idea/
+.vscode/
