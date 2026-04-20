@@ -32,6 +32,7 @@ class SystemAnswer:
     source_ref: str | None = None
     had_low_trust_warning: bool = False
     conflict_resolved: bool = False
+    unresolved_conflict: bool = False
     branch_name: str = "main"
 
 
@@ -326,6 +327,7 @@ class TruthGitSystem:
             if question.as_of is not None
             else self._choose_current(db, current)
         )
+        unresolved_conflict = self._has_unresolved_conflict(current)
         source_ref = self._source_ref(chosen.source_id) if chosen is not None else None
         related_warnings = self.warnings_by_event.get(question.related_event_id or "", [])
         answer_text = chosen.object_value if chosen else "unknown"
@@ -342,6 +344,7 @@ class TruthGitSystem:
                 and chosen.normalized_object_value
                 == normalize_object_value(question.expected_object_value or "")
             ),
+            unresolved_conflict=unresolved_conflict,
             branch_name=question.branch_name,
         )
 
@@ -384,6 +387,14 @@ class TruthGitSystem:
                 ),
             )
         return max(versions, key=lambda version: (_date_rank(version.valid_from), version.id))
+
+    def _has_unresolved_conflict(self, versions: list[object]) -> bool:
+        conflict_objects = {
+            getattr(version, "normalized_object_value", "")
+            for version in versions
+            if getattr(version, "contradiction_group", None)
+        }
+        return len(conflict_objects) > 1
 
     def _choose_as_of(self, db: Session, versions: list[object], as_of: object | None) -> object | None:
         eligible = [
