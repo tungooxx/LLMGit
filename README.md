@@ -275,6 +275,7 @@ python -m experiments.plot_results `
 
 The frozen paper draft for the final Benchmark v3 phase 2 table is in `docs/paper_draft.md`.
 The final reproducibility pack is in `RESULTS.md`; it locks the benchmark version, backbone label, prompt template, benchmark logic commit, expected result files, and figure paths.
+LongMemEval is added as the first public benchmark track in `docs/public_benchmarks/longmemeval.md`; it is supplementary and does not change the frozen TruthGit main table.
 
 Compared systems:
 

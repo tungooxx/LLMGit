@@ -48,6 +48,25 @@ python scripts/write_final_manifest.py
 
 The manifest records SHA-256 checksums for the prompt template, qualitative figure, and exported result files.
 
+## Public Benchmark Track
+
+The frozen TruthGit benchmark remains the main table. LongMemEval is the first public benchmark track and should be reported separately as an external supplementary table.
+
+LongMemEval setup:
+
+- adapter: `experiments/public_benchmarks/longmemeval.py`
+- instructions: `docs/public_benchmarks/longmemeval.md`
+- runner: `scripts/run_longmemeval.sh`
+- default data file: `data/longmemeval_s_cleaned.json`
+
+Run after downloading the official cleaned split:
+
+```bash
+LONGMEMEVAL_DATA=data/longmemeval_s_cleaned.json bash scripts/run_longmemeval.sh
+```
+
+This produces prompt JSONL and a dataset manifest under `experiments/public_results/longmemeval/`. It does not alter the frozen TruthGit result files.
+
 ## Final Result Table
 
 | System | Current | History | Provenance | Rollback | Branch | Merge | Low-trust |
