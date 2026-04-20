@@ -2,30 +2,27 @@
 
 from __future__ import annotations
 
-from dataclasses import dataclass
 from typing import Any
 from uuid import uuid4
 
 from sqlalchemy.orm import Session
 
-from app import crud
+from app import crud, models
 from app.commit_engine import apply_claims
 from app.normalization import normalize_extracted_claim
 from app.schemas import ExtractedClaim, SourceCreate
 
 
-@dataclass
-class StagedCommit:
-    """In-memory staged commit for MVP use."""
-
-    staged_commit_id: str
-    branch_id: int
-    claims: list[ExtractedClaim]
-    source: SourceCreate
-    warnings: list[str]
-
-
-STAGED_COMMITS: dict[str, StagedCommit] = {}
+LOW_TRUST_THRESHOLD = 0.4
+IMPORTANT_PREDICATES = {
+    "lives_in",
+    "works_at",
+    "medical_condition",
+    "legal_status",
+    "financial_status",
+    "identity",
+    "has_access_to",
+}
 
 
 TOOL_DEFINITIONS: list[dict[str, Any]] = [
@@ -230,29 +227,81 @@ def explain_conflict_context(db: Session, *, belief_id: int) -> dict[str, Any]:
 
 
 def stage_belief_changes(
+    db: Session,
     *,
     claims: list[ExtractedClaim],
     branch_id: int,
     source: SourceCreate,
-) -> StagedCommit:
-    """Tool: stage claims in memory."""
+    proposed_commit_message: str = "Update belief memory",
+    created_by: str = "agent",
+    model_name: str | None = None,
+) -> models.StagedCommit:
+    """Tool: persist proposed belief changes for review or auto-approval."""
 
     staged_id = str(uuid4())
-    warnings = []
     normalized = [normalize_extracted_claim(claim) for claim in claims]
-    if not normalized:
-        warnings.append("No explicit atomic claims were staged.")
-    if source.trust_score < 0.4:
-        warnings.append("Low-trust source was staged.")
-    staged = StagedCommit(
-        staged_commit_id=staged_id,
-        branch_id=branch_id,
+    review_required, risk_reasons, warnings = classify_staging_risk(
         claims=claims,
         source=source,
-        warnings=warnings,
     )
-    STAGED_COMMITS[staged_id] = staged
+    if not normalized:
+        warnings.append("No explicit atomic claims were staged.")
+    staged = models.StagedCommit(
+        id=staged_id,
+        branch_id=branch_id,
+        status="pending",
+        claims_json=[claim.model_dump(mode="json", by_alias=False) for claim in claims],
+        source_type=source.source_type,
+        source_ref=source.source_ref,
+        source_excerpt=source.excerpt,
+        source_trust_score=source.trust_score,
+        proposed_commit_message=proposed_commit_message,
+        created_by=created_by,
+        model_name=model_name,
+        review_required=review_required,
+        risk_reasons=risk_reasons,
+        warnings_json=warnings,
+    )
+    db.add(staged)
+    db.flush()
+    crud.add_audit_event(
+        db,
+        event_type="staged_commit.created",
+        entity_type="staged_commit",
+        entity_id=0,
+        payload={
+            "staged_commit_id": staged.id,
+            "branch_id": branch_id,
+            "review_required": review_required,
+            "risk_reasons": risk_reasons,
+        },
+    )
     return staged
+
+
+def classify_staging_risk(
+    *,
+    claims: list[ExtractedClaim],
+    source: SourceCreate,
+) -> tuple[bool, list[str], list[str]]:
+    """Return review gate decision, risk reasons, and user-facing warnings."""
+
+    risk_reasons: list[str] = []
+    warnings: list[str] = []
+    if source.trust_score < LOW_TRUST_THRESHOLD:
+        risk_reasons.append(f"low_trust_source:{source.trust_score:.2f}")
+        warnings.append("Low-trust source was staged for review.")
+    for claim in claims:
+        normalized = normalize_extracted_claim(claim)
+        if normalized.predicate in IMPORTANT_PREDICATES:
+            reason = f"important_predicate:{normalized.predicate}"
+            if reason not in risk_reasons:
+                risk_reasons.append(reason)
+                warnings.append(f"Important predicate '{normalized.predicate}' requires review.")
+        if normalized.confidence < 0.5:
+            risk_reasons.append(f"low_confidence_claim:{normalized.confidence:.2f}")
+            warnings.append("Low-confidence claim requires review.")
+    return bool(risk_reasons), risk_reasons, warnings
 
 
 def apply_staged_commit(
@@ -263,29 +312,103 @@ def apply_staged_commit(
     created_by: str = "agent",
     model_name: str | None = None,
 ) -> Any:
-    """Tool: validate and apply a staged commit."""
+    """Tool: apply a staged commit only when deterministic policy allows it."""
 
-    staged = STAGED_COMMITS.get(staged_commit_id)
+    staged = db.get(models.StagedCommit, staged_commit_id)
     if staged is None:
         raise ValueError(f"Unknown staged commit: {staged_commit_id}")
-    source = crud.create_source(
+    if staged.review_required:
+        raise ValueError(f"Staged commit {staged_commit_id} requires human review")
+    return approve_staged_commit(
         db,
-        source_type=staged.source.source_type,
-        source_ref=staged.source.source_ref,
-        excerpt=staged.source.excerpt,
-        trust_score=staged.source.trust_score,
-    )
-    result = apply_claims(
-        db,
-        claims=[normalize_extracted_claim(claim) for claim in staged.claims],
-        branch_id=staged.branch_id,
-        source=source,
-        message=commit_message,
-        created_by=created_by,
+        staged_commit_id=staged_commit_id,
+        reviewer=created_by,
+        notes="Auto-approved by deterministic review gate.",
+        commit_message=commit_message,
         model_name=model_name,
     )
-    STAGED_COMMITS.pop(staged_commit_id, None)
+
+
+def approve_staged_commit(
+    db: Session,
+    *,
+    staged_commit_id: str,
+    reviewer: str = "user",
+    notes: str | None = None,
+    commit_message: str | None = None,
+    model_name: str | None = None,
+) -> Any:
+    """Approve and apply a pending staged commit."""
+
+    staged = db.get(models.StagedCommit, staged_commit_id)
+    if staged is None:
+        raise ValueError(f"Unknown staged commit: {staged_commit_id}")
+    if staged.status != "pending":
+        raise ValueError(f"Staged commit {staged_commit_id} is {staged.status}, not pending")
+    source = crud.create_source(
+        db,
+        source_type=staged.source_type,
+        source_ref=staged.source_ref,
+        excerpt=staged.source_excerpt,
+        trust_score=staged.source_trust_score,
+    )
+    claims = [ExtractedClaim.model_validate(claim) for claim in staged.claims_json]
+    result = apply_claims(
+        db,
+        claims=[normalize_extracted_claim(claim) for claim in claims],
+        branch_id=staged.branch_id,
+        source=source,
+        message=commit_message or staged.proposed_commit_message,
+        created_by=reviewer,
+        model_name=model_name or staged.model_name,
+    )
+    staged.status = "applied"
+    staged.reviewer = reviewer
+    staged.review_notes = notes
+    staged.reviewed_at = models.utc_now()
+    staged.applied_commit_id = result.commit.id
+    crud.add_audit_event(
+        db,
+        event_type="staged_commit.approved",
+        entity_type="staged_commit",
+        entity_id=0,
+        payload={
+            "staged_commit_id": staged.id,
+            "applied_commit_id": result.commit.id,
+            "reviewer": reviewer,
+            "notes": notes,
+        },
+    )
     return result
+
+
+def reject_staged_commit(
+    db: Session,
+    *,
+    staged_commit_id: str,
+    reviewer: str = "user",
+    notes: str | None = None,
+) -> models.StagedCommit:
+    """Reject a pending staged commit without mutating belief memory."""
+
+    staged = db.get(models.StagedCommit, staged_commit_id)
+    if staged is None:
+        raise ValueError(f"Unknown staged commit: {staged_commit_id}")
+    if staged.status != "pending":
+        raise ValueError(f"Staged commit {staged_commit_id} is {staged.status}, not pending")
+    staged.status = "rejected"
+    staged.reviewer = reviewer
+    staged.review_notes = notes
+    staged.reviewed_at = models.utc_now()
+    crud.add_audit_event(
+        db,
+        event_type="staged_commit.rejected",
+        entity_type="staged_commit",
+        entity_id=0,
+        payload={"staged_commit_id": staged.id, "reviewer": reviewer, "notes": notes},
+    )
+    db.flush()
+    return staged
 
 
 class ToolExecutor:
@@ -314,7 +437,20 @@ class ToolExecutor:
             return explain_conflict_context(self.db, **arguments)
         if name == "stage_belief_changes":
             claims = [ExtractedClaim.model_validate(item) for item in arguments.get("claims", [])]
-            return stage_belief_changes(claims=claims, branch_id=self.branch_id, source=self.source).__dict__
+            staged = stage_belief_changes(
+                self.db,
+                claims=claims,
+                branch_id=self.branch_id,
+                source=self.source,
+                proposed_commit_message=arguments.get("commit_message", "Update belief memory"),
+            )
+            return {
+                "staged_commit_id": staged.id,
+                "status": staged.status,
+                "review_required": staged.review_required,
+                "risk_reasons": staged.risk_reasons,
+                "warnings": staged.warnings_json,
+            }
         if name == "apply_staged_commit":
             result = apply_staged_commit(self.db, **arguments)
             return {

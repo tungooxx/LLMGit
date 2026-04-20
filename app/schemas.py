@@ -174,6 +174,8 @@ class ChatResponse(BaseModel):
     citations: list[Citation] = Field(default_factory=list)
     memory_updated: bool = False
     created_commit_id: int | None = None
+    staged_commit_id: str | None = None
+    review_required: bool = False
     branch: BranchRead
     warnings: list[str] = Field(default_factory=list)
 
@@ -181,6 +183,8 @@ class ChatResponse(BaseModel):
 class IngestResponse(BaseModel):
     extracted_claims: list[ExtractedClaim]
     staged_commit_id: str
+    staged_status: str = "pending"
+    review_required: bool = False
     memory_updated: bool
     created_commit_id: int | None
     warnings: list[str] = Field(default_factory=list)
@@ -196,10 +200,38 @@ class RollbackRequest(BaseModel):
 
 
 class StagedCommitRead(BaseModel):
-    staged_commit_id: str
+    id: str
     branch_id: int
-    claim_count: int
-    warnings: list[str] = Field(default_factory=list)
+    status: str
+    claims_json: list[dict[str, Any]]
+    source_type: str
+    source_ref: str | None
+    source_excerpt: str
+    source_trust_score: float
+    proposed_commit_message: str
+    created_by: str
+    model_name: str | None
+    review_required: bool
+    risk_reasons: list[str]
+    warnings_json: list[str]
+    reviewer: str | None
+    review_notes: str | None
+    applied_commit_id: int | None
+    created_at: datetime
+    reviewed_at: datetime | None
+
+    model_config = ConfigDict(from_attributes=True)
+
+
+class StagedReviewRequest(BaseModel):
+    reviewer: str = "user"
+    notes: str | None = None
+    commit_message: str | None = None
+
+
+class StagedRejectRequest(BaseModel):
+    reviewer: str = "user"
+    notes: str | None = None
 
 
 class CommitResultRead(BaseModel):

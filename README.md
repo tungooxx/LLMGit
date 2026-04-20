@@ -23,6 +23,7 @@ TruthGit has two memory layers:
 
 - Short-term request/session state: staged claims and the current chat turn.
 - Long-term store: SQLite tables for sources, branches, commits, beliefs, belief versions, and audit events.
+- Durable review queue: proposed belief writes are stored in `staged_commits` before they become commits.
 
 ## Schema
 
@@ -31,11 +32,14 @@ TruthGit has two memory layers:
 - `Commit`: version-control operation such as add, update, merge, rollback, or retract.
 - `Belief`: stable subject+predicate identity, using `canonical_key`.
 - `BeliefVersion`: the actual claim object, confidence, temporal window, status, source, lineage, contradiction group, and metadata.
+- `StagedCommit`: reviewable proposed memory write containing extracted claims, source metadata, risk reasons, reviewer notes, and the applied commit id once approved.
 - `AuditEvent`: append-only operation log.
 
 ## Belief Versioning
 
 If Alice lives in Seoul and a later supported claim says Alice moved to Busan in March 2026, TruthGit does not overwrite the old belief. It creates a new `BeliefVersion`, marks the old one `superseded`, and links the new version through `supersedes_version_id`.
+
+Memory writes are reviewable. `/chat` and `/ingest` persist extracted claims as staged commits first. Low-risk staged writes may auto-apply when `auto_commit=true`; low-trust sources, low-confidence claims, and important predicates such as `lives_in` or `works_at` require explicit approval.
 
 ```mermaid
 gitGraph
@@ -89,12 +93,22 @@ Sample response:
 
 ```json
 {
-  "answer": "Recorded: Alice lives_in Seoul as version 1 on branch 'main'.",
-  "memory_updated": true,
-  "created_commit_id": 1,
+  "answer": "Staged 1 claim(s) for review as 64cf... TruthGit memory was not updated yet.",
+  "memory_updated": false,
+  "created_commit_id": null,
+  "staged_commit_id": "64cf...",
+  "review_required": true,
   "branch": {"id": 1, "name": "main", "status": "active"},
-  "warnings": []
+  "warnings": ["Important predicate 'lives_in' requires review."]
 }
+```
+
+Approve the staged write:
+
+```powershell
+curl -X POST http://127.0.0.1:8000/staged/64cf.../approve `
+  -H "Content-Type: application/json" `
+  -d "{\"reviewer\":\"human\",\"notes\":\"verified source\"}"
 ```
 
 ### 2. Supersede A Belief
@@ -109,12 +123,14 @@ Sample response:
 
 ```json
 {
-  "answer": "Recorded: Alice lives_in Busan as version 2 on branch 'main', superseding version 1.",
-  "memory_updated": true,
-  "created_commit_id": 2,
-  "warnings": []
+  "answer": "Staged 1 claim(s) for review as 91ad... TruthGit memory was not updated yet.",
+  "memory_updated": false,
+  "staged_commit_id": "91ad...",
+  "review_required": true
 }
 ```
+
+After approval, the applied commit records Busan as a new belief version that supersedes Seoul.
 
 ### 3. Query Active Truth
 
@@ -172,6 +188,16 @@ Sample response:
   "warnings": []
 }
 ```
+
+### 6. Reject A Staged Write
+
+```powershell
+curl -X POST http://127.0.0.1:8000/staged/64cf.../reject `
+  -H "Content-Type: application/json" `
+  -d "{\"reviewer\":\"human\",\"notes\":\"unsupported claim\"}"
+```
+
+Rejected staged writes remain auditable but never create durable `BeliefVersion` records.
 
 ## Why This Differs From RAG
 
