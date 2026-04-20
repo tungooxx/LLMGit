@@ -24,6 +24,7 @@ def test_demo_page_loads(client: TestClient) -> None:
     assert "LLM branch/trust" in response.text
     assert "ask current" in response.text
     assert "Load Benchmark Case" in response.text
+    assert "lineageStrip" in response.text
     assert "Benchmark Playback" not in response.text
 
 

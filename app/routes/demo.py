@@ -805,6 +805,46 @@ _HTML = """
       border-bottom: 1px solid var(--line);
       background: #ffffff;
       min-height: 0;
+      padding: 12px;
+    }
+    .lineage-strip {
+      display: flex;
+      align-items: stretch;
+      gap: 10px;
+      min-height: 104px;
+      margin-bottom: 10px;
+      padding: 10px;
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      background: #f8fafc;
+    }
+    .lineage-empty {
+      color: var(--muted);
+      font-size: 14px;
+      align-self: center;
+    }
+    .lineage-card {
+      min-width: 166px;
+      max-width: 190px;
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      padding: 10px;
+      background: #fff;
+    }
+    .lineage-card.active { border-color: #1b7f5a; background: #ecfdf3; }
+    .lineage-card.superseded { border-color: #d89a00; background: #fffaeb; }
+    .lineage-card.retracted { border-color: #b42318; background: #fef3f2; }
+    .lineage-card.hypothetical { border-color: #6d3fc4; background: #f4f0ff; }
+    .lineage-card b { display: block; font-size: 13px; }
+    .lineage-card strong { display: block; margin-top: 6px; font-size: 18px; }
+    .lineage-card small { display: block; margin-top: 4px; color: var(--muted); line-height: 1.35; }
+    .lineage-arrow {
+      display: flex;
+      align-items: center;
+      color: var(--muted);
+      font-weight: 800;
+      min-width: 26px;
+      justify-content: center;
     }
     svg { display: block; min-width: 760px; }
     .tables {
@@ -908,6 +948,9 @@ _HTML = """
       <h2>Git Graph</h2>
       <div class="stats" id="stats"></div>
       <div class="graph-wrap">
+        <div id="lineageStrip" class="lineage-strip">
+          <span class="lineage-empty">No belief lineage yet.</span>
+        </div>
         <svg id="gitGraph" width="920" height="320" role="img" aria-label="TruthGit commit graph"></svg>
       </div>
       <div class="tables">
@@ -1110,9 +1153,29 @@ _HTML = """
 
     function renderSnapshot(snapshot) {
       renderStats(snapshot?.counts || {});
+      renderLineage(snapshot?.versions || []);
       renderGraph(snapshot || {});
       renderVersions(snapshot?.versions || []);
       renderAudit(snapshot?.staged_commits || [], snapshot?.audit || []);
+    }
+
+    function renderLineage(rows) {
+      const container = document.getElementById("lineageStrip");
+      const versions = [...rows].sort((left, right) => Number(left.id) - Number(right.id));
+      if (!versions.length) {
+        container.innerHTML = `<span class="lineage-empty">No belief lineage yet. Click Load Benchmark Case or send a memory update.</span>`;
+        return;
+      }
+      container.innerHTML = versions.map((row, index) => `
+        ${index ? `<div class="lineage-arrow">-&gt;</div>` : ""}
+        <div class="lineage-card ${escapeHtml(row.status || "")}">
+          <b>#${row.id} ${escapeHtml(row.subject || "")}</b>
+          <small>${escapeHtml(row.predicate || "")}</small>
+          <strong>${escapeHtml(row.object_value || "")}</strong>
+          <small>${escapeHtml(row.status || "")} · commit #${row.commit_id} · ${escapeHtml(row.branch_name || "")}</small>
+          ${row.supersedes_version_id ? `<small>supersedes #${row.supersedes_version_id}</small>` : `<small>root belief</small>`}
+        </div>
+      `).join("");
     }
 
     function renderStats(counts) {
