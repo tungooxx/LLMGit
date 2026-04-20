@@ -46,6 +46,7 @@ def test_demo_manual_prompt_supersession_and_rollback(client: TestClient) -> Non
     assert first_payload["commit"] is None
     assert first_payload["staged"]["status"] == "pending"
     assert first_payload["staged"]["review_required"] is True
+    assert "needs review before it becomes TruthGit truth" in first_payload["assistant_reply"]
     first_approved = _approve_staged(client, first_payload)
     assert first_approved["commit"]["id"] is not None
     assert "assistant_reply" in first_payload

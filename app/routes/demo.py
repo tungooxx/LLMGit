@@ -422,7 +422,10 @@ def _safe_branch_name(value: str) -> str:
 
 def _assistant_reply_with_outcome(reply: str, committed: bool, staged_id: str) -> str:
     if not committed:
-        return f"I did not apply that to durable TruthGit truth yet. I staged it for review as {staged_id}."
+        return (
+            "I found a memory update, but it needs review before it becomes TruthGit truth. "
+            f"I staged it as {staged_id}. Click Approve Staged to apply it, or leave it pending."
+        )
     suffix = (
         "I saved it as a TruthGit commit."
     )
