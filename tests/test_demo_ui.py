@@ -3,6 +3,16 @@ from __future__ import annotations
 from fastapi.testclient import TestClient
 
 
+def _approve_staged(client: TestClient, payload: dict) -> dict:
+    staged_id = payload["staged"]["id"]
+    response = client.post(
+        f"/staged/{staged_id}/approve",
+        json={"reviewer": "tester", "notes": "approved in demo test"},
+    )
+    assert response.status_code == 200
+    return response.json()
+
+
 def test_demo_page_loads(client: TestClient) -> None:
     response = client.get("/demo")
 
@@ -31,9 +41,14 @@ def test_demo_manual_prompt_supersession_and_rollback(client: TestClient) -> Non
     )
     assert first.status_code == 200
     first_payload = first.json()
-    assert first_payload["commit"]["id"] is not None
+    assert first_payload["commit"] is None
+    assert first_payload["staged"]["status"] == "pending"
+    assert first_payload["staged"]["review_required"] is True
+    first_approved = _approve_staged(client, first_payload)
+    assert first_approved["commit"]["id"] is not None
     assert "assistant_reply" in first_payload
-    assert any(version["object_value"] == "Seoul" for version in first_payload["snapshot"]["versions"])
+    snapshot = client.get("/viz/data").json()
+    assert any(version["object_value"] == "Seoul" for version in snapshot["belief_versions"])
 
     second = client.post(
         "/demo/manual",
@@ -45,7 +60,10 @@ def test_demo_manual_prompt_supersession_and_rollback(client: TestClient) -> Non
         },
     )
     assert second.status_code == 200
-    versions = second.json()["snapshot"]["versions"]
+    second_payload = second.json()
+    assert second_payload["commit"] is None
+    _approve_staged(client, second_payload)
+    versions = client.get("/viz/data").json()["belief_versions"]
     assert any(version["object_value"] == "Busan" and version["status"] == "active" for version in versions)
     assert any(version["object_value"] == "Seoul" and version["status"] == "superseded" for version in versions)
 
@@ -59,7 +77,15 @@ def test_demo_manual_prompt_supersession_and_rollback(client: TestClient) -> Non
         },
     )
     assert bad.status_code == 200
-    bad_commit_id = bad.json()["commit"]["id"]
+    bad_payload = bad.json()
+    assert bad_payload["commit"] is None
+    assert bad_payload["staged"]["status"] == "pending"
+    assert bad_payload["staged"]["review_required"] is True
+    assert any("Review gate blocked auto-approval" in warning for warning in bad_payload["warnings"])
+    assert not any(version["object_value"] == "Atlantis" for version in bad_payload["snapshot"]["versions"])
+
+    bad_approved = _approve_staged(client, bad_payload)
+    bad_commit_id = bad_approved["commit"]["id"]
 
     rollback = client.post("/demo/rollback", json={"commit_id": bad_commit_id})
     assert rollback.status_code == 200
@@ -112,6 +138,7 @@ def test_demo_answers_questions_from_memory_without_writing(client: TestClient) 
         },
     )
     assert write.status_code == 200
+    _approve_staged(client, write.json())
 
     answer = client.post(
         "/demo/manual",
@@ -149,6 +176,7 @@ def test_demo_why_question_does_not_stage_duplicate_memory(client: TestClient) -
             },
         )
         assert response.status_code == 200
+        _approve_staged(client, response.json())
 
     before = client.get("/viz/data")
     assert before.status_code == 200

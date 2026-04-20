@@ -128,7 +128,7 @@ def manual_prompt(
     )
     warnings = [*extraction_warnings, *list(staged.warnings_json)]
     result = None
-    if request.auto_approve:
+    if request.auto_approve and not staged.review_required:
         result = approve_staged_commit(
             db,
             staged_commit_id=staged.id,
@@ -138,6 +138,8 @@ def manual_prompt(
             model_name=extraction_info["model_name"],
         )
         warnings.extend(result.warnings)
+    elif request.auto_approve and staged.review_required:
+        warnings.append("Review gate blocked auto-approval; approve or reject this staged write manually.")
     db.commit()
 
     affected_timelines = _affected_timelines(db, claims)
@@ -284,10 +286,10 @@ def _safe_branch_name(value: str) -> str:
 
 
 def _assistant_reply_with_outcome(reply: str, committed: bool, staged_id: str) -> str:
+    if not committed:
+        return f"I did not apply that to durable TruthGit truth yet. I staged it for review as {staged_id}."
     suffix = (
         "I saved it as a TruthGit commit."
-        if committed
-        else f"I staged it for review as {staged_id}."
     )
     clean_reply = reply.strip() or "Okay, I'll remember that in TruthGit memory."
     return f"{clean_reply} {suffix}"
@@ -741,7 +743,7 @@ _HTML = """
           <label>Trust <input id="manualTrust" type="number" min="0" max="1" step="0.01" value="0.8"></label>
           <label class="check"><input id="useLlm" type="checkbox" checked> use LLM</label>
           <label class="check"><input id="autoMetadata" type="checkbox" checked> LLM branch/trust</label>
-          <label class="check"><input id="autoApprove" type="checkbox" checked> approve after staging</label>
+          <label class="check"><input id="autoApprove" type="checkbox" checked> auto-approve low-risk writes</label>
         </div>
         <div class="quick">
           <button data-example="Alice lives in Seoul." data-branch="main" data-trust="0.8">initial fact</button>
