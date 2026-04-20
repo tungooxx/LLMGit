@@ -7,19 +7,10 @@ def test_demo_page_loads(client: TestClient) -> None:
     response = client.get("/demo")
 
     assert response.status_code == 200
-    assert "TruthGit Live Demo" in response.text
-    assert "Benchmark Playback" in response.text
-    assert "Manual Prompt Demo" in response.text
-
-
-def test_demo_benchmark_event_stream(client: TestClient) -> None:
-    with client.stream("GET", "/demo/benchmark/events?limit=1&delay_ms=0") as response:
-        body = "".join(response.iter_text())
-
-    assert response.status_code == 200
-    assert "event: run_started" in body
-    assert "event: run_complete" in body
-    assert "truthgit" in body
+    assert "TruthGit Memory Chat" in response.text
+    assert "Memory Chat" in response.text
+    assert "Git Graph" in response.text
+    assert "Benchmark Playback" not in response.text
 
 
 def test_demo_manual_prompt_supersession_and_rollback(client: TestClient) -> None:

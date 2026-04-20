@@ -1,17 +1,13 @@
-"""Professor-facing live demo UI for benchmark playback and manual prompts."""
+"""Professor-facing live demo UI for manual TruthGit memory prompts."""
 
 from __future__ import annotations
 
-import json
-import time
-from collections import defaultdict
-from collections.abc import Generator
 from typing import Any
 
-from fastapi import APIRouter, Depends, HTTPException, Query
-from fastapi.responses import HTMLResponse, StreamingResponse
+from fastapi import APIRouter, Depends, HTTPException
+from fastapi.responses import HTMLResponse
 from pydantic import BaseModel, Field
-from sqlalchemy import delete
+from sqlalchemy import delete, select
 from sqlalchemy.orm import Session
 
 from app import crud, models
@@ -20,9 +16,6 @@ from app.db import get_db
 from app.normalization import deterministic_extract_simple_claims
 from app.schemas import ExtractedClaim, SourceCreate
 from app.tools import approve_staged_commit, stage_belief_changes
-from experiments.baselines import default_systems
-from experiments.benchmark import BenchmarkCase, default_benchmark
-from experiments.metrics import score_answer
 
 router = APIRouter(tags=["demo"])
 
@@ -51,23 +44,9 @@ class DemoResetRequest(BaseModel):
 
 @router.get("/demo", response_class=HTMLResponse)
 def demo_page() -> HTMLResponse:
-    """Serve the professor-facing demo dashboard."""
+    """Serve the professor-facing chat and graph dashboard."""
 
     return HTMLResponse(_HTML)
-
-
-@router.get("/demo/benchmark/events")
-def benchmark_events(
-    limit: int = Query(default=8, ge=1, le=30),
-    delay_ms: int = Query(default=650, ge=0, le=5000),
-) -> StreamingResponse:
-    """Stream a live benchmark playback as server-sent events."""
-
-    return StreamingResponse(
-        _benchmark_event_stream(limit=limit, delay_ms=delay_ms),
-        media_type="text/event-stream",
-        headers={"Cache-Control": "no-cache", "X-Accel-Buffering": "no"},
-    )
 
 
 @router.post("/demo/manual")
@@ -185,115 +164,6 @@ def reset_demo_state(
     return {"snapshot": _demo_snapshot(db)}
 
 
-def _benchmark_event_stream(*, limit: int, delay_ms: int) -> Generator[str, None, None]:
-    cases = default_benchmark()[:limit]
-    systems = default_systems(include_ablations=False)
-    scores: dict[str, dict[str, list[float]]] = defaultdict(lambda: defaultdict(list))
-    total_questions = sum(len(case.questions) for case in cases)
-    processed_questions = 0
-
-    try:
-        for system in systems:
-            system.reset()
-        yield _sse(
-            "run_started",
-            {
-                "case_count": len(cases),
-                "question_count": total_questions,
-                "systems": [system.name for system in systems],
-            },
-        )
-        for case_index, case in enumerate(cases, start=1):
-            yield _sse("case_started", _case_payload(case, case_index, len(cases)))
-            _sleep(delay_ms)
-            for event in case.events:
-                for system in systems:
-                    system.ingest_event(event)
-                yield _sse(
-                    "memory_event",
-                    {
-                        "case_id": case.case_id,
-                        "event_id": event.event_id,
-                        "event_type": event.event_type,
-                        "text": event.text,
-                        "branch_name": event.branch_name,
-                        "source_ref": event.source_ref,
-                        "trust_score": event.trust_score,
-                    },
-                )
-                _sleep(delay_ms)
-            for question in case.questions:
-                processed_questions += 1
-                for system in systems:
-                    answer = system.answer(question)
-                    score = score_answer(question, answer)
-                    scores[system.name][question.metric].append(score)
-                    yield _sse(
-                        "question_scored",
-                        {
-                            "case_id": case.case_id,
-                            "question_id": question.question_id,
-                            "metric": question.metric,
-                            "prompt": question.prompt,
-                            "system_name": system.name,
-                            "score": score,
-                            "answer": {
-                                "object_value": answer.object_value,
-                                "source_ref": answer.source_ref,
-                                "historical_objects": answer.historical_objects,
-                                "had_low_trust_warning": answer.had_low_trust_warning,
-                                "conflict_resolved": answer.conflict_resolved,
-                                "unresolved_conflict": answer.unresolved_conflict,
-                            },
-                            "progress": processed_questions / max(1, total_questions),
-                            "summary": _score_summary(scores),
-                        },
-                    )
-                    _sleep(max(0, delay_ms // 2))
-                _sleep(delay_ms)
-        yield _sse("run_complete", {"summary": _score_summary(scores)})
-    finally:
-        for system in systems:
-            close = getattr(system, "close", None)
-            if close:
-                close()
-
-
-def _sse(event: str, payload: dict[str, Any]) -> str:
-    return f"event: {event}\ndata: {json.dumps(payload, default=str)}\n\n"
-
-
-def _sleep(delay_ms: int) -> None:
-    if delay_ms:
-        time.sleep(delay_ms / 1000)
-
-
-def _case_payload(case: BenchmarkCase, case_index: int, total_cases: int) -> dict[str, Any]:
-    return {
-        "case_id": case.case_id,
-        "case_index": case_index,
-        "total_cases": total_cases,
-        "description": case.description,
-        "event_count": len(case.events),
-        "question_count": len(case.questions),
-    }
-
-
-def _score_summary(scores: dict[str, dict[str, list[float]]]) -> list[dict[str, Any]]:
-    rows: list[dict[str, Any]] = []
-    for system_name, metric_map in sorted(scores.items()):
-        for metric, values in sorted(metric_map.items()):
-            rows.append(
-                {
-                    "system_name": system_name,
-                    "metric": metric,
-                    "score": round(sum(values) / len(values), 4) if values else 0.0,
-                    "n": len(values),
-                }
-            )
-    return rows
-
-
 def _resolve_demo_branch(db: Session, name: str) -> models.Branch:
     clean_name = name.strip() or "main"
     if clean_name == "main":
@@ -336,11 +206,22 @@ def _affected_timelines(db: Session, claims: list[ExtractedClaim]) -> list[dict[
 
 def _demo_snapshot(db: Session) -> dict[str, Any]:
     branches = crud.list_branches(db)
-    versions = crud.search_beliefs(db, query="", include_inactive=True, limit=60)
-    audit = crud.list_audit_events(db, limit=12)
+    commits = crud.list_commits(db)[:40]
+    versions = crud.search_beliefs(db, query="", include_inactive=True, limit=80)
+    staged = list(db.scalars(select(models.StagedCommit).order_by(models.StagedCommit.created_at.desc()).limit(30)))
+    audit = crud.list_audit_events(db, limit=16)
     return {
+        "counts": {
+            "branches": len(branches),
+            "commits": len(commits),
+            "versions": len(versions),
+            "staged": len(staged),
+            "audit_events": len(audit),
+        },
         "branches": [_branch_payload(branch) for branch in branches],
+        "commits": [_commit_payload(commit) for commit in commits],
         "versions": [_version_payload(db, version) for version in versions],
+        "staged_commits": [_staged_payload(item) for item in staged],
         "audit": [
             {
                 "id": event.id,
@@ -374,6 +255,9 @@ def _staged_payload(staged: models.StagedCommit) -> dict[str, Any]:
         "risk_reasons": staged.risk_reasons,
         "warnings": staged.warnings_json,
         "applied_commit_id": staged.applied_commit_id,
+        "source_ref": staged.source_ref,
+        "source_trust_score": staged.source_trust_score,
+        "created_at": _iso(staged.created_at),
     }
 
 
@@ -400,6 +284,7 @@ def _version_payload(db: Session, version: models.BeliefVersion) -> dict[str, An
         "predicate": belief.predicate if belief else None,
         "object_value": version.object_value,
         "status": version.status,
+        "branch_id": version.branch_id,
         "branch_name": branch.name if branch else str(version.branch_id),
         "commit_id": version.commit_id,
         "source_ref": source.source_ref if source else None,
@@ -424,15 +309,16 @@ _HTML = """
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>TruthGit Live Demo</title>
+  <title>TruthGit Memory Chat</title>
   <style>
     :root {
       color-scheme: light;
       --ink: #1f2933;
       --muted: #667085;
       --line: #d7dee8;
-      --page: #f5f7f9;
+      --page: #f4f6f8;
       --panel: #ffffff;
+      --panel-soft: #fbfcfd;
       --green: #1b7f5a;
       --blue: #1a73e8;
       --amber: #a65f00;
@@ -447,97 +333,184 @@ _HTML = """
       font-family: Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
     }
     header {
-      padding: 28px clamp(18px, 4vw, 48px);
+      padding: 24px clamp(18px, 4vw, 48px);
       background: #10241c;
       color: #f8fbf9;
       display: grid;
-      gap: 10px;
+      gap: 8px;
     }
     h1 { margin: 0; font-size: 34px; letter-spacing: 0; line-height: 1.05; }
-    header p { margin: 0; color: #c6d7d0; max-width: 900px; line-height: 1.45; }
+    header p { margin: 0; color: #c6d7d0; max-width: 980px; line-height: 1.45; }
     main {
-      padding: 22px clamp(14px, 3vw, 42px) 44px;
+      padding: 18px clamp(14px, 3vw, 40px) 36px;
       display: grid;
-      grid-template-columns: minmax(0, 1.15fr) minmax(360px, .85fr);
+      grid-template-columns: minmax(360px, 0.9fr) minmax(0, 1.1fr);
       gap: 18px;
+      min-height: calc(100vh - 112px);
     }
-    .panel, .metric {
+    .panel {
       background: var(--panel);
       border: 1px solid var(--line);
       border-radius: 8px;
+      overflow: hidden;
+      min-width: 0;
     }
-    .panel { overflow: hidden; min-width: 0; }
     .panel h2 {
       margin: 0;
       padding: 14px 16px;
       font-size: 17px;
       border-bottom: 1px solid var(--line);
-      background: #fbfcfd;
+      background: var(--panel-soft);
     }
-    .section { padding: 14px 16px; }
-    .controls {
-      display: flex;
-      flex-wrap: wrap;
+    .chat-panel {
+      display: grid;
+      grid-template-rows: auto 1fr auto;
+      min-height: 720px;
+    }
+    .settings {
+      padding: 12px 14px;
+      border-bottom: 1px solid var(--line);
+      display: grid;
       gap: 10px;
-      align-items: center;
     }
-    button, input, textarea, select {
+    .grid3 {
+      display: grid;
+      grid-template-columns: 1fr 110px 150px;
+      gap: 10px;
+      align-items: end;
+    }
+    label { color: var(--muted); font-size: 13px; display: grid; gap: 4px; }
+    input, textarea, button {
       font: inherit;
       border: 1px solid #b8c2cc;
       border-radius: 6px;
       background: #fff;
       color: var(--ink);
     }
+    input { padding: 8px 10px; min-width: 0; }
     button {
       cursor: pointer;
       font-weight: 700;
       padding: 9px 12px;
-      min-width: 104px;
     }
-    button.primary { background: #1b7f5a; color: white; border-color: #1b7f5a; }
+    button.primary { background: var(--green); color: white; border-color: var(--green); }
     button.warn { background: #fff7e6; border-color: #e7b35b; color: #6f4400; }
-    input, select { padding: 8px 10px; }
+    button.danger { background: #fde1df; border-color: #f1a29b; color: var(--red); }
+    .quick {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+    }
+    .quick button {
+      min-width: auto;
+      font-size: 12px;
+      padding: 7px 9px;
+      background: #edf2f7;
+    }
+    .messages {
+      padding: 16px;
+      overflow: auto;
+      display: grid;
+      align-content: start;
+      gap: 12px;
+      background: #f9fbfc;
+    }
+    .msg {
+      max-width: 88%;
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      padding: 10px 12px;
+      background: #fff;
+      line-height: 1.45;
+      white-space: pre-wrap;
+    }
+    .msg.user {
+      justify-self: end;
+      color: #fff;
+      background: #244d3d;
+      border-color: #244d3d;
+    }
+    .msg.system {
+      justify-self: start;
+    }
+    .msg small {
+      display: block;
+      margin-top: 6px;
+      color: var(--muted);
+      white-space: normal;
+    }
+    .composer {
+      border-top: 1px solid var(--line);
+      padding: 12px 14px;
+      display: grid;
+      gap: 10px;
+      background: var(--panel);
+    }
     textarea {
       width: 100%;
-      min-height: 96px;
-      padding: 10px 12px;
+      min-height: 76px;
       resize: vertical;
       line-height: 1.4;
+      padding: 10px 12px;
     }
-    label { color: var(--muted); font-size: 13px; display: grid; gap: 4px; }
-    .metrics {
-      display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(126px, 1fr));
+    .controls {
+      display: flex;
+      flex-wrap: wrap;
       gap: 10px;
-      margin-top: 12px;
+      align-items: center;
     }
-    .metric { padding: 12px; min-height: 76px; }
-    .metric span { color: var(--muted); font-size: 12px; display: block; }
-    .metric strong { font-size: 26px; display: block; margin-top: 6px; }
-    .progress {
-      height: 12px;
-      background: #e8edf2;
-      border-radius: 999px;
-      overflow: hidden;
-      margin-top: 12px;
-    }
-    .progress > div { height: 100%; width: 0%; background: var(--blue); transition: width .18s ease; }
-    .feed, .timeline, .score-grid {
-      max-height: 390px;
-      overflow: auto;
-      border-top: 1px solid var(--line);
-    }
-    .event {
-      padding: 11px 14px;
-      border-bottom: 1px solid var(--line);
+    .graph-shell {
       display: grid;
-      gap: 4px;
+      grid-template-rows: auto minmax(280px, 0.72fr) minmax(260px, 1fr);
+      min-height: 720px;
     }
-    .event b { font-size: 13px; }
-    .event small { color: var(--muted); line-height: 1.35; }
+    .stats {
+      padding: 12px 14px;
+      display: grid;
+      grid-template-columns: repeat(5, minmax(84px, 1fr));
+      gap: 10px;
+      border-bottom: 1px solid var(--line);
+    }
+    .stat {
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      padding: 10px;
+      min-height: 68px;
+      background: #fff;
+    }
+    .stat span { display: block; color: var(--muted); font-size: 12px; }
+    .stat strong { display: block; margin-top: 5px; font-size: 24px; }
+    .graph-wrap {
+      overflow: auto;
+      border-bottom: 1px solid var(--line);
+      background: #ffffff;
+    }
+    svg { display: block; min-width: 760px; }
+    .tables {
+      display: grid;
+      grid-template-columns: 1fr 0.76fr;
+      min-height: 0;
+    }
+    .table-wrap {
+      overflow: auto;
+      border-right: 1px solid var(--line);
+    }
+    .table-wrap:last-child { border-right: 0; }
     table { width: 100%; border-collapse: collapse; font-size: 13px; }
-    th, td { padding: 9px 10px; text-align: left; border-bottom: 1px solid var(--line); vertical-align: top; }
-    th { color: var(--muted); background: #fbfcfd; font-weight: 700; }
+    th, td {
+      padding: 9px 10px;
+      text-align: left;
+      border-bottom: 1px solid var(--line);
+      vertical-align: top;
+    }
+    th {
+      color: var(--muted);
+      background: var(--panel-soft);
+      font-weight: 700;
+      position: sticky;
+      top: 0;
+      z-index: 1;
+    }
     .pill {
       display: inline-flex;
       align-items: center;
@@ -553,257 +526,184 @@ _HTML = """
     .hypothetical { color: var(--purple); background: #eee5fb; }
     .superseded { color: var(--amber); background: #fff1d6; }
     .retracted { color: var(--red); background: #fde1df; }
-    .grid2 { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
-    .chips { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 10px; }
-    .chip { min-width: auto; font-size: 12px; padding: 7px 9px; background: #edf2f7; }
-    .result-box {
-      display: grid;
-      grid-template-columns: repeat(4, minmax(0, 1fr));
-      gap: 10px;
-      margin-top: 12px;
-    }
-    .stage-card {
-      border: 1px solid var(--line);
-      border-radius: 8px;
-      min-height: 86px;
-      padding: 10px;
-      background: #fff;
-    }
-    .stage-card b { display: block; margin-bottom: 6px; }
-    .stage-card small { color: var(--muted); line-height: 1.35; }
-    @media (max-width: 1040px) {
+    .pending { color: var(--amber); background: #fff1d6; }
+    .applied { color: var(--green); background: #dff3e8; }
+    .muted { color: var(--muted); }
+    @media (max-width: 1120px) {
       main { grid-template-columns: 1fr; }
-      .result-box { grid-template-columns: 1fr 1fr; }
+      .chat-panel, .graph-shell { min-height: 640px; }
     }
-    @media (max-width: 640px) {
-      .grid2, .result-box { grid-template-columns: 1fr; }
+    @media (max-width: 720px) {
+      .grid3, .tables, .stats { grid-template-columns: 1fr; }
       h1 { font-size: 28px; }
+      .msg { max-width: 96%; }
     }
   </style>
 </head>
 <body>
   <header>
-    <h1>TruthGit Live Demo</h1>
-    <p>Benchmark playback and manual belief-memory prompts with staged writes, commits, supersession, branches, rollback, provenance, and audit state.</p>
+    <h1>TruthGit Memory Chat</h1>
+    <p>Manual prompts flow through extraction, durable staging, review, commits, belief versions, rollback, provenance, and audit state. The graph updates from the live SQLite memory store.</p>
   </header>
   <main>
-    <section class="panel">
-      <h2>Benchmark Playback</h2>
-      <div class="section">
-        <div class="controls">
-          <label>Cases <input id="benchLimit" type="number" min="1" max="30" value="8"></label>
-          <label>Pacing ms <input id="benchDelay" type="number" min="0" max="5000" value="650"></label>
-          <button class="primary" id="startBench">Start</button>
-          <button id="stopBench">Stop</button>
-        </div>
-        <div class="progress"><div id="benchProgress"></div></div>
-        <div class="metrics" id="benchMetrics"></div>
-      </div>
-      <div class="score-grid">
-        <table>
-          <thead><tr><th>System</th><th>Metric</th><th>Score</th><th>N</th></tr></thead>
-          <tbody id="scoreRows"><tr><td colspan="4">Waiting for run.</td></tr></tbody>
-        </table>
-      </div>
-      <div class="feed" id="benchFeed"></div>
-    </section>
-
-    <section class="panel">
-      <h2>Manual Prompt Demo</h2>
-      <div class="section">
-        <textarea id="manualText">Alice lives in Seoul.</textarea>
-        <div class="chips">
-          <button class="chip" data-example="Alice lives in Seoul." data-branch="main" data-trust="0.8">initial fact</button>
-          <button class="chip" data-example="Alice moved to Busan in March 2026." data-branch="main" data-trust="0.86">supersede</button>
-          <button class="chip" data-example="Alice lives in Atlantis." data-branch="main" data-trust="0.2">bad update</button>
-          <button class="chip" data-example="During the conference week, Alice will stay in Tokyo." data-branch="trip-plan" data-trust="0.78">branch-only</button>
-        </div>
-        <div class="grid2" style="margin-top: 12px;">
+    <section class="panel chat-panel">
+      <h2>Memory Chat</h2>
+      <div class="settings">
+        <div class="grid3">
           <label>Branch <input id="manualBranch" value="main"></label>
-          <label>Trust score <input id="manualTrust" type="number" min="0" max="1" step="0.01" value="0.8"></label>
-        </div>
-        <div class="controls" style="margin-top: 12px;">
+          <label>Trust <input id="manualTrust" type="number" min="0" max="1" step="0.01" value="0.8"></label>
           <label><input id="autoApprove" type="checkbox" checked> approve after staging</label>
-          <button class="primary" id="runManual">Run Prompt</button>
+        </div>
+        <div class="quick">
+          <button data-example="Alice lives in Seoul." data-branch="main" data-trust="0.8">initial fact</button>
+          <button data-example="Alice moved to Busan in March 2026." data-branch="main" data-trust="0.86">supersede</button>
+          <button data-example="Alice lives in Atlantis." data-branch="main" data-trust="0.2">bad update</button>
+          <button data-example="During the conference week, Alice will stay in Tokyo." data-branch="trip-plan" data-trust="0.78">branch-only</button>
+        </div>
+      </div>
+      <div class="messages" id="messages">
+        <div class="msg system">Send a belief update. TruthGit will extract atomic claims, stage them, optionally approve them into commits, and preserve the old versions instead of overwriting them.</div>
+      </div>
+      <div class="composer">
+        <textarea id="manualText" placeholder="Type a memory update, for example: Alice lives in Seoul.">Alice lives in Seoul.</textarea>
+        <div class="controls">
+          <button class="primary" id="sendPrompt">Send</button>
           <button class="warn" id="approveStaged">Approve Staged</button>
           <button class="warn" id="rollbackLast">Rollback Last Commit</button>
-          <button id="resetDemo">Reset</button>
-        </div>
-        <div class="result-box">
-          <div class="stage-card"><b>Extract</b><small id="extractState">No prompt run yet.</small></div>
-          <div class="stage-card"><b>Stage</b><small id="stageState">No staged commit.</small></div>
-          <div class="stage-card"><b>Commit</b><small id="commitState">No commit.</small></div>
-          <div class="stage-card"><b>Audit</b><small id="auditState">No audit events loaded.</small></div>
+          <button class="danger" id="resetDemo">Reset</button>
         </div>
       </div>
-      <div class="timeline">
-        <table>
-          <thead><tr><th>Version</th><th>Belief</th><th>Object</th><th>Status</th><th>Lineage</th></tr></thead>
-          <tbody id="manualVersions"><tr><td colspan="5">No versions yet.</td></tr></tbody>
-        </table>
+    </section>
+
+    <section class="panel graph-shell">
+      <h2>Git Graph</h2>
+      <div class="stats" id="stats"></div>
+      <div class="graph-wrap">
+        <svg id="gitGraph" width="920" height="320" role="img" aria-label="TruthGit commit graph"></svg>
+      </div>
+      <div class="tables">
+        <div class="table-wrap">
+          <table>
+            <thead><tr><th>Version</th><th>Belief</th><th>Object</th><th>Status</th><th>Lineage</th></tr></thead>
+            <tbody id="versionRows"><tr><td colspan="5" class="muted">No belief versions yet.</td></tr></tbody>
+          </table>
+        </div>
+        <div class="table-wrap">
+          <table>
+            <thead><tr><th>Staged / Audit</th><th>Status</th></tr></thead>
+            <tbody id="auditRows"><tr><td colspan="2" class="muted">No audit events yet.</td></tr></tbody>
+          </table>
+        </div>
       </div>
     </section>
   </main>
   <script>
-    let benchSource = null;
     let lastStagedId = null;
     let lastCommitId = null;
 
-    const metrics = [
-      ["current_truth_accuracy", "Current"],
-      ["historical_truth_accuracy", "History"],
-      ["provenance_accuracy", "Provenance"],
-      ["rollback_recovery_rate", "Rollback"],
-      ["branch_isolation_score", "Branch"],
-      ["merge_conflict_resolution_score", "Merge"],
-      ["low_trust_warning_rate", "Low-trust"]
-    ];
-
-    document.getElementById("startBench").addEventListener("click", startBenchmark);
-    document.getElementById("stopBench").addEventListener("click", stopBenchmark);
-    document.getElementById("runManual").addEventListener("click", runManualPrompt);
+    document.getElementById("sendPrompt").addEventListener("click", runManualPrompt);
     document.getElementById("approveStaged").addEventListener("click", approveStaged);
     document.getElementById("rollbackLast").addEventListener("click", rollbackLast);
     document.getElementById("resetDemo").addEventListener("click", resetDemo);
+    document.getElementById("manualText").addEventListener("keydown", event => {
+      if (event.key === "Enter" && (event.ctrlKey || event.metaKey)) runManualPrompt();
+    });
     document.querySelectorAll("[data-example]").forEach(button => {
       button.addEventListener("click", () => {
         document.getElementById("manualText").value = button.dataset.example;
         document.getElementById("manualBranch").value = button.dataset.branch;
         document.getElementById("manualTrust").value = button.dataset.trust;
+        document.getElementById("manualText").focus();
       });
     });
 
-    function startBenchmark() {
-      stopBenchmark();
-      document.getElementById("benchFeed").innerHTML = "";
-      document.getElementById("scoreRows").innerHTML = `<tr><td colspan="4">Starting.</td></tr>`;
-      renderBenchMetrics([]);
-      const limit = document.getElementById("benchLimit").value || "8";
-      const delay = document.getElementById("benchDelay").value || "650";
-      benchSource = new EventSource(`/demo/benchmark/events?limit=${encodeURIComponent(limit)}&delay_ms=${encodeURIComponent(delay)}`);
-      benchSource.addEventListener("run_started", event => {
-        const data = JSON.parse(event.data);
-        addFeed("Run started", `${data.case_count} cases, ${data.question_count} questions, ${data.systems.join(", ")}`);
-      });
-      benchSource.addEventListener("case_started", event => {
-        const data = JSON.parse(event.data);
-        addFeed(`Case ${data.case_index}/${data.total_cases}`, `${data.case_id}: ${data.description}`);
-      });
-      benchSource.addEventListener("memory_event", event => {
-        const data = JSON.parse(event.data);
-        addFeed(`${data.event_type}: ${data.event_id}`, `${data.text} | branch ${data.branch_name} | trust ${Number(data.trust_score).toFixed(2)}`);
-      });
-      benchSource.addEventListener("question_scored", event => {
-        const data = JSON.parse(event.data);
-        document.getElementById("benchProgress").style.width = `${Math.round(data.progress * 100)}%`;
-        renderScoreRows(data.summary);
-        renderBenchMetrics(data.summary);
-        if (data.system_name === "truthgit") {
-          addFeed(`${data.metric}: ${data.score.toFixed(1)}`, data.prompt);
-        }
-      });
-      benchSource.addEventListener("run_complete", event => {
-        const data = JSON.parse(event.data);
-        renderScoreRows(data.summary);
-        renderBenchMetrics(data.summary);
-        addFeed("Run complete", "Final scores rendered.");
-        stopBenchmark();
-      });
-      benchSource.onerror = () => addFeed("Stream warning", "Connection ended or interrupted.");
-    }
-
-    function stopBenchmark() {
-      if (benchSource) {
-        benchSource.close();
-        benchSource = null;
-      }
-    }
-
     async function runManualPrompt() {
+      const message = document.getElementById("manualText").value.trim();
+      if (!message) return;
+      appendMessage("user", message);
       const payload = {
-        message: document.getElementById("manualText").value,
+        message,
         branch_name: document.getElementById("manualBranch").value,
         trust_score: Number(document.getElementById("manualTrust").value),
         auto_approve: document.getElementById("autoApprove").checked
       };
-      const data = await postJson("/demo/manual", payload);
-      lastStagedId = data.staged?.status === "pending" ? data.staged.id : null;
-      lastCommitId = data.commit?.id || lastCommitId;
-      renderManual(data);
+      try {
+        const data = await postJson("/demo/manual", payload);
+        lastStagedId = data.staged?.status === "pending" ? data.staged.id : null;
+        lastCommitId = data.commit?.id || lastCommitId;
+        renderSnapshot(data.snapshot);
+        appendMessage("system", summarizeManual(data), detailLine(data));
+      } catch (error) {
+        appendMessage("system", "Request failed.", String(error));
+      }
     }
 
     async function approveStaged() {
-      if (!lastStagedId) return;
+      if (!lastStagedId) {
+        appendMessage("system", "No pending staged commit to approve.");
+        return;
+      }
       const approvedId = lastStagedId;
-      const data = await postJson(`/staged/${lastStagedId}/approve`, {
-        reviewer: "demo-ui",
-        notes: "Approved during live demo.",
-        commit_message: "Manual approval from demo UI"
-      });
-      lastCommitId = data.commit.id;
-      lastStagedId = null;
-      await refreshSnapshot(`Approved staged ${approvedId}`, `commit #${lastCommitId}`);
+      try {
+        const data = await postJson(`/staged/${lastStagedId}/approve`, {
+          reviewer: "demo-ui",
+          notes: "Approved during live demo.",
+          commit_message: "Manual approval from demo UI"
+        });
+        lastCommitId = data.commit.id;
+        lastStagedId = null;
+        const snapshot = await fetchSnapshot();
+        renderSnapshot(snapshot);
+        appendMessage("system", `Approved staged commit ${approvedId}.`, `Created commit #${lastCommitId}.`);
+      } catch (error) {
+        appendMessage("system", "Approval failed.", String(error));
+      }
     }
 
     async function rollbackLast() {
-      if (!lastCommitId) return;
-      const data = await postJson("/demo/rollback", {commit_id: lastCommitId});
-      lastCommitId = null;
-      renderSnapshot(data.snapshot);
-      document.getElementById("commitState").textContent = `rollback commit #${data.commit.id}`;
-      document.getElementById("stageState").textContent = `${data.retracted_versions.length} version(s) retracted, ${data.restored_versions.length} restored`;
+      if (!lastCommitId) {
+        appendMessage("system", "No last commit is selected for rollback.");
+        return;
+      }
+      try {
+        const data = await postJson("/demo/rollback", {commit_id: lastCommitId});
+        lastCommitId = data.commit.id;
+        renderSnapshot(data.snapshot);
+        appendMessage(
+          "system",
+          `Rollback commit #${data.commit.id} created.`,
+          `${data.retracted_versions.length} version(s) retracted, ${data.restored_versions.length} restored.`
+        );
+      } catch (error) {
+        appendMessage("system", "Rollback failed.", String(error));
+      }
     }
 
     async function resetDemo() {
-      const data = await postJson("/demo/reset", {confirm: true});
-      lastStagedId = null;
-      lastCommitId = null;
-      renderSnapshot(data.snapshot);
-      document.getElementById("extractState").textContent = "Reset complete.";
-      document.getElementById("stageState").textContent = "No staged commit.";
-      document.getElementById("commitState").textContent = "No commit.";
-      document.getElementById("auditState").textContent = "Database reset.";
+      try {
+        const data = await postJson("/demo/reset", {confirm: true});
+        lastStagedId = null;
+        lastCommitId = null;
+        renderSnapshot(data.snapshot);
+        document.getElementById("messages").innerHTML = "";
+        appendMessage("system", "Demo memory reset. The main branch has been recreated.");
+      } catch (error) {
+        appendMessage("system", "Reset failed.", String(error));
+      }
     }
 
-    async function refreshSnapshot(title, text) {
-      const response = await fetch("/viz/data");
+    async function fetchSnapshot() {
+      const response = await fetch("/viz/data", {headers: {"Accept": "application/json"}});
+      if (!response.ok) throw new Error(await response.text());
       const data = await response.json();
-      document.getElementById("commitState").textContent = text;
-      document.getElementById("stageState").textContent = title;
-      document.getElementById("auditState").textContent = `${data.audit_events.length} recent audit event(s)`;
-      document.getElementById("manualVersions").innerHTML = data.belief_versions.map(versionRow).join("") || emptyVersionRow();
-    }
-
-    function renderManual(data) {
-      document.getElementById("extractState").textContent = `${data.claims.length} claim(s): ${data.claims.map(c => `${c.subject} ${c.predicate} ${objectValue(c)}`).join("; ") || "none"}`;
-      document.getElementById("stageState").textContent = data.staged ? `${data.staged.status} ${data.staged.review_required ? "review required" : "auto-safe"} ${data.warnings.join(" ")}` : "No staged commit.";
-      document.getElementById("commitState").textContent = data.commit ? `commit #${data.commit.id} on branch ${data.branch.name}` : "Pending review.";
-      renderSnapshot(data.snapshot);
-    }
-
-    function objectValue(claim) {
-      return claim.object_value || claim.object || "";
-    }
-
-    function renderSnapshot(snapshot) {
-      const versions = snapshot?.versions || [];
-      const audit = snapshot?.audit || [];
-      document.getElementById("auditState").textContent = `${audit.length} recent audit event(s)`;
-      document.getElementById("manualVersions").innerHTML = versions.map(versionRow).join("") || emptyVersionRow();
-    }
-
-    function versionRow(row) {
-      return `<tr>
-        <td>#${row.id}</td>
-        <td><b>${escapeHtml(row.subject || "")}</b><br><span>${escapeHtml(row.predicate || "")}</span></td>
-        <td>${escapeHtml(row.object_value || "")}</td>
-        <td><span class="pill ${escapeHtml(row.status || "")}">${escapeHtml(row.status || "")}</span>${row.contradiction_group ? "<br>conflict" : ""}</td>
-        <td>${row.supersedes_version_id ? "supersedes #" + row.supersedes_version_id : "root"}<br>commit #${row.commit_id}<br>${escapeHtml(row.branch_name || "")}</td>
-      </tr>`;
-    }
-
-    function emptyVersionRow() {
-      return `<tr><td colspan="5">No belief versions yet.</td></tr>`;
+      return {
+        counts: data.counts,
+        branches: data.branches,
+        commits: data.commits,
+        versions: data.belief_versions,
+        staged_commits: data.staged_commits,
+        audit: data.audit_events
+      };
     }
 
     async function postJson(url, payload) {
@@ -812,34 +712,126 @@ _HTML = """
         headers: {"Content-Type": "application/json"},
         body: JSON.stringify(payload)
       });
-      if (!response.ok) {
-        const text = await response.text();
-        throw new Error(text);
-      }
+      if (!response.ok) throw new Error(await response.text());
       return response.json();
     }
 
-    function renderScoreRows(summary) {
-      const rows = summary || [];
-      document.getElementById("scoreRows").innerHTML = rows.map(row => `
-        <tr><td>${escapeHtml(row.system_name)}</td><td>${escapeHtml(row.metric)}</td><td>${Number(row.score).toFixed(3)}</td><td>${row.n}</td></tr>
-      `).join("") || `<tr><td colspan="4">No scores yet.</td></tr>`;
+    function summarizeManual(data) {
+      const claims = data.claims.map(claim => `${claim.subject} ${claim.predicate} ${claim.object_value || claim.object || ""}`.trim());
+      if (!claims.length) return "No atomic claim was extracted from that prompt.";
+      if (data.commit) return `Committed ${claims.length} claim(s) on ${data.branch.name}.`;
+      return `Staged ${claims.length} claim(s) for review on ${data.branch.name}.`;
     }
 
-    function renderBenchMetrics(summary) {
-      const truthgit = new Map((summary || []).filter(row => row.system_name === "truthgit").map(row => [row.metric, row.score]));
-      document.getElementById("benchMetrics").innerHTML = metrics.map(([key, label]) => `
-        <div class="metric"><span>${escapeHtml(label)}</span><strong>${truthgit.has(key) ? Number(truthgit.get(key)).toFixed(2) : "0.00"}</strong></div>
+    function detailLine(data) {
+      const parts = [];
+      if (data.staged) parts.push(`staged ${data.staged.id}`);
+      if (data.commit) parts.push(`commit #${data.commit.id}`);
+      if (data.warnings?.length) parts.push(data.warnings.join(" "));
+      return parts.join(" | ");
+    }
+
+    function appendMessage(role, text, detail = "") {
+      const messages = document.getElementById("messages");
+      const item = document.createElement("div");
+      item.className = `msg ${role}`;
+      item.innerHTML = `${escapeHtml(text)}${detail ? `<small>${escapeHtml(detail)}</small>` : ""}`;
+      messages.appendChild(item);
+      messages.scrollTop = messages.scrollHeight;
+    }
+
+    function renderSnapshot(snapshot) {
+      renderStats(snapshot?.counts || {});
+      renderGraph(snapshot || {});
+      renderVersions(snapshot?.versions || []);
+      renderAudit(snapshot?.staged_commits || [], snapshot?.audit || []);
+    }
+
+    function renderStats(counts) {
+      const entries = [
+        ["branches", "Branches"],
+        ["commits", "Commits"],
+        ["versions", "Versions"],
+        ["staged", "Staged"],
+        ["audit_events", "Audit"]
+      ];
+      document.getElementById("stats").innerHTML = entries.map(([key, label]) => `
+        <div class="stat"><span>${label}</span><strong>${Number(counts[key] || 0)}</strong></div>
       `).join("");
     }
 
-    function addFeed(title, text) {
-      const feed = document.getElementById("benchFeed");
-      const item = document.createElement("div");
-      item.className = "event";
-      item.innerHTML = `<b>${escapeHtml(title)}</b><small>${escapeHtml(text)}</small>`;
-      feed.prepend(item);
-      while (feed.children.length > 80) feed.removeChild(feed.lastChild);
+    function renderGraph(snapshot) {
+      const svg = document.getElementById("gitGraph");
+      const commits = [...(snapshot.commits || [])].reverse();
+      const branches = snapshot.branches || [];
+      const branchById = new Map(branches.map(branch => [branch.id, branch]));
+      const lanes = new Map(branches.map((branch, index) => [branch.id, 100 + index * 160]));
+      const width = Math.max(920, 260 + Math.max(0, branches.length - 1) * 160);
+      const height = Math.max(300, 86 + commits.length * 76);
+      svg.setAttribute("width", width);
+      svg.setAttribute("height", height);
+      if (!commits.length) {
+        svg.innerHTML = `<text x="40" y="72" fill="#667085" font-size="15">No commits yet. Send a prompt to create the first memory commit.</text>`;
+        return;
+      }
+      const yByCommit = new Map();
+      commits.forEach((commit, index) => yByCommit.set(commit.id, 56 + index * 76));
+      const lines = [];
+      const nodes = [];
+      for (const branch of branches) {
+        const x = lanes.get(branch.id) || 100;
+        lines.push(`<text x="${x - 34}" y="24" fill="#667085" font-size="12">${escapeSvg(branch.name)}</text>`);
+      }
+      for (const commit of commits) {
+        const x = lanes.get(commit.branch_id) || 100;
+        const y = yByCommit.get(commit.id);
+        if (commit.parent_commit_id && yByCommit.has(commit.parent_commit_id)) {
+          const parent = commits.find(item => item.id === commit.parent_commit_id);
+          const px = parent ? (lanes.get(parent.branch_id) || 100) : x;
+          const py = yByCommit.get(commit.parent_commit_id);
+          lines.push(`<line x1="${px}" y1="${py}" x2="${x}" y2="${y}" stroke="#98a2b3" stroke-width="2" />`);
+        }
+        const color = commit.operation_type === "rollback" ? "#b42318" : commit.operation_type === "merge" ? "#6d3fc4" : "#1b7f5a";
+        const branch = branchById.get(commit.branch_id);
+        nodes.push(`
+          <circle cx="${x}" cy="${y}" r="13" fill="${color}" stroke="#ffffff" stroke-width="3"></circle>
+          <text x="${x + 24}" y="${y - 7}" fill="#1f2933" font-size="13" font-weight="700">#${commit.id} ${escapeSvg(commit.operation_type)}</text>
+          <text x="${x + 24}" y="${y + 10}" fill="#667085" font-size="12">${escapeSvg(branch?.name || String(commit.branch_id))} ${escapeSvg(shorten(commit.message || "", 48))}</text>
+        `);
+      }
+      svg.innerHTML = lines.join("") + nodes.join("");
+    }
+
+    function renderVersions(rows) {
+      document.getElementById("versionRows").innerHTML = rows.map(row => `
+        <tr>
+          <td>#${row.id}</td>
+          <td><b>${escapeHtml(row.subject || "")}</b><br><span class="muted">${escapeHtml(row.predicate || "")}</span></td>
+          <td>${escapeHtml(row.object_value || "")}</td>
+          <td><span class="pill ${escapeHtml(row.status || "")}">${escapeHtml(row.status || "")}</span>${row.contradiction_group ? "<br><span class='muted'>conflict</span>" : ""}</td>
+          <td>${row.supersedes_version_id ? "supersedes #" + row.supersedes_version_id : "root"}<br>commit #${row.commit_id}<br>${escapeHtml(row.branch_name || "")}</td>
+        </tr>
+      `).join("") || `<tr><td colspan="5" class="muted">No belief versions yet.</td></tr>`;
+    }
+
+    function renderAudit(staged, audit) {
+      const stagedRows = staged.map(row => `
+        <tr>
+          <td><b>staged</b><br><span class="muted">${escapeHtml(row.id)}</span></td>
+          <td><span class="pill ${escapeHtml(row.status)}">${escapeHtml(row.status)}</span><br>${row.review_required ? "review required" : "review clear"}</td>
+        </tr>
+      `);
+      const auditRows = audit.slice(0, 12).map(row => `
+        <tr>
+          <td><b>${escapeHtml(row.event_type)}</b><br><span class="muted">${escapeHtml(row.entity_key || row.entity_id || "")}</span></td>
+          <td>${escapeHtml(row.entity_type)}<br><span class="muted">${escapeHtml(row.created_at || "")}</span></td>
+        </tr>
+      `);
+      document.getElementById("auditRows").innerHTML = stagedRows.concat(auditRows).join("") || `<tr><td colspan="2" class="muted">No staged writes or audit events yet.</td></tr>`;
+    }
+
+    function shorten(value, maxLength) {
+      return value.length > maxLength ? `${value.slice(0, maxLength - 1)}...` : value;
     }
 
     function escapeHtml(value) {
@@ -847,7 +839,13 @@ _HTML = """
         "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#039;"
       }[character]));
     }
-    renderBenchMetrics([]);
+
+    function escapeSvg(value) {
+      return escapeHtml(value);
+    }
+
+    renderStats({});
+    fetchSnapshot().then(renderSnapshot).catch(() => renderSnapshot({}));
   </script>
 </body>
 </html>
