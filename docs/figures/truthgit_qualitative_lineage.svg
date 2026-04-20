@@ -1,0 +1,85 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1280" height="760" viewBox="0 0 1280 760" role="img" aria-labelledby="title desc">
+  <title id="title">TruthGit qualitative belief lineage</title>
+  <desc id="desc">A qualitative example showing initial fact, superseding fact, bad low-trust update, rollback, and branch-only hypothetical fact.</desc>
+  <defs>
+    <marker id="arrow" markerWidth="10" markerHeight="10" refX="8" refY="3" orient="auto" markerUnits="strokeWidth">
+      <path d="M0,0 L0,6 L8,3 z" fill="#344054" />
+    </marker>
+    <style>
+      .bg { fill: #f6f8fa; }
+      .lane { fill: #ffffff; stroke: #d0d7de; stroke-width: 2; }
+      .title { font: 700 30px Arial, sans-serif; fill: #111827; }
+      .subtitle { font: 400 17px Arial, sans-serif; fill: #4b5563; }
+      .lane-title { font: 700 18px Arial, sans-serif; fill: #111827; }
+      .card-title { font: 700 16px Arial, sans-serif; fill: #111827; }
+      .card-text { font: 400 14px Arial, sans-serif; fill: #344054; }
+      .small { font: 400 12px Arial, sans-serif; fill: #667085; }
+      .initial { fill: #e7f4ee; stroke: #1e8e5a; }
+      .supersede { fill: #e8f1fd; stroke: #1a73e8; }
+      .bad { fill: #fde8e7; stroke: #c5221f; }
+      .rollback { fill: #fff4dc; stroke: #b06000; }
+      .branch { fill: #efe7fb; stroke: #6f42c1; }
+      .line { stroke: #344054; stroke-width: 3; fill: none; marker-end: url(#arrow); }
+      .dashed { stroke: #6f42c1; stroke-width: 3; fill: none; stroke-dasharray: 8 7; marker-end: url(#arrow); }
+      .badge { fill: #ffffff; stroke: #d0d7de; }
+    </style>
+  </defs>
+
+  <rect class="bg" x="0" y="0" width="1280" height="760" />
+  <text class="title" x="54" y="58">TruthGit Belief Lineage Example</text>
+  <text class="subtitle" x="54" y="88">Memory is managed as versioned belief state, not overwritten text chunks.</text>
+
+  <rect class="lane" x="44" y="126" width="1192" height="364" rx="10" />
+  <text class="lane-title" x="70" y="160">main branch: current truth and rollback history</text>
+
+  <rect class="initial" x="78" y="206" width="210" height="122" rx="10" stroke-width="2" />
+  <text class="card-title" x="98" y="238">Commit 1</text>
+  <text class="card-text" x="98" y="264">Alice lives_in Seoul</text>
+  <text class="small" x="98" y="290">status: superseded</text>
+  <text class="small" x="98" y="310">source: profile-main</text>
+
+  <path class="line" d="M298 268 C330 268, 346 268, 378 268" />
+
+  <rect class="supersede" x="388" y="206" width="230" height="122" rx="10" stroke-width="2" />
+  <text class="card-title" x="408" y="238">Commit 2</text>
+  <text class="card-text" x="408" y="264">Alice moved to Busan</text>
+  <text class="small" x="408" y="290">status: active</text>
+  <text class="small" x="408" y="310">supersedes: Commit 1</text>
+
+  <path class="line" d="M628 268 C664 268, 680 268, 716 268" />
+
+  <rect class="bad" x="726" y="206" width="218" height="122" rx="10" stroke-width="2" />
+  <text class="card-title" x="746" y="238">Commit 3</text>
+  <text class="card-text" x="746" y="264">Alice lives_in Atlantis</text>
+  <text class="small" x="746" y="290">status: retracted</text>
+  <text class="small" x="746" y="310">source: low-trust scrape</text>
+
+  <path class="line" d="M954 268 C992 268, 1008 268, 1046 268" />
+
+  <rect class="rollback" x="1056" y="206" width="142" height="122" rx="10" stroke-width="2" />
+  <text class="card-title" x="1076" y="238">Rollback</text>
+  <text class="card-text" x="1076" y="264">retracts</text>
+  <text class="card-text" x="1076" y="284">bad commit</text>
+  <text class="small" x="1076" y="310">Busan remains active</text>
+
+  <rect class="badge" x="388" y="372" width="230" height="58" rx="8" />
+  <text class="card-title" x="410" y="397">Current answer on main</text>
+  <text class="card-text" x="410" y="418">Alice is in Busan, not Seoul or Atlantis.</text>
+
+  <path class="line" d="M503 338 L503 362" />
+
+  <rect class="lane" x="44" y="536" width="1192" height="164" rx="10" />
+  <text class="lane-title" x="70" y="570">trip-plan branch: hypothetical belief isolated from main</text>
+
+  <path class="dashed" d="M503 328 C520 466, 640 478, 716 590" />
+
+  <rect class="branch" x="726" y="586" width="288" height="76" rx="10" stroke-width="2" />
+  <text class="card-title" x="746" y="614">Branch Commit</text>
+  <text class="card-text" x="746" y="638">Alice stays_in Tokyo during conference week</text>
+  <text class="small" x="746" y="656">status: hypothetical; branch: trip-plan</text>
+
+  <rect class="badge" x="78" y="586" width="326" height="76" rx="8" />
+  <text class="card-title" x="98" y="614">Why this is not RAG</text>
+  <text class="card-text" x="98" y="638">The old, new, bad, rolled-back, and hypothetical</text>
+  <text class="card-text" x="98" y="656">claims all remain auditable with different statuses.</text>
+</svg>

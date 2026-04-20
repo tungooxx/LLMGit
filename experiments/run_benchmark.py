@@ -4,11 +4,18 @@ from __future__ import annotations
 
 import argparse
 import csv
+import hashlib
 import json
 from pathlib import Path
 
 from experiments.baselines import SystemAnswer, default_systems
 from experiments.benchmark import BenchmarkCase, BenchmarkQuestion, default_benchmark
+from experiments.final_config import (
+    BACKBONE,
+    BENCHMARK_LOGIC_COMMIT_SHA,
+    BENCHMARK_VERSION,
+    PROMPT_TEMPLATE_PATH,
+)
 from experiments.metrics import aggregate_scores, score_questions, scores_to_dicts
 
 
@@ -16,7 +23,7 @@ def run_benchmark(
     cases: list[BenchmarkCase],
     *,
     include_ablations: bool = False,
-    backbone: str = "gpt-4o-mini",
+    backbone: str = BACKBONE,
 ) -> dict[str, object]:
     """Run all systems on all benchmark cases."""
 
@@ -49,7 +56,11 @@ def run_benchmark(
 
     return {
         "metadata": {
+            "benchmark_version": BENCHMARK_VERSION,
             "backbone": backbone,
+            "prompt_template_path": PROMPT_TEMPLATE_PATH.as_posix(),
+            "prompt_template_sha256": _sha256_file(PROMPT_TEMPLATE_PATH),
+            "benchmark_logic_commit_sha": BENCHMARK_LOGIC_COMMIT_SHA,
             "include_ablations": include_ablations,
             "case_count": len(cases),
             "question_count": len(all_questions),
@@ -86,10 +97,18 @@ def _write_csv(path: Path, rows_obj: object) -> None:
         writer.writerows(rows)
 
 
+def _sha256_file(path: Path) -> str:
+    digest = hashlib.sha256()
+    with path.open("rb") as handle:
+        for chunk in iter(lambda: handle.read(1024 * 1024), b""):
+            digest.update(chunk)
+    return digest.hexdigest()
+
+
 def main() -> None:
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("--output-dir", default="experiments/results")
-    parser.add_argument("--backbone", default="gpt-4o-mini")
+    parser.add_argument("--backbone", default=BACKBONE)
     parser.add_argument("--include-ablations", action="store_true")
     args = parser.parse_args()
     results = run_benchmark(

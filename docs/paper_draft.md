@@ -1,81 +1,97 @@
 # TruthGit: Version-Controlled Belief Memory for LLM Agents
 
-## Draft Status
+## Frozen Draft
 
-This draft freezes the Benchmark v3 phase 2 result generated with `gpt-4o-mini` as the backbone label. The benchmark is deterministic and synthetic, but it now stresses dynamic truth maintenance rather than simple fact recall.
+This draft freezes the final Benchmark v3 phase 2 experiment setup:
+
+- benchmark version: `truthgit-benchmark-v3-phase2-final`
+- backbone label: `gpt-4o-mini`
+- benchmark logic commit: `6b5e6d5478baa67eb0c767fcfad162d3a2b4919f`
+- prompt template: `experiments/prompt_templates/final_answer_prompt.txt`
+- primary result table: `experiments/results/metric_summary.csv`
+- qualitative figure: `docs/figures/truthgit_qualitative_lineage.svg`
+
+The benchmark should not be changed after this freeze unless an obvious implementation bug is found.
 
 ## Abstract
 
-Long-running LLM agents operate in changing worlds: facts become stale, sources conflict, hypotheses should remain isolated, and bad memory writes must be reversible. Retrieval-augmented generation and chat-history memory can recall old text, but they do not directly represent which belief is current, which source governs it, or why a prior version was superseded. TruthGit is a research prototype that stores memory as version-controlled atomic beliefs. Each belief version records provenance, branch, commit lineage, status, temporal validity, supersession, contradiction groups, and audit events. In a synthetic changing-world benchmark with 86 cases and 161 structured questions, TruthGit reaches 1.0 across current truth, ordered history, provenance, rollback recovery, branch isolation, merge conflict resolution, and low-trust warning metrics, while naive history, simple RAG, and TF-IDF embedding RAG fail on columns requiring explicit memory structure.
+Long-running LLM agents operate in changing worlds: facts become stale, sources conflict, hypothetical plans should not overwrite current truth, and bad memory writes must be reversible. Retrieval-augmented generation and chat-history memory can recall prior text, but they do not directly represent which belief is current, which source governs it, why a previous belief was superseded, or whether a branch-local claim should remain hypothetical. TruthGit is a research prototype that stores memory as version-controlled atomic beliefs. Each belief version records provenance, branch, commit lineage, status, temporal validity, supersession, contradiction groups, and audit events. In a synthetic changing-world benchmark with 86 cases and 161 structured questions, TruthGit reaches 1.0 across current truth, ordered history, provenance, rollback recovery, branch isolation, merge conflict resolution, and low-trust warning metrics. Naive chat history, simple RAG, and TF-IDF embedding RAG fail on columns that require explicit state management rather than fact retrieval.
 
-## Hypothesis
+## Problem
 
-LLM agents will answer changing-world memory questions more reliably when durable memory is represented as version-controlled belief state rather than flat chat history or unversioned retrieval chunks.
+Most practical memory systems for LLM agents treat memory as retrievable text. A user says something, the system stores a chunk, and later retrieval finds semantically similar chunks. That design helps recall, but changing-world agents need more than recall.
 
-More specifically:
+A memory system must answer questions such as:
 
-- branch metadata should improve hypothetical isolation;
-- rollback metadata should improve recovery from bad writes and rollback-aware history;
-- provenance metadata should improve exact current-source citation;
-- contradiction groups and temporal windows should improve merge conflict handling.
+- What is currently true after a later update superseded an earlier fact?
+- Which source currently justifies the answer?
+- Was a high-confidence update later rolled back?
+- Is this claim true on `main`, or only inside a hypothetical branch?
+- Did a merge resolve a conflict, preserve temporal coexistence, or require manual review?
 
-## Related Work
+Flat memory makes these questions ambiguous because the old and new records are just coexisting chunks. A retriever can find both "Alice lives in Seoul" and "Alice moved to Busan," but retrieval alone does not say which one is active, which one is historical, why the change happened, or whether a bad update was retracted.
 
-Recent memory evaluation work has moved beyond single-shot recall. StoryBench argues for dynamic long-term-memory evaluation with multi-turn sequential reasoning. MEMTRACK evaluates long-term memory and state tracking in dynamic multi-platform agent environments. StructMemEval, introduced in "Evaluating Memory Structure in LLM Agents," directly argues that memory benchmarks should test how agents organize memory rather than only whether they recall stored facts.
+## Method
 
-TruthGit follows the same direction but focuses on a different research question: whether explicit version-control semantics for atomic beliefs improve state tracking under supersession, rollback, branching, provenance, and merge conflict.
+TruthGit represents long-term memory as version-controlled belief state. The stable unit is a `Belief`, identified by a normalized `(subject, predicate)` pair such as `Alice::lives_in`. The mutable content lives in `BeliefVersion` rows. Each version records:
 
-References:
+- object value;
+- normalized object value;
+- source and trust score;
+- confidence;
+- branch;
+- commit;
+- status: active, superseded, retracted, or hypothetical;
+- temporal validity window;
+- superseded predecessor;
+- contradiction group for unresolved conflicts;
+- metadata and audit events.
 
-- Luanbo Wan and Weizhi Ma. 2025. "StoryBench: A Dynamic Benchmark for Evaluating Long-Term Memory with Multi Turns." arXiv:2506.13356. https://arxiv.org/abs/2506.13356
-- Darshan Deshpande et al. 2025. "MEMTRACK: Evaluating Long-Term Memory and State Tracking in Multi-Platform Dynamic Agent Environments." arXiv:2510.01353. https://arxiv.org/abs/2510.01353
-- Alina Shutova, Alexandra Olenina, Ivan Vinogradov, and Anton Sinitsin. 2026. "Evaluating Memory Structure in LLM Agents." arXiv:2602.11243. https://arxiv.org/abs/2602.11243
+The system separates proposal from mutation. The LLM may extract candidate claims and propose memory changes, but durable memory writes pass through deterministic Python validation. Proposed writes are stored in durable `StagedCommit` records. Low-trust, low-confidence, or important-predicate updates require review before they can become commits. Rollback never deletes history; it retracts introduced versions and restores superseded predecessors when appropriate.
 
-## System
+This architecture lets the agent answer from structured state rather than from raw retrieval alone. Current-truth questions read active versions on the requested branch. Historical questions read ordered timelines. Provenance questions read the governing source for the active version. Merge questions inspect branch-local versions, temporal windows, and contradiction groups.
 
-TruthGit stores long-term memory in SQLite through deterministic Python services. The LLM may extract candidate claims and explain results, but the database and commit engine decide whether memory changes are staged, approved, superseded, merged, rolled back, or flagged for review.
+## Qualitative Figure
 
-Core tables:
+![TruthGit qualitative lineage](figures/truthgit_qualitative_lineage.svg)
 
-- `Source`: provenance and trust score.
-- `Branch`: main or hypothetical belief branch.
-- `Commit`: add, update, merge, retract, rollback operation.
-- `Belief`: stable subject+predicate identity.
-- `BeliefVersion`: object value, status, source, confidence, temporal window, branch, supersession, contradiction group.
-- `StagedCommit`: durable review queue for proposed writes.
-- `AuditEvent`: append-only operational audit log.
+The figure shows the central behavior. An initial belief says Alice lives in Seoul. A later commit supersedes it with Busan. A bad low-trust update says Atlantis, but rollback retracts that version and preserves Busan as active. A branch-only conference plan says Alice stays in Tokyo, but that belief remains hypothetical on `trip-plan` and does not leak into `main`.
 
-## Benchmark V3 Phase 2
+A more realistic project-assistant narrative is included in `docs/case_study_project_assistant.md`. It uses changing launch-review schedules, a low-trust cancellation, rollback, and a contingency branch.
 
-Benchmark v3 phase 2 contains 86 generated worlds and 161 structured questions.
+## Benchmark
 
-Question categories:
+Benchmark v3 phase 2 is designed to test changing-world state management rather than recall-only memory. It contains 86 generated worlds and 161 structured questions.
 
-- current truth after supersession;
-- exact ordered historical timeline;
-- date-aware time-slice history;
-- provenance for the exact current governing source;
-- rollback recovery after bad commits;
-- branch-only hypothetical isolation;
-- resolved and unresolved merge conflict;
-- low-trust warning behavior.
+The benchmark includes:
 
-New phase 2 hard cases:
-
-- multiple sources mention the same winning fact;
-- a rolled-back source mentions the same object and should no longer be cited;
-- main and branch have the same object but different governing sources;
-- a merge has a winning branch source and a weaker later conflicting branch;
+- three-step temporal supersession;
+- exact ordered history questions;
+- date-aware time-slice questions;
+- low-trust poisoning attempts;
+- rollback-needed bad commits;
+- branch-only hypothetical facts;
+- branch-specific provenance;
+- multiple sources supporting the same object;
+- rollback-invalidated sources;
+- resolved high-trust merges;
+- unresolved/manual-review merges;
 - main changes after branch fork;
-- two competing branches are merged into main;
-- merge values coexist temporally instead of overwriting.
+- two competing branches;
+- temporal coexistence instead of overwrite.
 
-## Systems Compared
+The hardest provenance questions ask for the exact source currently justifying the answer, not merely any source that mentions the same object. The hardest merge questions require the system to distinguish automatic resolution, unresolved manual review, and non-overlapping temporal coexistence.
 
-- `naive_chat_history`: flat append-only memory.
+This setup follows the direction of recent memory-benchmark work. StoryBench evaluates dynamic long-term-memory reasoning over multi-turn stories [1]. MEMTRACK emphasizes state tracking and contradictions in dynamic multi-platform agent environments [2]. StructMemEval argues that memory evaluation should test organization and structure, not only factual recall [3]. TruthGit focuses on a complementary claim: explicit version-control semantics improve changing-truth management.
+
+## Experimental Setup
+
+Systems compared:
+
+- `naive_chat_history`: append-only flat memory with no branches, rollback, or trust handling.
 - `simple_rag`: subject/predicate retrieval with source-trust sorting.
 - `embedding_rag`: local TF-IDF cosine retrieval over memory chunks.
-- `truthgit`: real TruthGit branch, commit, rollback, conflict, provenance, and audit engines.
+- `truthgit`: the real deterministic TruthGit service layer.
 
 Ablations:
 
@@ -84,7 +100,19 @@ Ablations:
 - `truthgit_no_review_gate`
 - `truthgit_no_trust_scoring`
 
-## Main Result
+Metrics:
+
+- `current_truth_accuracy`
+- `historical_truth_accuracy`
+- `provenance_accuracy`
+- `rollback_recovery_rate`
+- `branch_isolation_score`
+- `merge_conflict_resolution_score`
+- `low_trust_warning_rate`
+
+The frozen run uses `gpt-4o-mini` as the backbone label. The current benchmark implementation uses deterministic adapters rather than live model calls, so the table isolates memory-structure behavior from sampling variance. The prompt template is frozen for reproducibility and for future LLM-backed runs.
+
+## Results
 
 | System | Current | History | Provenance | Rollback | Branch | Merge | Low-trust |
 | --- | ---: | ---: | ---: | ---: | ---: | ---: | ---: |
@@ -93,30 +121,45 @@ Ablations:
 | embedding RAG | 1.000 | 0.273 | 0.729 | 0.000 | 0.500 | 0.400 | 0.000 |
 | TruthGit | 1.000 | 1.000 | 1.000 | 1.000 | 1.000 | 1.000 | 1.000 |
 
-## Interpretation
+Retrieval baselines can often recover the current object. Simple RAG and embedding RAG both reach 1.0 on current truth because the latest or highest-trust current value is usually present as a chunk. This is the expected strength of retrieval.
 
-Retrieval baselines can often recover the current object when the benchmark only asks "what is true now?" Simple RAG and embedding RAG both reach 1.0 on current truth because the current object is usually present in a high-trust or recent chunk.
+The gap appears when the question requires structured memory state. History requires exact ordered timelines and date-aware slices. Provenance requires the exact source currently governing the belief. Rollback requires retraction and restoration semantics. Branch isolation requires branch-local belief visibility. Merge conflict requires contradiction groups, branch lineage, and temporal windows. Low-trust warning requires a review gate.
 
-The gap appears when the question requires memory structure:
+TruthGit wins because the information needed to answer these questions is represented explicitly in the database rather than inferred from retrieved text.
 
-- History requires exact ordered timelines and date-aware slices. Retrieval returns relevant chunks but does not maintain a canonical timeline.
-- Provenance requires the exact source that currently justifies an answer, not merely any source that mentions the object.
-- Rollback requires retraction semantics. Flat baselines keep the bad chunk.
-- Branch isolation requires branch-local state. Flat baselines leak hypothetical facts into main.
-- Merge conflict requires contradiction groups, branch lineage, and temporal coexistence. Retrieval can return text but cannot decide whether a merge should remain unresolved.
-- Low-trust warning requires a review gate or trust-aware write policy.
+## Ablations
 
-The ablations support the structural claim. Removing branches hurts branch isolation and branch-specific provenance. Removing rollback destroys rollback recovery and rollback-aware history/provenance. Removing the review gate destroys low-trust warnings. Removing trust scoring weakens current-truth behavior under poisoning.
+The ablations support the claim that different version-control mechanisms protect different capabilities.
+
+| Ablation | Branch | Rollback | Provenance | Merge | Low-trust |
+| --- | ---: | ---: | ---: | ---: | ---: |
+| TruthGit full | 1.000 | 1.000 | 1.000 | 1.000 | 1.000 |
+| no branches | 0.500 | 1.000 | 0.864 | 0.850 | 1.000 |
+| no rollback | 1.000 | 0.000 | 0.864 | 1.000 | 1.000 |
+| no review gate | 1.000 | 1.000 | 1.000 | 1.000 | 0.000 |
+| no trust scoring | 1.000 | 1.000 | 0.932 | 1.000 | 0.000 |
+
+Branches protect hypothetical isolation and branch-specific provenance. Rollback protects recovery from bad commits and invalidated sources. The review gate protects low-trust warning behavior. Trust scoring protects current truth under poisoning and improves provenance selection when multiple sources mention the same object.
 
 ## Limitations
 
-The benchmark is synthetic and deterministic. It does not measure full natural-language answer quality or human preference. The embedding baseline is TF-IDF rather than a neural retriever with learned reranking. TruthGit's merge policy is hand-written and deterministic. Same-object corroboration is represented as a new governing belief version; a production system should also preserve all corroborating sources as a support set. The benchmark should be expanded with larger stochastic worlds, noisier source text, and live LLM extraction errors.
+The benchmark is synthetic and deterministic. It is useful for isolating memory-state mechanics, but it is not a replacement for real deployed-agent evaluation. The tasks use structured expectations rather than human preference judgments. The embedding baseline is local TF-IDF, not a production neural retriever with reranking and temporal post-processing. The final table uses deterministic adapters and a frozen backbone label rather than live sampled LLM answers. TruthGit's merge and trust policies are hand-written. Same-object corroboration is represented as a new governing belief version; a fuller system should keep all corroborating evidence as support sets.
+
+The benchmark also assumes extraction has already produced clean atomic claims. Real agents will make extraction errors, over-split claims, miss temporal qualifiers, and face vague or deceptive source text. Future evaluation should include live extraction noise, adversarial prompts, and human review data.
 
 ## Future Work
 
 - Add neural embedding and reranking baselines.
 - Add stochastic world generation with hidden source reliability.
 - Add adversarial poisoning and delayed rollback scenarios.
-- Evaluate human-readable conflict explanations.
-- Learn branch creation and merge policies from feedback.
+- Evaluate natural-language conflict explanations with human raters.
+- Learn branch creation, review gating, and merge policies from feedback.
 - Add support-set provenance so multiple sources can jointly justify one belief version.
+
+## References
+
+[1] Luanbo Wan and Weizhi Ma. 2025. "StoryBench: A Dynamic Benchmark for Evaluating Long-Term Memory with Multi Turns." arXiv:2506.13356. https://arxiv.org/abs/2506.13356
+
+[2] Darshan Deshpande et al. 2025. "MEMTRACK: Evaluating Long-Term Memory and State Tracking in Multi-Platform Dynamic Agent Environments." arXiv:2510.01353. https://arxiv.org/abs/2510.01353
+
+[3] Alina Shutova, Alexandra Olenina, Ivan Vinogradov, and Anton Sinitsin. 2026. "Evaluating Memory Structure in LLM Agents." arXiv:2602.11243. https://arxiv.org/abs/2602.11243
