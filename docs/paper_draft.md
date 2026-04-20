@@ -112,6 +112,14 @@ Metrics:
 
 The frozen run uses `gpt-4o-mini` as the backbone label. The current benchmark implementation uses deterministic adapters rather than live model calls, so the table isolates memory-structure behavior from sampling variance. The prompt template is frozen for reproducibility and for future LLM-backed runs.
 
+### Public Benchmark Extension: LongMemEval
+
+The frozen TruthGit benchmark remains the main table. As the first public benchmark extension, this project adds a LongMemEval track. LongMemEval is an ICLR 2025 benchmark for long-term interactive memory in chat assistants, with 500 questions covering information extraction, multi-session reasoning, temporal reasoning, knowledge updates, and abstention [4].
+
+LongMemEval should be reported as a separate supplementary table, not mixed into the frozen TruthGit table. The reason is methodological: the TruthGit benchmark directly tests version-control operations such as rollback, branch isolation, merge conflict, and exact governing-source provenance, while LongMemEval provides an external public check on broader long-term chat-memory QA.
+
+The adapter and setup notes live in `docs/public_benchmarks/longmemeval.md` and `experiments/public_benchmarks/longmemeval.py`.
+
 ## Results
 
 | System | Current | History | Provenance | Rollback | Branch | Merge | Low-trust |
@@ -163,3 +171,5 @@ The benchmark also assumes extraction has already produced clean atomic claims. 
 [2] Darshan Deshpande et al. 2025. "MEMTRACK: Evaluating Long-Term Memory and State Tracking in Multi-Platform Dynamic Agent Environments." arXiv:2510.01353. https://arxiv.org/abs/2510.01353
 
 [3] Alina Shutova, Alexandra Olenina, Ivan Vinogradov, and Anton Sinitsin. 2026. "Evaluating Memory Structure in LLM Agents." arXiv:2602.11243. https://arxiv.org/abs/2602.11243
+
+[4] Di Wu, Hongwei Wang, Wenhao Yu, Yuwei Zhang, Kai-Wei Chang, and Dong Yu. 2024. "LongMemEval: Benchmarking Chat Assistants on Long-Term Interactive Memory." arXiv:2410.10813. https://arxiv.org/abs/2410.10813
