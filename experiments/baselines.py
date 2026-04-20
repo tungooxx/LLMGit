@@ -2,6 +2,9 @@
 
 from __future__ import annotations
 
+import math
+import re
+from collections import Counter
 from dataclasses import dataclass, field
 from typing import Protocol
 
@@ -58,7 +61,17 @@ class MemoryFact:
     branch_name: str
     source_ref: str
     trust_score: float
+    confidence: float
+    text: str
+    valid_from: object | None = None
     active: bool = True
+
+    @property
+    def document(self) -> str:
+        return (
+            f"{self.subject} {self.predicate} {self.object_value}. "
+            f"Source {self.source_ref}. Branch {self.branch_name}. {self.text}"
+        )
 
 
 class NaiveChatHistoryBaseline:
@@ -73,19 +86,9 @@ class NaiveChatHistoryBaseline:
         self.facts.clear()
 
     def ingest_event(self, event: BenchmarkEvent) -> None:
-        if event.event_type in {"fact", "bad_fact", "branch_fact"} and event.subject and event.predicate and event.object_value:
-            self.facts.append(
-                MemoryFact(
-                    event_id=event.event_id,
-                    subject=event.subject,
-                    predicate=event.predicate,
-                    object_value=event.object_value,
-                    branch_name=event.branch_name,
-                    source_ref=event.source_ref,
-                    trust_score=event.trust_score,
-                )
-            )
-        # This baseline does not understand rollback or merge as state operations.
+        if _is_fact_event(event):
+            self.facts.append(_fact_from_event(event))
+        # This baseline does not understand rollback, merge, branch isolation, or warnings.
 
     def answer(self, question: BenchmarkQuestion) -> SystemAnswer:
         matches = [
@@ -95,21 +98,11 @@ class NaiveChatHistoryBaseline:
         ]
         chosen = matches[-1] if matches else None
         historical = [fact.object_value for fact in matches]
-        return SystemAnswer(
-            question_id=question.question_id,
-            system_name=self.name,
-            answer_text=chosen.object_value if chosen else "unknown",
-            object_value=chosen.object_value if chosen else None,
-            historical_objects=historical,
-            source_ref=chosen.source_ref if chosen else None,
-            had_low_trust_warning=False,
-            conflict_resolved=False,
-            branch_name=question.branch_name,
-        )
+        return _answer_from_fact(self.name, question, chosen, historical)
 
 
 class SimpleRagBaseline:
-    """Baseline that retrieves the highest lexical-overlap memory chunk."""
+    """Baseline that retrieves by subject/predicate and source trust only."""
 
     name = "simple_rag"
 
@@ -120,18 +113,8 @@ class SimpleRagBaseline:
         self.facts.clear()
 
     def ingest_event(self, event: BenchmarkEvent) -> None:
-        if event.event_type in {"fact", "bad_fact", "branch_fact"} and event.subject and event.predicate and event.object_value:
-            self.facts.append(
-                MemoryFact(
-                    event_id=event.event_id,
-                    subject=event.subject,
-                    predicate=event.predicate,
-                    object_value=event.object_value,
-                    branch_name=event.branch_name,
-                    source_ref=event.source_ref,
-                    trust_score=event.trust_score,
-                )
-            )
+        if _is_fact_event(event):
+            self.facts.append(_fact_from_event(event))
 
     def answer(self, question: BenchmarkQuestion) -> SystemAnswer:
         matches = [
@@ -146,26 +129,81 @@ class SimpleRagBaseline:
                 if fact.subject == question.subject and fact.predicate == question.predicate
             ]
         chosen = max(matches, key=lambda fact: (fact.trust_score, fact.event_id), default=None)
-        historical = [fact.object_value for fact in matches]
-        return SystemAnswer(
-            question_id=question.question_id,
-            system_name=self.name,
-            answer_text=chosen.object_value if chosen else "unknown",
-            object_value=chosen.object_value if chosen else None,
-            historical_objects=historical,
-            source_ref=chosen.source_ref if chosen else None,
-            had_low_trust_warning=False,
-            conflict_resolved=False,
-            branch_name=question.branch_name,
+        return _answer_from_fact(self.name, question, chosen, [fact.object_value for fact in matches])
+
+
+class EmbeddingRagBaseline:
+    """TF-IDF embedding RAG baseline with cosine retrieval over memory chunks."""
+
+    name = "embedding_rag"
+
+    def __init__(self, top_k: int = 5) -> None:
+        self.facts: list[MemoryFact] = []
+        self.top_k = top_k
+
+    def reset(self) -> None:
+        self.facts.clear()
+
+    def ingest_event(self, event: BenchmarkEvent) -> None:
+        if _is_fact_event(event):
+            self.facts.append(_fact_from_event(event))
+
+    def answer(self, question: BenchmarkQuestion) -> SystemAnswer:
+        if not self.facts:
+            return _answer_from_fact(self.name, question, None, [])
+        query = (
+            f"{question.prompt} {question.subject} {question.predicate} "
+            f"{question.branch_name}"
         )
+        ranked = self._rank(query)
+        matches = [
+            fact
+            for fact in ranked[: self.top_k]
+            if fact.subject == question.subject and fact.predicate == question.predicate
+        ]
+        if not matches:
+            matches = [
+                fact
+                for fact in self.facts
+                if fact.subject == question.subject and fact.predicate == question.predicate
+            ]
+        chosen = max(
+            matches,
+            key=lambda fact: (_date_rank(fact.valid_from), fact.trust_score * fact.confidence, fact.event_id),
+            default=None,
+        )
+        return _answer_from_fact(self.name, question, chosen, [fact.object_value for fact in matches])
+
+    def _rank(self, query: str) -> list[MemoryFact]:
+        docs = [fact.document for fact in self.facts]
+        doc_tokens = [_tokens(doc) for doc in docs]
+        query_tokens = _tokens(query)
+        vocabulary = sorted(set(query_tokens).union(*(set(tokens) for tokens in doc_tokens)))
+        idf = _idf(vocabulary, doc_tokens)
+        query_vec = _tfidf(query_tokens, vocabulary, idf)
+        scored = []
+        for fact, tokens in zip(self.facts, doc_tokens, strict=True):
+            scored.append((_cosine(query_vec, _tfidf(tokens, vocabulary, idf)), fact))
+        return [fact for _, fact in sorted(scored, key=lambda item: item[0], reverse=True)]
 
 
 class TruthGitSystem:
     """Benchmark adapter that uses the real TruthGit commit engine."""
 
-    name = "truthgit"
-
-    def __init__(self) -> None:
+    def __init__(
+        self,
+        *,
+        name: str = "truthgit",
+        support_branches: bool = True,
+        support_rollback: bool = True,
+        trust_aware: bool = True,
+        review_gate: bool = True,
+    ) -> None:
+        self.name = name
+        self.support_branches = support_branches
+        self.support_rollback = support_rollback
+        self.trust_aware = trust_aware
+        self.review_gate = review_gate
         self.engine = create_engine(
             "sqlite://",
             connect_args={"check_same_thread": False},
@@ -196,14 +234,14 @@ class TruthGitSystem:
 
     def ingest_event(self, event: BenchmarkEvent) -> None:
         db = self._db()
-        if event.event_type in {"fact", "bad_fact", "branch_fact"}:
-            branch_id = self._ensure_branch(event.branch_name)
+        if _is_fact_event(event):
+            branch_id = self._ensure_branch(event.branch_name if self.support_branches else "main")
             source = crud.create_source(
                 db,
                 source_type="document",
                 source_ref=event.source_ref,
                 excerpt=event.text,
-                trust_score=event.trust_score,
+                trust_score=event.trust_score if self.trust_aware else 0.5,
             )
             claim = NormalizedClaim(
                 subject=event.subject or "",
@@ -223,11 +261,14 @@ class TruthGitSystem:
                 created_by="benchmark",
             )
             self.commit_ids_by_event[event.event_id] = result.commit.id
-            self.warnings_by_event[event.event_id] = result.warnings
+            self.warnings_by_event[event.event_id] = result.warnings if self.review_gate else []
             db.commit()
             return
 
         if event.event_type == "rollback" and event.rollback_target_event_id:
+            if not self.support_rollback:
+                self.warnings_by_event[event.event_id] = []
+                return
             target_commit_id = self.commit_ids_by_event[event.rollback_target_event_id]
             result = rollback_commit(
                 db,
@@ -241,6 +282,8 @@ class TruthGitSystem:
             return
 
         if event.event_type == "merge" and event.merge_source_branch:
+            if not self.support_branches:
+                return
             source_branch_id = self._ensure_branch(event.merge_source_branch)
             target_branch_id = self._ensure_branch(event.merge_target_branch)
             result = merge_branch(
@@ -256,7 +299,7 @@ class TruthGitSystem:
 
     def answer(self, question: BenchmarkQuestion) -> SystemAnswer:
         db = self._db()
-        branch_id = self._ensure_branch(question.branch_name)
+        branch_id = self._ensure_branch(question.branch_name if self.support_branches else "main")
         belief = crud.get_belief_by_subject_predicate(
             db,
             subject=question.subject,
@@ -283,7 +326,11 @@ class TruthGitSystem:
             historical_objects=[version.object_value for version in historical_versions],
             source_ref=source_ref,
             had_low_trust_warning=any("Low-trust" in warning for warning in related_warnings),
-            conflict_resolved=bool(chosen and chosen.normalized_object_value == normalize_object_value(question.expected_object_value or "")),
+            conflict_resolved=bool(
+                chosen
+                and chosen.normalized_object_value
+                == normalize_object_value(question.expected_object_value or "")
+            ),
             branch_name=question.branch_name,
         )
 
@@ -313,20 +360,125 @@ class TruthGitSystem:
         source = self._db().get(models.Source, source_id)
         return source.source_ref if source else None
 
-    @staticmethod
-    def _choose_current(db: Session, versions: list[object]) -> object | None:
+    def _choose_current(self, db: Session, versions: list[object]) -> object | None:
         if not versions:
             return None
-        return max(
-            versions,
-            key=lambda version: (
-                crud.source_trust(db, version.source_id) * version.confidence,
-                version.id,
-            ),
-        )
+        if self.trust_aware:
+            return max(
+                versions,
+                key=lambda version: (
+                    _date_rank(version.valid_from),
+                    crud.source_trust(db, version.source_id) * version.confidence,
+                    version.id,
+                ),
+            )
+        return max(versions, key=lambda version: (_date_rank(version.valid_from), version.id))
 
 
-def default_systems() -> list[MemorySystem]:
-    """Return the systems compared by the benchmark script."""
+def primary_systems() -> list[MemorySystem]:
+    """Return the first paper-table systems."""
 
-    return [NaiveChatHistoryBaseline(), SimpleRagBaseline(), TruthGitSystem()]
+    return [
+        NaiveChatHistoryBaseline(),
+        SimpleRagBaseline(),
+        EmbeddingRagBaseline(),
+        TruthGitSystem(),
+    ]
+
+
+def ablation_systems() -> list[MemorySystem]:
+    """Return TruthGit ablations for structural attribution."""
+
+    return [
+        TruthGitSystem(name="truthgit_no_branches", support_branches=False),
+        TruthGitSystem(name="truthgit_no_rollback", support_rollback=False),
+        TruthGitSystem(name="truthgit_no_review_gate", review_gate=False),
+        TruthGitSystem(name="truthgit_no_trust_scoring", trust_aware=False, review_gate=False),
+    ]
+
+
+def default_systems(*, include_ablations: bool = False) -> list[MemorySystem]:
+    """Return systems compared by the benchmark script."""
+
+    systems = primary_systems()
+    if include_ablations:
+        systems.extend(ablation_systems())
+    return systems
+
+
+def _is_fact_event(event: BenchmarkEvent) -> bool:
+    return (
+        event.event_type in {"fact", "bad_fact", "branch_fact"}
+        and event.subject is not None
+        and event.predicate is not None
+        and event.object_value is not None
+    )
+
+
+def _fact_from_event(event: BenchmarkEvent) -> MemoryFact:
+    return MemoryFact(
+        event_id=event.event_id,
+        subject=event.subject or "",
+        predicate=event.predicate or "",
+        object_value=event.object_value or "",
+        branch_name=event.branch_name,
+        source_ref=event.source_ref,
+        trust_score=event.trust_score,
+        confidence=event.confidence,
+        text=event.text,
+        valid_from=event.valid_from,
+    )
+
+
+def _answer_from_fact(
+    system_name: str,
+    question: BenchmarkQuestion,
+    chosen: MemoryFact | None,
+    historical_objects: list[str],
+) -> SystemAnswer:
+    return SystemAnswer(
+        question_id=question.question_id,
+        system_name=system_name,
+        answer_text=chosen.object_value if chosen else "unknown",
+        object_value=chosen.object_value if chosen else None,
+        historical_objects=historical_objects,
+        source_ref=chosen.source_ref if chosen else None,
+        had_low_trust_warning=False,
+        conflict_resolved=bool(
+            chosen and chosen.object_value.lower() == (question.expected_object_value or "").lower()
+        ),
+        branch_name=question.branch_name,
+    )
+
+
+def _tokens(text: str) -> list[str]:
+    return re.findall(r"[a-z0-9]+", text.lower())
+
+
+def _idf(vocabulary: list[str], docs: list[list[str]]) -> dict[str, float]:
+    total = len(docs)
+    return {
+        term: math.log((1 + total) / (1 + sum(1 for doc in docs if term in doc))) + 1.0
+        for term in vocabulary
+    }
+
+
+def _tfidf(tokens: list[str], vocabulary: list[str], idf: dict[str, float]) -> list[float]:
+    counts = Counter(tokens)
+    total = max(1, len(tokens))
+    return [(counts[term] / total) * idf[term] for term in vocabulary]
+
+
+def _cosine(left: list[float], right: list[float]) -> float:
+    numerator = sum(a * b for a, b in zip(left, right, strict=True))
+    left_norm = math.sqrt(sum(a * a for a in left))
+    right_norm = math.sqrt(sum(b * b for b in right))
+    if left_norm == 0.0 or right_norm == 0.0:
+        return 0.0
+    return numerator / (left_norm * right_norm)
+
+
+def _date_rank(value: object | None) -> int:
+    if value is None:
+        return 0
+    return int(getattr(value, "toordinal", lambda: 0)())

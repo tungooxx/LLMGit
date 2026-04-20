@@ -137,6 +137,7 @@ class AuditEventRead(BaseModel):
     event_type: str
     entity_type: str
     entity_id: int
+    entity_key: str | None = None
     payload_json: dict[str, Any]
     created_at: datetime
 

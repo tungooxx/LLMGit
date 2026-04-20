@@ -269,6 +269,7 @@ def stage_belief_changes(
         event_type="staged_commit.created",
         entity_type="staged_commit",
         entity_id=0,
+        entity_key=staged.id,
         payload={
             "staged_commit_id": staged.id,
             "branch_id": branch_id,
@@ -372,6 +373,7 @@ def approve_staged_commit(
         event_type="staged_commit.approved",
         entity_type="staged_commit",
         entity_id=0,
+        entity_key=staged.id,
         payload={
             "staged_commit_id": staged.id,
             "applied_commit_id": result.commit.id,
@@ -405,6 +407,7 @@ def reject_staged_commit(
         event_type="staged_commit.rejected",
         entity_type="staged_commit",
         entity_id=0,
+        entity_key=staged.id,
         payload={"staged_commit_id": staged.id, "reviewer": reviewer, "notes": notes},
     )
     db.flush()

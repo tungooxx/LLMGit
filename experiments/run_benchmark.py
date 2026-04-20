@@ -12,7 +12,12 @@ from experiments.benchmark import BenchmarkCase, BenchmarkQuestion, default_benc
 from experiments.metrics import aggregate_scores, score_questions, scores_to_dicts
 
 
-def run_benchmark(cases: list[BenchmarkCase]) -> dict[str, object]:
+def run_benchmark(
+    cases: list[BenchmarkCase],
+    *,
+    include_ablations: bool = False,
+    backbone: str = "gpt-4o-mini",
+) -> dict[str, object]:
     """Run all systems on all benchmark cases."""
 
     all_questions: list[BenchmarkQuestion] = [
@@ -21,7 +26,7 @@ def run_benchmark(cases: list[BenchmarkCase]) -> dict[str, object]:
     all_scores = []
     predictions = []
 
-    for system in default_systems():
+    for system in default_systems(include_ablations=include_ablations):
         system.reset()
         system_answers: list[SystemAnswer] = []
         try:
@@ -31,7 +36,9 @@ def run_benchmark(cases: list[BenchmarkCase]) -> dict[str, object]:
                 for question in case.questions:
                     answer = system.answer(question)
                     system_answers.append(answer)
-                    predictions.append(answer.__dict__)
+                    prediction = dict(answer.__dict__)
+                    prediction["backbone"] = backbone
+                    predictions.append(prediction)
             all_scores.extend(
                 score_questions(system_name=system.name, questions=all_questions, answers=system_answers)
             )
@@ -41,6 +48,12 @@ def run_benchmark(cases: list[BenchmarkCase]) -> dict[str, object]:
                 close()
 
     return {
+        "metadata": {
+            "backbone": backbone,
+            "include_ablations": include_ablations,
+            "case_count": len(cases),
+            "question_count": len(all_questions),
+        },
         "benchmark": [case.to_json() for case in cases],
         "predictions": predictions,
         "question_scores": scores_to_dicts(all_scores),
@@ -76,8 +89,14 @@ def _write_csv(path: Path, rows_obj: object) -> None:
 def main() -> None:
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("--output-dir", default="experiments/results")
+    parser.add_argument("--backbone", default="gpt-4o-mini")
+    parser.add_argument("--include-ablations", action="store_true")
     args = parser.parse_args()
-    results = run_benchmark(default_benchmark())
+    results = run_benchmark(
+        default_benchmark(),
+        include_ablations=args.include_ablations,
+        backbone=args.backbone,
+    )
     export_results(results, Path(args.output_dir))
     print(f"Wrote benchmark outputs to {args.output_dir}")
 
