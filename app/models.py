@@ -5,7 +5,7 @@ from __future__ import annotations
 from datetime import date, datetime, timezone
 from typing import Any
 
-from sqlalchemy import Date, DateTime, Float, ForeignKey, Index, JSON, String, Text, UniqueConstraint
+from sqlalchemy import Boolean, Date, DateTime, Float, ForeignKey, Index, JSON, String, Text, UniqueConstraint
 from sqlalchemy.orm import Mapped, mapped_column
 
 from app.db import Base
@@ -97,6 +97,32 @@ class BeliefVersion(Base):
     contradiction_group: Mapped[str | None] = mapped_column(String(120), nullable=True)
     metadata_json: Mapped[dict[str, Any]] = mapped_column(JSON, default=dict)
     created_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), default=utc_now)
+
+
+class StagedCommit(Base):
+    """Durable review queue entry for proposed belief-memory writes."""
+
+    __tablename__ = "staged_commits"
+
+    id: Mapped[str] = mapped_column(String(36), primary_key=True)
+    branch_id: Mapped[int] = mapped_column(ForeignKey("branches.id"), index=True)
+    status: Mapped[str] = mapped_column(String(30), default="pending", index=True)
+    claims_json: Mapped[list[dict[str, Any]]] = mapped_column(JSON, default=list)
+    source_type: Mapped[str] = mapped_column(String(50))
+    source_ref: Mapped[str | None] = mapped_column(String(500), nullable=True)
+    source_excerpt: Mapped[str] = mapped_column(Text)
+    source_trust_score: Mapped[float] = mapped_column(Float, default=0.5)
+    proposed_commit_message: Mapped[str] = mapped_column(Text)
+    created_by: Mapped[str] = mapped_column(String(80), default="agent")
+    model_name: Mapped[str | None] = mapped_column(String(120), nullable=True)
+    review_required: Mapped[bool] = mapped_column(Boolean, default=False)
+    risk_reasons: Mapped[list[str]] = mapped_column(JSON, default=list)
+    warnings_json: Mapped[list[str]] = mapped_column(JSON, default=list)
+    reviewer: Mapped[str | None] = mapped_column(String(80), nullable=True)
+    review_notes: Mapped[str | None] = mapped_column(Text, nullable=True)
+    applied_commit_id: Mapped[int | None] = mapped_column(ForeignKey("commits.id"), nullable=True, index=True)
+    created_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), default=utc_now)
+    reviewed_at: Mapped[datetime | None] = mapped_column(DateTime(timezone=True), nullable=True)
 
 
 class AuditEvent(Base):

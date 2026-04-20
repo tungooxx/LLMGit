@@ -8,7 +8,7 @@ from fastapi import FastAPI
 
 from app.commit_engine import ensure_main_branch
 from app.db import SessionLocal, init_db
-from app.routes import beliefs, branches, chat, commits
+from app.routes import beliefs, branches, chat, commits, staged
 
 logging.basicConfig(level=logging.INFO)
 
@@ -43,3 +43,4 @@ app.include_router(chat.router)
 app.include_router(beliefs.router)
 app.include_router(branches.router)
 app.include_router(commits.router)
+app.include_router(staged.router)

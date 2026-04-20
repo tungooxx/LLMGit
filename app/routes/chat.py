@@ -18,7 +18,6 @@ from app.schemas import (
     ChatRequest,
     ChatResponse,
     Citation,
-    ExtractedClaim,
     IngestRequest,
     IngestResponse,
     SourceCreate,
@@ -50,18 +49,32 @@ def chat(
         excerpt=request.message,
         trust_score=0.7,
     )
-    staged = stage_belief_changes(claims=extracted.claims, branch_id=branch.id, source=source)
+    plan = llm.plan_answer(request.message, []) if extracted.claims else None
+    staged = (
+        stage_belief_changes(
+            db,
+            claims=extracted.claims,
+            branch_id=branch.id,
+            source=source,
+            proposed_commit_message=(
+                plan.proposed_commit_message if plan and plan.proposed_commit_message else "Update belief memory from chat"
+            ),
+            created_by="agent",
+            model_name=get_settings().openai_model,
+        )
+        if extracted.claims
+        else None
+    )
     created_commit_id: int | None = None
     introduced_versions: list[object] = []
-    warnings = list(staged.warnings)
+    warnings = list(staged.warnings_json) if staged else []
 
-    if request.auto_commit and extracted.claims:
+    if request.auto_commit and staged and not staged.review_required:
         try:
-            plan = llm.plan_answer(request.message, [])
             result = apply_staged_commit(
                 db,
-                staged_commit_id=staged.staged_commit_id,
-                commit_message=plan.proposed_commit_message or "Update belief memory from chat",
+                staged_commit_id=staged.id,
+                commit_message=staged.proposed_commit_message,
                 created_by="agent",
                 model_name=get_settings().openai_model,
             )
@@ -71,23 +84,36 @@ def chat(
         created_commit_id = result.commit.id
         introduced_versions = list(result.introduced_versions)
         warnings.extend(result.warnings)
+    elif staged and staged.review_required:
+        warnings.append(f"Staged commit {staged.id} requires review before memory update.")
+
+    if staged and staged.status == "pending":
+        db.commit()
 
     citations = _citations_for_versions(db, introduced_versions)
     if not citations:
         relevant_versions = _retrieve_relevant_versions(db, request.message, branch.id)
         citations = _citations_for_versions(db, relevant_versions)
-    answer = _compose_answer(
-        db=db,
-        message=request.message,
-        branch_name=branch.name,
-        introduced_versions=introduced_versions,
-        citations=citations,
-    )
+    if staged and staged.status == "pending":
+        answer = (
+            f"Staged {len(extracted.claims)} claim(s) for review as {staged.id}. "
+            "TruthGit memory was not updated yet."
+        )
+    else:
+        answer = _compose_answer(
+            db=db,
+            message=request.message,
+            branch_name=branch.name,
+            introduced_versions=introduced_versions,
+            citations=citations,
+        )
     return ChatResponse(
         answer=answer,
         citations=citations,
         memory_updated=bool(introduced_versions),
         created_commit_id=created_commit_id,
+        staged_commit_id=staged.id if staged else None,
+        review_required=bool(staged.review_required) if staged else False,
         branch=BranchRead.model_validate(branch),
         warnings=sorted(set(warnings)),
     )
@@ -109,16 +135,24 @@ def ingest(
         excerpt=request.raw_text,
         trust_score=request.trust_score,
     )
-    staged = stage_belief_changes(claims=extracted.claims, branch_id=branch.id, source=source)
-    warnings = list(staged.warnings)
+    staged = stage_belief_changes(
+        db,
+        claims=extracted.claims,
+        branch_id=branch.id,
+        source=source,
+        proposed_commit_message=f"Ingest {request.source_type}: {request.source_ref or 'raw text'}",
+        created_by="agent",
+        model_name=get_settings().openai_model,
+    )
+    warnings = list(staged.warnings_json)
     commit_id: int | None = None
     memory_updated = False
-    if request.auto_commit and extracted.claims:
+    if request.auto_commit and extracted.claims and not staged.review_required:
         try:
             result = apply_staged_commit(
                 db,
-                staged_commit_id=staged.staged_commit_id,
-                commit_message=f"Ingest {request.source_type}: {request.source_ref or 'raw text'}",
+                staged_commit_id=staged.id,
+                commit_message=staged.proposed_commit_message,
                 created_by="agent",
                 model_name=get_settings().openai_model,
             )
@@ -128,10 +162,17 @@ def ingest(
         commit_id = result.commit.id
         memory_updated = bool(result.introduced_versions)
         warnings.extend(result.warnings)
+    elif staged.review_required:
+        warnings.append(f"Staged commit {staged.id} requires review before memory update.")
+
+    if staged.status == "pending":
+        db.commit()
 
     return IngestResponse(
         extracted_claims=extracted.claims,
-        staged_commit_id=staged.staged_commit_id,
+        staged_commit_id=staged.id,
+        staged_status=staged.status,
+        review_required=staged.review_required,
         memory_updated=memory_updated,
         created_commit_id=commit_id,
         warnings=sorted(set(warnings)),
