@@ -7,8 +7,12 @@ param(
     [string]$JudgeModel = "gpt-4o",
     [ValidateSet("per_session", "record_batch")]
     [string]$ExtractionMode = "per_session",
-    [int]$MaxSessions = 12,
+    [ValidateSet("beliefs_only", "beliefs_and_excerpts")]
+    [string]$ContextMode = "beliefs_and_excerpts",
+    [int]$MaxSessions = 0,
+    [int]$MaxSourceExcerpts = 0,
     [int]$Limit = 0,
+    [int]$StartIndex = 0,
     [int]$SampleSize = 0,
     [int]$SampleSeed = 0,
     [switch]$SkipEvaluation,
@@ -31,8 +35,9 @@ if (-not $env:OPENAI_API_KEY) {
 
 New-Item -ItemType Directory -Force -Path $OutputDir | Out-Null
 $SafeAnswerModel = $AnswerModel -replace '[^A-Za-z0-9_.-]', '_'
-$RunLabel = if ($SampleSize -gt 0) { "random_$SampleSize`_seed_$SampleSeed" } elseif ($Limit -gt 0) { "sample_$Limit" } else { "full" }
-$BaseName = "$SplitLabel`_truthgit`_$SafeAnswerModel`_$ExtractionMode`_$RunLabel"
+$RunLabel = if ($SampleSize -gt 0) { "random_$SampleSize`_seed_$SampleSeed" } elseif ($Limit -gt 0) { "shard_$StartIndex`_limit_$Limit" } elseif ($StartIndex -gt 0) { "from_$StartIndex" } else { "full" }
+$SessionLabel = if ($MaxSessions -gt 0) { "ms$MaxSessions" } else { "fullhistory" }
+$BaseName = "$SplitLabel`_truthgit`_$SafeAnswerModel`_$ExtractionMode`_$SessionLabel`_$ContextMode`_$RunLabel"
 $Hypotheses = Join-Path $OutputDir "$BaseName.hypotheses.jsonl"
 $EvalLog = Join-Path $OutputDir "$BaseName.eval-results-$JudgeModel.jsonl"
 $SummaryJson = Join-Path $OutputDir "$BaseName.summary.json"
@@ -41,10 +46,15 @@ $LimitArgs = @()
 if ($SampleSize -gt 0 -and $Limit -gt 0) {
     throw "Use either -Limit or -SampleSize, not both."
 }
+if ($SampleSize -gt 0 -and $StartIndex -gt 0) {
+    throw "Use -StartIndex only with deterministic -Limit shards, not random samples."
+}
 if ($SampleSize -gt 0) {
     $LimitArgs = @("--sample-size", "$SampleSize", "--sample-seed", "$SampleSeed")
 } elseif ($Limit -gt 0) {
-    $LimitArgs = @("--limit", "$Limit")
+    $LimitArgs = @("--limit", "$Limit", "--start-index", "$StartIndex")
+} elseif ($StartIndex -gt 0) {
+    $LimitArgs = @("--start-index", "$StartIndex")
 }
 $TraceArgs = @()
 if ($Trace) {
@@ -61,7 +71,9 @@ python -m experiments.public_benchmarks.longmemeval_truthgit generate `
     --answer-model $AnswerModel `
     --extraction-model $ExtractionModel `
     --extraction-mode $ExtractionMode `
+    --context-mode $ContextMode `
     --max-sessions $MaxSessions `
+    --max-source-excerpts $MaxSourceExcerpts `
     @LimitArgs `
     @TraceArgs `
     @ResumeArgs

@@ -7,12 +7,14 @@ SPLIT_LABEL="${LONGMEMEVAL_SPLIT_LABEL:-longmemeval_s_cleaned}"
 MODEL="${OPENAI_MODEL:-gpt-4o-mini}"
 JUDGE_MODEL="${LONGMEMEVAL_JUDGE_MODEL:-gpt-4o}"
 LIMIT="${LONGMEMEVAL_LIMIT:-}"
+START_INDEX="${LONGMEMEVAL_START_INDEX:-0}"
 SAMPLE_SIZE="${LONGMEMEVAL_SAMPLE_SIZE:-}"
 SAMPLE_SEED="${LONGMEMEVAL_SAMPLE_SEED:-0}"
 HISTORY_FORMAT="${LONGMEMEVAL_HISTORY_FORMAT:-json}"
 READER_MODE="${LONGMEMEVAL_READER_MODE:-con}"
 MAX_OUTPUT_TOKENS="${LONGMEMEVAL_MAX_OUTPUT_TOKENS:-256}"
 SKIP_EVALUATION="${LONGMEMEVAL_SKIP_EVALUATION:-0}"
+NO_RESUME="${LONGMEMEVAL_NO_RESUME:-0}"
 
 if command -v py >/dev/null 2>&1; then
   PYTHON_CMD=(py -3)
@@ -40,12 +42,19 @@ if [[ -n "$LIMIT" && -n "$SAMPLE_SIZE" ]]; then
   echo "Use either LONGMEMEVAL_LIMIT or LONGMEMEVAL_SAMPLE_SIZE, not both." >&2
   exit 2
 fi
+if [[ -n "$SAMPLE_SIZE" && "$START_INDEX" != "0" ]]; then
+  echo "Use LONGMEMEVAL_START_INDEX only with deterministic LONGMEMEVAL_LIMIT shards, not random samples." >&2
+  exit 2
+fi
 if [[ -n "$SAMPLE_SIZE" ]]; then
   RUN_LABEL="random_${SAMPLE_SIZE}_seed_${SAMPLE_SEED}"
   LIMIT_ARGS=(--sample-size "$SAMPLE_SIZE" --sample-seed "$SAMPLE_SEED")
 elif [[ -n "$LIMIT" ]]; then
-  RUN_LABEL="sample_${LIMIT}"
-  LIMIT_ARGS=(--limit "$LIMIT")
+  RUN_LABEL="shard_${START_INDEX}_limit_${LIMIT}"
+  LIMIT_ARGS=(--limit "$LIMIT" --start-index "$START_INDEX")
+elif [[ "$START_INDEX" != "0" ]]; then
+  RUN_LABEL="from_${START_INDEX}"
+  LIMIT_ARGS=(--start-index "$START_INDEX")
 else
   RUN_LABEL="full"
   LIMIT_ARGS=()
@@ -56,6 +65,10 @@ PROMPTS="${OUTPUT_DIR}/${BASE_NAME}.prompts.jsonl"
 HYPOTHESES="${OUTPUT_DIR}/${BASE_NAME}.hypotheses.jsonl"
 EVAL_LOG="${OUTPUT_DIR}/${BASE_NAME}.eval-results-${JUDGE_MODEL}.jsonl"
 SUMMARY="${OUTPUT_DIR}/${BASE_NAME}.summary.json"
+RESUME_ARGS=()
+if [[ "$NO_RESUME" == "1" ]]; then
+  RESUME_ARGS=(--no-resume)
+fi
 
 "${PYTHON_CMD[@]}" -m experiments.public_benchmarks.longmemeval inspect \
   --data "$DATA_FILE" \
@@ -77,6 +90,7 @@ SUMMARY="${OUTPUT_DIR}/${BASE_NAME}.summary.json"
   --history-format "$HISTORY_FORMAT" \
   --reader-mode "$READER_MODE" \
   --max-output-tokens "$MAX_OUTPUT_TOKENS" \
+  "${RESUME_ARGS[@]}" \
   "${LIMIT_ARGS[@]}"
 
 if [[ "$SKIP_EVALUATION" != "1" ]]; then

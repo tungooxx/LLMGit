@@ -1,28 +1,27 @@
-"""Professor-facing live demo UI for benchmark playback and manual prompts."""
+"""Professor-facing live demo UI for manual TruthGit memory prompts."""
 
 from __future__ import annotations
 
-import json
-import time
-from collections import defaultdict
-from collections.abc import Generator
-from typing import Any
+import re
+from datetime import date
+from typing import Any, Literal
 
-from fastapi import APIRouter, Depends, HTTPException, Query
-from fastapi.responses import HTMLResponse, StreamingResponse
+from fastapi import APIRouter, Depends, HTTPException
+from fastapi.responses import HTMLResponse
 from pydantic import BaseModel, Field
-from sqlalchemy import delete
+from sqlalchemy import delete, select
 from sqlalchemy.orm import Session
 
 from app import crud, models
 from app.commit_engine import create_branch, ensure_main_branch, rollback_commit
+from app.config import get_settings
 from app.db import get_db
+from app.llm import LLMClient
+from app.memory_ci import check_report_payload
 from app.normalization import deterministic_extract_simple_claims
-from app.schemas import ExtractedClaim, SourceCreate
-from app.tools import approve_staged_commit, stage_belief_changes
-from experiments.baselines import default_systems
-from experiments.benchmark import BenchmarkCase, default_benchmark
-from experiments.metrics import score_answer
+from app.schemas import ExtractedClaim, MemoryWritePlan, SourceCreate
+from app.tools import apply_staged_commit, approve_staged_commit, stage_belief_changes
+from app.write_policy import enforce_write_policy, safe_branch_name
 
 router = APIRouter(tags=["demo"])
 
@@ -34,6 +33,8 @@ class DemoPromptRequest(BaseModel):
     branch_name: str = "main"
     trust_score: float = Field(default=0.7, ge=0.0, le=1.0)
     auto_approve: bool = False
+    extraction_mode: Literal["llm", "local"] = "llm"
+    auto_metadata: bool = True
 
 
 class DemoRollbackRequest(BaseModel):
@@ -51,23 +52,9 @@ class DemoResetRequest(BaseModel):
 
 @router.get("/demo", response_class=HTMLResponse)
 def demo_page() -> HTMLResponse:
-    """Serve the professor-facing demo dashboard."""
+    """Serve the professor-facing chat and graph dashboard."""
 
     return HTMLResponse(_HTML)
-
-
-@router.get("/demo/benchmark/events")
-def benchmark_events(
-    limit: int = Query(default=8, ge=1, le=30),
-    delay_ms: int = Query(default=650, ge=0, le=5000),
-) -> StreamingResponse:
-    """Stream a live benchmark playback as server-sent events."""
-
-    return StreamingResponse(
-        _benchmark_event_stream(limit=limit, delay_ms=delay_ms),
-        media_type="text/event-stream",
-        headers={"Cache-Control": "no-cache", "X-Accel-Buffering": "no"},
-    )
 
 
 @router.post("/demo/manual")
@@ -77,16 +64,12 @@ def manual_prompt(
 ) -> dict[str, Any]:
     """Run deterministic extraction, staging, optional approval, and return memory state."""
 
-    branch = _resolve_demo_branch(db, request.branch_name)
-    claim_dicts = deterministic_extract_simple_claims(request.message)
-    claims = [ExtractedClaim.model_validate(claim) for claim in claim_dicts]
-    source = SourceCreate(
-        source_type="manual",
-        source_ref=f"demo-ui:{request.branch_name}",
-        excerpt=request.message,
-        trust_score=request.trust_score,
-    )
-    if not claims:
+    if _is_demo_question(request.message):
+        branch = _resolve_demo_branch(db, request.branch_name)
+        answer = LLMClient(get_settings()).answer_from_memory(
+            request.message,
+            _demo_memory_context(db, branch),
+        )
         db.commit()
         return {
             "branch": _branch_payload(branch),
@@ -95,7 +78,50 @@ def manual_prompt(
             "commit": None,
             "versions": [],
             "timelines": [],
-            "warnings": ["No explicit claim matched the local demo extractor."],
+            "assistant_reply": answer,
+            "warnings": [],
+            "extraction": {
+                "mode": request.extraction_mode,
+                "auto_metadata": request.auto_metadata,
+                "model_name": get_settings().openai_model if request.extraction_mode == "llm" else "deterministic-demo",
+                "branch_name": branch.name,
+                "trust_score": request.trust_score,
+                "rationale": "Detected a question; answered from TruthGit memory without staging a write.",
+                "used_fallback": False,
+            },
+            "snapshot": _demo_snapshot(db),
+        }
+
+    write_plan, extraction_info, extraction_warnings = _build_demo_write_plan(request, db)
+    branch_name = write_plan.branch_name if write_plan.write_action != "reject" else request.branch_name
+    branch = _resolve_demo_branch(db, branch_name)
+    claims = write_plan.claims
+    source = SourceCreate(
+        source_type="user_message" if request.extraction_mode == "llm" else "manual",
+        source_ref=f"demo-ui:{request.extraction_mode}:{branch.name}",
+        excerpt=request.message,
+        trust_score=write_plan.trust_score,
+    )
+    if not claims or write_plan.write_action == "reject":
+        answer = (
+            write_plan.assistant_reply
+            if write_plan.write_action == "reject"
+            else LLMClient(get_settings()).answer_from_memory(
+                request.message,
+                _demo_memory_context(db, branch),
+            )
+        )
+        db.commit()
+        return {
+            "branch": _branch_payload(branch),
+            "claims": [claim.model_dump(mode="json") for claim in claims],
+            "staged": None,
+            "commit": None,
+            "versions": [],
+            "timelines": [],
+            "assistant_reply": answer,
+            "warnings": sorted(set([*extraction_warnings, *write_plan.warnings, *_write_plan_risk_reasons(write_plan)])),
+            "extraction": extraction_info,
             "snapshot": _demo_snapshot(db),
         }
 
@@ -106,31 +132,46 @@ def manual_prompt(
         source=source,
         proposed_commit_message="Demo prompt memory update",
         created_by="demo-ui",
-        model_name="deterministic-demo",
+        model_name=extraction_info["model_name"],
+        review_required=bool(extraction_info["review_required"]),
+        risk_reasons=_write_plan_risk_reasons(write_plan),
+        warnings=write_plan.warnings,
     )
-    warnings = list(staged.warnings_json)
+    warnings = [*extraction_warnings, *list(staged.warnings_json)]
     result = None
-    if request.auto_approve:
-        result = approve_staged_commit(
-            db,
-            staged_commit_id=staged.id,
-            reviewer="demo-ui",
-            notes="Approved from professor demo panel.",
-            commit_message=staged.proposed_commit_message,
-            model_name="deterministic-demo",
+    if request.auto_approve and staged.status == "quarantined":
+        warnings.append(
+            f"TruthGit Memory CI quarantined staged write {staged.id}; release or reject it manually."
         )
-        warnings.extend(result.warnings)
+    elif request.auto_approve and staged.review_required:
+        warnings.append(
+            f"TruthGit policy requires review; approve or reject staged write {staged.id} manually."
+        )
+    elif request.auto_approve:
+        try:
+            result = apply_staged_commit(
+                db,
+                staged_commit_id=staged.id,
+                commit_message=staged.proposed_commit_message,
+                created_by="demo-ui",
+                model_name=extraction_info["model_name"],
+            )
+            warnings.extend(result.warnings)
+        except ValueError as exc:
+            warnings.append(str(exc))
     db.commit()
 
     affected_timelines = _affected_timelines(db, claims)
     return {
         "branch": _branch_payload(branch),
         "claims": [claim.model_dump(mode="json") for claim in claims],
-        "staged": _staged_payload(staged),
+        "staged": _staged_payload(db, staged),
         "commit": _commit_payload(result.commit) if result else None,
         "versions": [_version_payload(db, version) for version in result.introduced_versions] if result else [],
         "timelines": affected_timelines,
+        "assistant_reply": _assistant_reply_with_outcome(write_plan.assistant_reply, result is not None, staged.id),
         "warnings": sorted(set(warnings)),
+        "extraction": extraction_info,
         "snapshot": _demo_snapshot(db),
     }
 
@@ -170,9 +211,85 @@ def reset_demo_state(
 
     if not request.confirm:
         raise HTTPException(status_code=400, detail="Reset requires confirm=true")
+    _reset_demo_tables(db)
+    db.commit()
+    return {"snapshot": _demo_snapshot(db)}
+
+
+@router.post("/demo/benchmark-case")
+def load_demo_benchmark_case(db: Session = Depends(get_db)) -> dict[str, Any]:
+    """Load one LongMemEval-style case through the staged commit pipeline."""
+
+    _reset_demo_tables(db)
+    branch = ensure_main_branch(db)
+    db.flush()
+    sessions = _demo_longmemeval_sessions()
+    claims = _demo_longmemeval_claims()
+    source_excerpt = "\n\n".join(_demo_session_text(session) for session in sessions)
+    source = SourceCreate(
+        source_type="document",
+        source_ref="longmemeval:demo-alice:selected-history",
+        excerpt=source_excerpt,
+        trust_score=0.75,
+    )
+    staged = stage_belief_changes(
+        db,
+        claims=claims,
+        branch_id=branch.id,
+        source=source,
+        proposed_commit_message="LongMemEval one-case selected-history ingest",
+        created_by="longmemeval-truthgit",
+        model_name="demo-longmemeval-question-blind",
+    )
+    result = approve_staged_commit(
+        db,
+        staged_commit_id=staged.id,
+        reviewer="longmemeval-truthgit",
+        notes="Automated one-case benchmark replay approval.",
+        commit_message=staged.proposed_commit_message,
+        model_name="demo-longmemeval-question-blind",
+    )
+    question = "Where does Alice live now?"
+    answer = LLMClient(get_settings()).answer_from_memory(question, _demo_memory_context(db, branch))
+    db.commit()
+    return {
+        "branch": _branch_payload(branch),
+        "benchmark_case": {
+            "question_id": "demo-alice",
+            "question": question,
+            "answer": answer,
+            "mode": "LongMemEval-style record_batch",
+            "steps": [
+                "select non-gold sessions",
+                "extract durable claims without seeing the future question",
+                "persist staged commit in SQLite",
+                "approve staged commit through deterministic TruthGit validation",
+                "answer from versioned belief memory",
+            ],
+        },
+        "sessions": sessions,
+        "claims": [claim.model_dump(mode="json") for claim in claims],
+        "staged": _staged_payload(db, staged),
+        "commit": _commit_payload(result.commit),
+        "versions": [_version_payload(db, version) for version in result.introduced_versions],
+        "assistant_reply": (
+            f"Loaded one LongMemEval-style case. TruthGit staged and approved "
+            f"{len(claims)} extracted claim(s) as commit #{result.commit.id}. Answer: {answer}"
+        ),
+        "warnings": sorted(set([*list(staged.warnings_json), *result.warnings])),
+        "snapshot": _demo_snapshot(db),
+    }
+
+
+def _reset_demo_tables(db: Session) -> None:
+    """Clear demo tables and recreate main without hard-deleting outside this SQLite DB."""
+
     for model in (
         models.AuditEvent,
+        models.MemoryCheckResult,
+        models.MemoryCheckRun,
         models.StagedCommit,
+        models.BeliefVersionSourceLink,
         models.BeliefVersion,
         models.Belief,
         models.Commit,
@@ -181,117 +298,220 @@ def reset_demo_state(
     ):
         db.execute(delete(model))
     ensure_main_branch(db)
-    db.commit()
-    return {"snapshot": _demo_snapshot(db)}
 
 
-def _benchmark_event_stream(*, limit: int, delay_ms: int) -> Generator[str, None, None]:
-    cases = default_benchmark()[:limit]
-    systems = default_systems(include_ablations=False)
-    scores: dict[str, dict[str, list[float]]] = defaultdict(lambda: defaultdict(list))
-    total_questions = sum(len(case.questions) for case in cases)
-    processed_questions = 0
+def _demo_longmemeval_sessions() -> list[dict[str, Any]]:
+    """Return a small non-gold LongMemEval-style session history for visualization."""
 
-    try:
-        for system in systems:
-            system.reset()
-        yield _sse(
-            "run_started",
+    return [
+        {
+            "session_index": 0,
+            "session_id": "demo-s1",
+            "date": "2026-03-01",
+            "turns": [
+                {"role": "user", "content": "Alice lives in Seoul."},
+                {"role": "assistant", "content": "Noted."},
+            ],
+        },
+        {
+            "session_index": 1,
+            "session_id": "demo-s2",
+            "date": "2026-04-01",
+            "turns": [
+                {"role": "user", "content": "Alice moved to Busan."},
+                {"role": "assistant", "content": "Updated."},
+            ],
+        },
+    ]
+
+
+def _demo_longmemeval_claims() -> list[ExtractedClaim]:
+    """Return the claims that a question-blind extractor should persist."""
+
+    return [
+        ExtractedClaim.model_validate(
             {
-                "case_count": len(cases),
-                "question_count": total_questions,
-                "systems": [system.name for system in systems],
-            },
-        )
-        for case_index, case in enumerate(cases, start=1):
-            yield _sse("case_started", _case_payload(case, case_index, len(cases)))
-            _sleep(delay_ms)
-            for event in case.events:
-                for system in systems:
-                    system.ingest_event(event)
-                yield _sse(
-                    "memory_event",
-                    {
-                        "case_id": case.case_id,
-                        "event_id": event.event_id,
-                        "event_type": event.event_type,
-                        "text": event.text,
-                        "branch_name": event.branch_name,
-                        "source_ref": event.source_ref,
-                        "trust_score": event.trust_score,
-                    },
-                )
-                _sleep(delay_ms)
-            for question in case.questions:
-                processed_questions += 1
-                for system in systems:
-                    answer = system.answer(question)
-                    score = score_answer(question, answer)
-                    scores[system.name][question.metric].append(score)
-                    yield _sse(
-                        "question_scored",
-                        {
-                            "case_id": case.case_id,
-                            "question_id": question.question_id,
-                            "metric": question.metric,
-                            "prompt": question.prompt,
-                            "system_name": system.name,
-                            "score": score,
-                            "answer": {
-                                "object_value": answer.object_value,
-                                "source_ref": answer.source_ref,
-                                "historical_objects": answer.historical_objects,
-                                "had_low_trust_warning": answer.had_low_trust_warning,
-                                "conflict_resolved": answer.conflict_resolved,
-                                "unresolved_conflict": answer.unresolved_conflict,
-                            },
-                            "progress": processed_questions / max(1, total_questions),
-                            "summary": _score_summary(scores),
-                        },
-                    )
-                    _sleep(max(0, delay_ms // 2))
-                _sleep(delay_ms)
-        yield _sse("run_complete", {"summary": _score_summary(scores)})
-    finally:
-        for system in systems:
-            close = getattr(system, "close", None)
-            if close:
-                close()
+                "subject": "Alice",
+                "predicate": "lives_in",
+                "object": "Seoul",
+                "confidence": 0.82,
+                "valid_from": date(2026, 3, 1),
+                "source_quote": "Alice lives in Seoul.",
+                "notes": "demo benchmark extractor: session 0",
+            }
+        ),
+        ExtractedClaim.model_validate(
+            {
+                "subject": "Alice",
+                "predicate": "lives_in",
+                "object": "Busan",
+                "confidence": 0.88,
+                "valid_from": date(2026, 4, 1),
+                "source_quote": "Alice moved to Busan.",
+                "notes": "demo benchmark extractor: session 1",
+            }
+        ),
+    ]
 
 
-def _sse(event: str, payload: dict[str, Any]) -> str:
-    return f"event: {event}\ndata: {json.dumps(payload, default=str)}\n\n"
+def _demo_session_text(session: dict[str, Any]) -> str:
+    """Render one demo session in the same compact shape as the benchmark source."""
+
+    lines = [f"[Session {session['session_index']} | {session.get('date') or 'unknown'}]"]
+    for turn in session["turns"]:
+        lines.append(f"{turn['role']}: {turn['content']}")
+    return "\n".join(lines)
 
 
-def _sleep(delay_ms: int) -> None:
-    if delay_ms:
-        time.sleep(delay_ms / 1000)
+def _build_demo_write_plan(request: DemoPromptRequest, db: Session) -> tuple[MemoryWritePlan, dict[str, Any], list[str]]:
+    """Return claims plus branch/trust metadata for the demo prompt."""
 
+    settings = get_settings()
+    warnings: list[str] = []
+    model_name = "deterministic-demo"
+    used_fallback = False
 
-def _case_payload(case: BenchmarkCase, case_index: int, total_cases: int) -> dict[str, Any]:
-    return {
-        "case_id": case.case_id,
-        "case_index": case_index,
-        "total_cases": total_cases,
-        "description": case.description,
-        "event_count": len(case.events),
-        "question_count": len(case.questions),
-    }
-
-
-def _score_summary(scores: dict[str, dict[str, list[float]]]) -> list[dict[str, Any]]:
-    rows: list[dict[str, Any]] = []
-    for system_name, metric_map in sorted(scores.items()):
-        for metric, values in sorted(metric_map.items()):
-            rows.append(
-                {
-                    "system_name": system_name,
-                    "metric": metric,
-                    "score": round(sum(values) / len(values), 4) if values else 0.0,
-                    "n": len(values),
-                }
+    if request.extraction_mode == "llm":
+        llm = LLMClient(settings)
+        used_fallback = llm.client is None
+        if request.auto_metadata:
+            context_branch = _demo_context_branch(db, request.branch_name)
+            plan = llm.plan_memory_write(
+                request.message,
+                fallback_branch_name=request.branch_name,
+                fallback_trust_score=request.trust_score,
+                memory_context=_demo_memory_context(db, context_branch),
             )
-    return rows
+        else:
+            extracted = llm.extract_claims(request.message)
+            plan = MemoryWritePlan(
+                claims=extracted.claims,
+                branch_name=request.branch_name,
+                trust_score=request.trust_score,
+                write_action="commit_now",
+                rationale="LLM extracted claims; branch and trust came from demo controls.",
+            )
+        model_name = settings.openai_model if not used_fallback else "deterministic-demo-fallback"
+        if used_fallback:
+            warnings.append("LLM mode requested, but OPENAI_API_KEY is not configured; used local fallback.")
+    else:
+        claims = [ExtractedClaim.model_validate(claim) for claim in deterministic_extract_simple_claims(request.message)]
+        plan = MemoryWritePlan(
+            claims=claims,
+            branch_name=request.branch_name,
+            trust_score=request.trust_score,
+            write_action="commit_now",
+            rationale="Local deterministic demo extractor; branch and trust came from demo controls.",
+        )
+
+    if not request.auto_metadata:
+        plan = plan.model_copy(
+            update={
+                "branch_name": request.branch_name,
+                "trust_score": request.trust_score,
+                "write_action": "commit_now",
+                "risk_reasons": [],
+                "warnings": [],
+            }
+        )
+    plan = _sanitize_demo_write_plan(plan, fallback_branch_name=request.branch_name)
+    policy = enforce_write_policy(
+        db,
+        plan=plan,
+        source_excerpt=request.message,
+        fallback_branch_name=request.branch_name,
+    )
+    plan = plan.model_copy(
+        update={
+            "branch_name": policy.branch_name,
+            "trust_score": policy.trust_score,
+            "write_action": policy.write_action,
+            "risk_reasons": policy.risk_reasons,
+            "warnings": policy.warnings,
+        }
+    )
+    info = {
+        "mode": request.extraction_mode,
+        "auto_metadata": request.auto_metadata,
+        "model_name": model_name,
+        "branch_name": plan.branch_name,
+        "trust_score": plan.trust_score,
+        "write_action": plan.write_action,
+        "review_required": policy.review_required,
+        "risk_reasons": plan.risk_reasons,
+        "warnings": plan.warnings,
+        "rationale": plan.rationale,
+        "used_fallback": used_fallback,
+    }
+    return plan, info, warnings
+
+
+def _is_demo_question(message: str) -> bool:
+    """Return True when a demo message should be answered, not staged."""
+
+    stripped = message.strip()
+    if not stripped:
+        return False
+    if _is_what_if_memory_scenario(stripped):
+        return False
+    if stripped.endswith("?"):
+        return True
+    return bool(
+        re.match(
+            r"^(why|what|where|when|how|who|which|show|list|display|explain|summarize|do you|can you|tell me)\b",
+            stripped,
+            re.I,
+        )
+    )
+
+
+def _is_what_if_memory_scenario(message: str) -> bool:
+    """Return True for mixed what-if prompts that introduce branch-local claims."""
+
+    lowered = message.lower()
+    if not re.match(r"^what\s+if\b", lowered):
+        return False
+    if "?" not in message:
+        return True
+    after_question = message.split("?", 1)[1].strip().lower()
+    if not after_question:
+        return False
+    return bool(
+        re.search(
+            r"\b(will|would|could|during|plan|scenario|fellowship|conference|trip|stay|work from)\b",
+            after_question,
+        )
+    )
+
+
+def _sanitize_demo_write_plan(plan: MemoryWritePlan, *, fallback_branch_name: str) -> MemoryWritePlan:
+    """Clamp model-suggested metadata before it can affect durable memory."""
+
+    branch_name = _safe_branch_name(plan.branch_name or fallback_branch_name)
+    trust_score = max(0.0, min(1.0, plan.trust_score))
+    return plan.model_copy(update={"branch_name": branch_name, "trust_score": trust_score})
+
+
+def _safe_branch_name(value: str) -> str:
+    return safe_branch_name(value)
+
+
+def _assistant_reply_with_outcome(reply: str, committed: bool, staged_id: str) -> str:
+    if not committed:
+        clean_reply = reply.strip() or "I found a memory update."
+        return f"{clean_reply} I staged it as {staged_id}. Click Approve Staged to apply it, or leave it pending."
+    suffix = (
+        "I saved it as a TruthGit commit."
+    )
+    clean_reply = reply.strip() or "Okay, I'll remember that in TruthGit memory."
+    return f"{clean_reply} {suffix}"
+
+
+def _write_plan_risk_reasons(plan: MemoryWritePlan) -> list[str]:
+    reasons = list(plan.risk_reasons)
+    if plan.write_action in {"stage_for_review", "reject"}:
+        reasons.append(f"model_write_action:{plan.write_action}")
+    return reasons
 
 
 def _resolve_demo_branch(db: Session, name: str) -> models.Branch:
@@ -304,6 +524,22 @@ def _resolve_demo_branch(db: Session, name: str) -> models.Branch:
     if branch is not None:
         return branch
     branch = create_branch(db, name=clean_name, description=f"Demo branch {clean_name}")
+    db.flush()
+    return branch
+
+
+def _demo_context_branch(db: Session, name: str) -> models.Branch:
+    """Return an existing branch for context without creating a fallback branch."""
+
+    clean_name = safe_branch_name(name or "main")
+    if clean_name == "main":
+        branch = ensure_main_branch(db)
+        db.flush()
+        return branch
+    branch = crud.get_branch_by_name(db, clean_name)
+    if branch is not None:
+        return branch
+    branch = ensure_main_branch(db)
     db.flush()
     return branch
 
@@ -336,11 +572,23 @@ def _affected_timelines(db: Session, claims: list[ExtractedClaim]) -> list[dict[
 
 def _demo_snapshot(db: Session) -> dict[str, Any]:
     branches = crud.list_branches(db)
-    versions = crud.search_beliefs(db, query="", include_inactive=True, limit=60)
-    audit = crud.list_audit_events(db, limit=12)
+    commits = crud.list_commits(db)[:40]
+    versions = crud.search_beliefs(db, query="", include_inactive=True, limit=80)
+    staged = list(db.scalars(select(models.StagedCommit).order_by(models.StagedCommit.created_at.desc()).limit(30)))
+    audit = crud.list_audit_events(db, limit=16)
     return {
+        "counts": {
+            "branches": len(branches),
+            "commits": len(commits),
+            "versions": len(versions),
+            "staged": sum(1 for item in staged if item.status not in {"applied", "rejected"}),
+            "quarantined": sum(1 for item in staged if item.status == "quarantined"),
+            "audit_events": len(audit),
+        },
         "branches": [_branch_payload(branch) for branch in branches],
+        "commits": [_commit_payload(commit) for commit in commits],
         "versions": [_version_payload(db, version) for version in versions],
+        "staged_commits": [_staged_payload(db, item) for item in staged],
         "audit": [
             {
                 "id": event.id,
@@ -348,6 +596,50 @@ def _demo_snapshot(db: Session) -> dict[str, Any]:
                 "entity_type": event.entity_type,
                 "entity_id": event.entity_id,
                 "entity_key": event.entity_key,
+                "payload_json": event.payload_json,
+                "created_at": _iso(event.created_at),
+            }
+            for event in audit
+        ],
+    }
+
+
+def _demo_memory_context(db: Session, branch: models.Branch) -> dict[str, Any]:
+    """Build compact memory context for read-only demo chat answers."""
+
+    beliefs = list(db.scalars(select(models.Belief).order_by(models.Belief.id)))
+    current: list[dict[str, Any]] = []
+    for belief in beliefs:
+        versions = crud.get_current_versions(db, belief_id=belief.id, branch_id=branch.id)
+        current.extend(_version_payload(db, version) for version in versions)
+    timelines = crud.search_beliefs(db, query="", include_inactive=True, limit=80)
+    staged = list(
+        db.scalars(
+            select(models.StagedCommit)
+            .order_by(models.StagedCommit.created_at.desc())
+            .limit(30)
+        )
+    )
+    audit = crud.list_audit_events(db, limit=40)
+    return {
+        "branch": _branch_payload(branch),
+        "current_beliefs": current,
+        "timelines": [_version_payload(db, version) for version in timelines],
+        "commits": [_commit_payload(commit) for commit in crud.list_commits(db)[:30]],
+        "staged_commits": [_staged_payload(db, item) for item in staged],
+        "pending_staged_commits": [
+            _staged_payload(db, item)
+            for item in staged
+            if item.status in {"pending", "proposed", "checked", "review_required", "quarantined"}
+        ],
+        "audit_events": [
+            {
+                "id": event.id,
+                "event_type": event.event_type,
+                "entity_type": event.entity_type,
+                "entity_id": event.entity_id,
+                "entity_key": event.entity_key,
+                "payload_json": event.payload_json,
                 "created_at": _iso(event.created_at),
             }
             for event in audit
@@ -365,15 +657,26 @@ def _branch_payload(branch: models.Branch) -> dict[str, Any]:
     }
 
 
-def _staged_payload(staged: models.StagedCommit) -> dict[str, Any]:
+def _staged_payload(db: Session, staged: models.StagedCommit) -> dict[str, Any]:
     return {
         "id": staged.id,
         "status": staged.status,
         "branch_id": staged.branch_id,
+        "claims_json": staged.claims_json,
         "review_required": staged.review_required,
         "risk_reasons": staged.risk_reasons,
         "warnings": staged.warnings_json,
+        "latest_check_run_id": staged.latest_check_run_id,
+        "checked_at": _iso(staged.checked_at),
+        "quarantined_at": _iso(staged.quarantined_at),
+        "quarantine_reason_summary": staged.quarantine_reason_summary,
+        "quarantine_release_status": staged.quarantine_release_status,
         "applied_commit_id": staged.applied_commit_id,
+        "source_ref": staged.source_ref,
+        "source_excerpt": staged.source_excerpt,
+        "source_trust_score": staged.source_trust_score,
+        "created_at": _iso(staged.created_at),
+        "checks": check_report_payload(db, staged),
     }
 
 
@@ -393,13 +696,14 @@ def _version_payload(db: Session, version: models.BeliefVersion) -> dict[str, An
     belief = crud.get_belief(db, version.belief_id)
     source = db.get(models.Source, version.source_id)
     branch = crud.get_branch(db, version.branch_id)
-    return {
+    payload = {
         "id": version.id,
         "belief_id": version.belief_id,
         "subject": belief.subject if belief else None,
         "predicate": belief.predicate if belief else None,
         "object_value": version.object_value,
         "status": version.status,
+        "branch_id": version.branch_id,
         "branch_name": branch.name if branch else str(version.branch_id),
         "commit_id": version.commit_id,
         "source_ref": source.source_ref if source else None,
@@ -410,6 +714,8 @@ def _version_payload(db: Session, version: models.BeliefVersion) -> dict[str, An
         "valid_to": _iso(version.valid_to),
         "created_at": _iso(version.created_at),
     }
+    payload.update(crud.support_graph_payload(db, version))
+    return payload
 
 
 def _iso(value: Any) -> str | None:
@@ -424,15 +730,16 @@ _HTML = """
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>TruthGit Live Demo</title>
+  <title>TruthGit Memory Chat</title>
   <style>
     :root {
       color-scheme: light;
       --ink: #1f2933;
       --muted: #667085;
       --line: #d7dee8;
-      --page: #f5f7f9;
+      --page: #f4f6f8;
       --panel: #ffffff;
+      --panel-soft: #fbfcfd;
       --green: #1b7f5a;
       --blue: #1a73e8;
       --amber: #a65f00;
@@ -445,99 +752,258 @@ _HTML = """
       background: var(--page);
       color: var(--ink);
       font-family: Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+      min-height: 100vh;
     }
     header {
-      padding: 28px clamp(18px, 4vw, 48px);
+      padding: 24px clamp(18px, 4vw, 48px);
       background: #10241c;
       color: #f8fbf9;
       display: grid;
-      gap: 10px;
+      gap: 8px;
     }
     h1 { margin: 0; font-size: 34px; letter-spacing: 0; line-height: 1.05; }
-    header p { margin: 0; color: #c6d7d0; max-width: 900px; line-height: 1.45; }
+    header p { margin: 0; color: #c6d7d0; max-width: 980px; line-height: 1.45; }
     main {
-      padding: 22px clamp(14px, 3vw, 42px) 44px;
+      padding: 18px clamp(14px, 3vw, 40px) 36px;
       display: grid;
-      grid-template-columns: minmax(0, 1.15fr) minmax(360px, .85fr);
+      grid-template-columns: minmax(360px, 0.9fr) minmax(0, 1.1fr);
       gap: 18px;
+      min-height: calc(100vh - 112px);
+      align-items: start;
     }
-    .panel, .metric {
+    .panel {
       background: var(--panel);
       border: 1px solid var(--line);
       border-radius: 8px;
+      overflow: hidden;
+      min-width: 0;
     }
-    .panel { overflow: hidden; min-width: 0; }
     .panel h2 {
       margin: 0;
       padding: 14px 16px;
       font-size: 17px;
       border-bottom: 1px solid var(--line);
-      background: #fbfcfd;
+      background: var(--panel-soft);
     }
-    .section { padding: 14px 16px; }
-    .controls {
-      display: flex;
-      flex-wrap: wrap;
+    .chat-panel {
+      display: grid;
+      grid-template-rows: auto auto minmax(270px, 1fr) auto;
+      height: calc(100vh - 156px);
+      min-height: 640px;
+      max-height: 780px;
+    }
+    .settings {
+      padding: 12px 14px;
+      border-bottom: 1px solid var(--line);
+      display: grid;
       gap: 10px;
-      align-items: center;
     }
-    button, input, textarea, select {
+    .grid3 {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(130px, 1fr));
+      gap: 10px;
+      align-items: end;
+    }
+    label { color: var(--muted); font-size: 13px; display: grid; gap: 4px; }
+    label.check {
+      min-height: 37px;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      padding: 8px 10px;
+      border: 1px solid #b8c2cc;
+      border-radius: 6px;
+      background: #fff;
+      color: var(--ink);
+      white-space: nowrap;
+    }
+    input, textarea, button {
       font: inherit;
       border: 1px solid #b8c2cc;
       border-radius: 6px;
       background: #fff;
       color: var(--ink);
     }
+    input { padding: 8px 10px; min-width: 0; }
+    input[type="checkbox"] {
+      width: 16px;
+      height: 16px;
+      min-width: 16px;
+      padding: 0;
+      accent-color: var(--green);
+    }
     button {
       cursor: pointer;
       font-weight: 700;
       padding: 9px 12px;
-      min-width: 104px;
     }
-    button.primary { background: #1b7f5a; color: white; border-color: #1b7f5a; }
+    button.primary { background: var(--green); color: white; border-color: var(--green); }
     button.warn { background: #fff7e6; border-color: #e7b35b; color: #6f4400; }
-    input, select { padding: 8px 10px; }
+    button.danger { background: #fde1df; border-color: #f1a29b; color: var(--red); }
+    .quick {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+      align-items: center;
+    }
+    .quick button {
+      min-width: auto;
+      font-size: 12px;
+      padding: 7px 9px;
+      background: #edf2f7;
+      min-height: 34px;
+    }
+    .messages {
+      padding: 16px;
+      overflow: auto;
+      display: grid;
+      align-content: start;
+      gap: 12px;
+      background: #f9fbfc;
+      min-height: 260px;
+    }
+    .msg {
+      max-width: 88%;
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      padding: 10px 12px;
+      background: #fff;
+      line-height: 1.45;
+      white-space: pre-wrap;
+    }
+    .msg.user {
+      justify-self: end;
+      color: #fff;
+      background: #244d3d;
+      border-color: #244d3d;
+    }
+    .msg.system {
+      justify-self: start;
+    }
+    .msg small {
+      display: block;
+      margin-top: 6px;
+      color: var(--muted);
+      white-space: normal;
+    }
+    .composer {
+      border-top: 1px solid var(--line);
+      padding: 12px 14px;
+      display: grid;
+      gap: 10px;
+      background: var(--panel);
+    }
     textarea {
       width: 100%;
-      min-height: 96px;
-      padding: 10px 12px;
+      min-height: 76px;
       resize: vertical;
       line-height: 1.4;
+      padding: 10px 12px;
     }
-    label { color: var(--muted); font-size: 13px; display: grid; gap: 4px; }
-    .metrics {
-      display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(126px, 1fr));
+    .controls {
+      display: flex;
+      flex-wrap: wrap;
       gap: 10px;
-      margin-top: 12px;
+      align-items: center;
     }
-    .metric { padding: 12px; min-height: 76px; }
-    .metric span { color: var(--muted); font-size: 12px; display: block; }
-    .metric strong { font-size: 26px; display: block; margin-top: 6px; }
-    .progress {
-      height: 12px;
-      background: #e8edf2;
-      border-radius: 999px;
-      overflow: hidden;
-      margin-top: 12px;
-    }
-    .progress > div { height: 100%; width: 0%; background: var(--blue); transition: width .18s ease; }
-    .feed, .timeline, .score-grid {
-      max-height: 390px;
-      overflow: auto;
-      border-top: 1px solid var(--line);
-    }
-    .event {
-      padding: 11px 14px;
-      border-bottom: 1px solid var(--line);
+    .graph-shell {
       display: grid;
-      gap: 4px;
+      grid-template-rows: auto auto minmax(260px, 0.9fr) minmax(280px, 1fr);
+      height: calc(100vh - 156px);
+      min-height: 640px;
+      max-height: 780px;
     }
-    .event b { font-size: 13px; }
-    .event small { color: var(--muted); line-height: 1.35; }
+    .stats {
+      padding: 12px 14px;
+      display: grid;
+      grid-template-columns: repeat(5, minmax(84px, 1fr));
+      gap: 10px;
+      border-bottom: 1px solid var(--line);
+    }
+    .stat {
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      padding: 10px;
+      min-height: 66px;
+      background: #fff;
+    }
+    .stat span { display: block; color: var(--muted); font-size: 12px; }
+    .stat strong { display: block; margin-top: 5px; font-size: 24px; }
+    .graph-wrap {
+      overflow: auto;
+      border-bottom: 1px solid var(--line);
+      background: #ffffff;
+      min-height: 0;
+      padding: 12px;
+    }
+    .lineage-strip {
+      display: flex;
+      align-items: stretch;
+      gap: 10px;
+      min-height: 104px;
+      margin-bottom: 10px;
+      padding: 10px;
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      background: #f8fafc;
+    }
+    .lineage-empty {
+      color: var(--muted);
+      font-size: 14px;
+      align-self: center;
+    }
+    .lineage-card {
+      min-width: 166px;
+      max-width: 190px;
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      padding: 10px;
+      background: #fff;
+    }
+    .lineage-card.active { border-color: #1b7f5a; background: #ecfdf3; }
+    .lineage-card.superseded { border-color: #d89a00; background: #fffaeb; }
+    .lineage-card.retracted { border-color: #b42318; background: #fef3f2; }
+    .lineage-card.hypothetical { border-color: #6d3fc4; background: #f4f0ff; }
+    .lineage-card b { display: block; font-size: 13px; }
+    .lineage-card strong { display: block; margin-top: 6px; font-size: 18px; }
+    .lineage-card small { display: block; margin-top: 4px; color: var(--muted); line-height: 1.35; }
+    .lineage-arrow {
+      display: flex;
+      align-items: center;
+      color: var(--muted);
+      font-weight: 800;
+      min-width: 26px;
+      justify-content: center;
+    }
+    svg { display: block; min-width: 760px; }
+    .tables {
+      display: grid;
+      grid-template-columns: 1fr;
+      grid-template-rows: minmax(150px, 1fr) minmax(140px, 0.78fr);
+      min-height: 0;
+      overflow: hidden;
+    }
+    .table-wrap {
+      overflow: auto;
+      border-bottom: 1px solid var(--line);
+      min-height: 0;
+    }
+    .table-wrap:last-child { border-bottom: 0; }
     table { width: 100%; border-collapse: collapse; font-size: 13px; }
-    th, td { padding: 9px 10px; text-align: left; border-bottom: 1px solid var(--line); vertical-align: top; }
-    th { color: var(--muted); background: #fbfcfd; font-weight: 700; }
+    th, td {
+      padding: 9px 10px;
+      text-align: left;
+      border-bottom: 1px solid var(--line);
+      vertical-align: top;
+    }
+    th {
+      color: var(--muted);
+      background: var(--panel-soft);
+      font-weight: 700;
+      position: sticky;
+      top: 0;
+      z-index: 1;
+    }
     .pill {
       display: inline-flex;
       align-items: center;
@@ -553,257 +1019,219 @@ _HTML = """
     .hypothetical { color: var(--purple); background: #eee5fb; }
     .superseded { color: var(--amber); background: #fff1d6; }
     .retracted { color: var(--red); background: #fde1df; }
-    .grid2 { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
-    .chips { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 10px; }
-    .chip { min-width: auto; font-size: 12px; padding: 7px 9px; background: #edf2f7; }
-    .result-box {
-      display: grid;
-      grid-template-columns: repeat(4, minmax(0, 1fr));
-      gap: 10px;
-      margin-top: 12px;
-    }
-    .stage-card {
-      border: 1px solid var(--line);
-      border-radius: 8px;
-      min-height: 86px;
-      padding: 10px;
-      background: #fff;
-    }
-    .stage-card b { display: block; margin-bottom: 6px; }
-    .stage-card small { color: var(--muted); line-height: 1.35; }
-    @media (max-width: 1040px) {
+    .pending { color: var(--amber); background: #fff1d6; }
+    .proposed, .checked { color: var(--green); background: #dff3e8; }
+    .review_required { color: var(--amber); background: #fff1d6; }
+    .quarantined { color: var(--red); background: #fde1df; }
+    .applied { color: var(--green); background: #dff3e8; }
+    .muted { color: var(--muted); }
+    @media (max-width: 1120px) {
       main { grid-template-columns: 1fr; }
-      .result-box { grid-template-columns: 1fr 1fr; }
+      .chat-panel, .graph-shell { height: 720px; max-height: none; }
     }
-    @media (max-width: 640px) {
-      .grid2, .result-box { grid-template-columns: 1fr; }
+    @media (max-width: 720px) {
+      .grid3, .tables, .stats { grid-template-columns: 1fr; }
       h1 { font-size: 28px; }
+      .msg { max-width: 96%; }
     }
   </style>
 </head>
 <body>
   <header>
-    <h1>TruthGit Live Demo</h1>
-    <p>Benchmark playback and manual belief-memory prompts with staged writes, commits, supersession, branches, rollback, provenance, and audit state.</p>
+    <h1>TruthGit Memory Chat</h1>
+    <p>Chat normally while TruthGit extracts durable memory updates, answers from versioned beliefs, and refreshes the commit graph from the live SQLite store.</p>
   </header>
   <main>
-    <section class="panel">
-      <h2>Benchmark Playback</h2>
-      <div class="section">
+    <section class="panel chat-panel">
+      <h2>Memory Chat</h2>
+      <div class="settings">
+        <div class="grid3">
+          <label>Branch fallback <input id="manualBranch" value="main"></label>
+          <label>Trust <input id="manualTrust" type="number" min="0" max="1" step="0.01" value="0.8"></label>
+          <label class="check"><input id="useLlm" type="checkbox" checked> use LLM</label>
+          <label class="check"><input id="autoMetadata" type="checkbox" checked> LLM branch/trust</label>
+          <label class="check"><input id="autoApprove" type="checkbox" checked> auto-apply model commit decisions</label>
+        </div>
+        <div class="quick">
+          <button data-example="Alice lives in Seoul." data-branch="main" data-trust="0.8">initial fact</button>
+          <button data-example="Alice moved to Busan in March 2026." data-branch="main" data-trust="0.86">supersede</button>
+          <button data-example="Where does Alice live now?" data-branch="main" data-trust="0.8">ask current</button>
+          <button data-example="Why do you think Alice lives in Busan if earlier she lived in Seoul?" data-branch="main" data-trust="0.8">ask lineage</button>
+          <button data-example="Alice lives in Atlantis." data-branch="main" data-trust="0.2">bad update</button>
+          <button data-example="During the conference week, Alice will stay in Tokyo." data-branch="trip-plan" data-trust="0.78">branch-only</button>
+        </div>
+      </div>
+      <div class="messages" id="messages">
+        <div class="msg system">Send updates or ask questions. TruthGit will stage new beliefs as commits, answer from current branch memory, and keep old versions visible instead of overwriting them.</div>
+      </div>
+      <div class="composer">
+        <textarea id="manualText" placeholder="Type a memory update, for example: Alice lives in Seoul.">Alice lives in Seoul.</textarea>
         <div class="controls">
-          <label>Cases <input id="benchLimit" type="number" min="1" max="30" value="8"></label>
-          <label>Pacing ms <input id="benchDelay" type="number" min="0" max="5000" value="650"></label>
-          <button class="primary" id="startBench">Start</button>
-          <button id="stopBench">Stop</button>
-        </div>
-        <div class="progress"><div id="benchProgress"></div></div>
-        <div class="metrics" id="benchMetrics"></div>
-      </div>
-      <div class="score-grid">
-        <table>
-          <thead><tr><th>System</th><th>Metric</th><th>Score</th><th>N</th></tr></thead>
-          <tbody id="scoreRows"><tr><td colspan="4">Waiting for run.</td></tr></tbody>
-        </table>
-      </div>
-      <div class="feed" id="benchFeed"></div>
-    </section>
-
-    <section class="panel">
-      <h2>Manual Prompt Demo</h2>
-      <div class="section">
-        <textarea id="manualText">Alice lives in Seoul.</textarea>
-        <div class="chips">
-          <button class="chip" data-example="Alice lives in Seoul." data-branch="main" data-trust="0.8">initial fact</button>
-          <button class="chip" data-example="Alice moved to Busan in March 2026." data-branch="main" data-trust="0.86">supersede</button>
-          <button class="chip" data-example="Alice lives in Atlantis." data-branch="main" data-trust="0.2">bad update</button>
-          <button class="chip" data-example="During the conference week, Alice will stay in Tokyo." data-branch="trip-plan" data-trust="0.78">branch-only</button>
-        </div>
-        <div class="grid2" style="margin-top: 12px;">
-          <label>Branch <input id="manualBranch" value="main"></label>
-          <label>Trust score <input id="manualTrust" type="number" min="0" max="1" step="0.01" value="0.8"></label>
-        </div>
-        <div class="controls" style="margin-top: 12px;">
-          <label><input id="autoApprove" type="checkbox" checked> approve after staging</label>
-          <button class="primary" id="runManual">Run Prompt</button>
+          <button class="primary" id="sendPrompt">Send</button>
+          <button class="warn" id="benchmarkCase">Load Benchmark Case</button>
           <button class="warn" id="approveStaged">Approve Staged</button>
           <button class="warn" id="rollbackLast">Rollback Last Commit</button>
-          <button id="resetDemo">Reset</button>
-        </div>
-        <div class="result-box">
-          <div class="stage-card"><b>Extract</b><small id="extractState">No prompt run yet.</small></div>
-          <div class="stage-card"><b>Stage</b><small id="stageState">No staged commit.</small></div>
-          <div class="stage-card"><b>Commit</b><small id="commitState">No commit.</small></div>
-          <div class="stage-card"><b>Audit</b><small id="auditState">No audit events loaded.</small></div>
+          <button class="danger" id="resetDemo">Reset</button>
         </div>
       </div>
-      <div class="timeline">
-        <table>
-          <thead><tr><th>Version</th><th>Belief</th><th>Object</th><th>Status</th><th>Lineage</th></tr></thead>
-          <tbody id="manualVersions"><tr><td colspan="5">No versions yet.</td></tr></tbody>
-        </table>
+    </section>
+
+    <section class="panel graph-shell">
+      <h2>Git Graph</h2>
+      <div class="stats" id="stats"></div>
+      <div class="graph-wrap">
+        <div id="lineageStrip" class="lineage-strip">
+          <span class="lineage-empty">No belief lineage yet.</span>
+        </div>
+        <svg id="gitGraph" width="920" height="320" role="img" aria-label="TruthGit commit graph"></svg>
+      </div>
+      <div class="tables">
+        <div class="table-wrap">
+          <table>
+            <thead><tr><th>Version</th><th>Belief</th><th>Object</th><th>Status</th><th>Lineage</th></tr></thead>
+            <tbody id="versionRows"><tr><td colspan="5" class="muted">No belief versions yet.</td></tr></tbody>
+          </table>
+        </div>
+        <div class="table-wrap">
+          <table>
+            <thead><tr><th>Staged / Audit</th><th>Status</th></tr></thead>
+            <tbody id="auditRows"><tr><td colspan="2" class="muted">No audit events yet.</td></tr></tbody>
+          </table>
+        </div>
       </div>
     </section>
   </main>
   <script>
-    let benchSource = null;
     let lastStagedId = null;
     let lastCommitId = null;
 
-    const metrics = [
-      ["current_truth_accuracy", "Current"],
-      ["historical_truth_accuracy", "History"],
-      ["provenance_accuracy", "Provenance"],
-      ["rollback_recovery_rate", "Rollback"],
-      ["branch_isolation_score", "Branch"],
-      ["merge_conflict_resolution_score", "Merge"],
-      ["low_trust_warning_rate", "Low-trust"]
-    ];
-
-    document.getElementById("startBench").addEventListener("click", startBenchmark);
-    document.getElementById("stopBench").addEventListener("click", stopBenchmark);
-    document.getElementById("runManual").addEventListener("click", runManualPrompt);
+    document.getElementById("sendPrompt").addEventListener("click", runManualPrompt);
+    document.getElementById("benchmarkCase").addEventListener("click", loadBenchmarkCase);
     document.getElementById("approveStaged").addEventListener("click", approveStaged);
     document.getElementById("rollbackLast").addEventListener("click", rollbackLast);
     document.getElementById("resetDemo").addEventListener("click", resetDemo);
+    document.getElementById("manualText").addEventListener("keydown", event => {
+      if (event.key === "Enter" && (event.ctrlKey || event.metaKey)) runManualPrompt();
+    });
     document.querySelectorAll("[data-example]").forEach(button => {
       button.addEventListener("click", () => {
         document.getElementById("manualText").value = button.dataset.example;
         document.getElementById("manualBranch").value = button.dataset.branch;
         document.getElementById("manualTrust").value = button.dataset.trust;
+        document.getElementById("manualText").focus();
       });
     });
 
-    function startBenchmark() {
-      stopBenchmark();
-      document.getElementById("benchFeed").innerHTML = "";
-      document.getElementById("scoreRows").innerHTML = `<tr><td colspan="4">Starting.</td></tr>`;
-      renderBenchMetrics([]);
-      const limit = document.getElementById("benchLimit").value || "8";
-      const delay = document.getElementById("benchDelay").value || "650";
-      benchSource = new EventSource(`/demo/benchmark/events?limit=${encodeURIComponent(limit)}&delay_ms=${encodeURIComponent(delay)}`);
-      benchSource.addEventListener("run_started", event => {
-        const data = JSON.parse(event.data);
-        addFeed("Run started", `${data.case_count} cases, ${data.question_count} questions, ${data.systems.join(", ")}`);
-      });
-      benchSource.addEventListener("case_started", event => {
-        const data = JSON.parse(event.data);
-        addFeed(`Case ${data.case_index}/${data.total_cases}`, `${data.case_id}: ${data.description}`);
-      });
-      benchSource.addEventListener("memory_event", event => {
-        const data = JSON.parse(event.data);
-        addFeed(`${data.event_type}: ${data.event_id}`, `${data.text} | branch ${data.branch_name} | trust ${Number(data.trust_score).toFixed(2)}`);
-      });
-      benchSource.addEventListener("question_scored", event => {
-        const data = JSON.parse(event.data);
-        document.getElementById("benchProgress").style.width = `${Math.round(data.progress * 100)}%`;
-        renderScoreRows(data.summary);
-        renderBenchMetrics(data.summary);
-        if (data.system_name === "truthgit") {
-          addFeed(`${data.metric}: ${data.score.toFixed(1)}`, data.prompt);
+    async function runManualPrompt() {
+      const message = document.getElementById("manualText").value.trim();
+      if (!message) return;
+      appendMessage("user", message);
+      const payload = {
+        message,
+        branch_name: document.getElementById("manualBranch").value,
+        trust_score: Number(document.getElementById("manualTrust").value),
+        auto_approve: document.getElementById("autoApprove").checked,
+        extraction_mode: document.getElementById("useLlm").checked ? "llm" : "local",
+        auto_metadata: document.getElementById("autoMetadata").checked
+      };
+      try {
+        const data = await postJson("/demo/manual", payload);
+        lastStagedId = isApproveableStaged(data.staged) ? data.staged.id : null;
+        lastCommitId = data.commit?.id || lastCommitId;
+        if (data.branch?.name) {
+          document.getElementById("manualBranch").value = data.branch.name;
         }
-      });
-      benchSource.addEventListener("run_complete", event => {
-        const data = JSON.parse(event.data);
-        renderScoreRows(data.summary);
-        renderBenchMetrics(data.summary);
-        addFeed("Run complete", "Final scores rendered.");
-        stopBenchmark();
-      });
-      benchSource.onerror = () => addFeed("Stream warning", "Connection ended or interrupted.");
-    }
-
-    function stopBenchmark() {
-      if (benchSource) {
-        benchSource.close();
-        benchSource = null;
+        renderSnapshot(data.snapshot);
+        appendMessage("system", data.assistant_reply || summarizeManual(data), detailLine(data));
+      } catch (error) {
+        appendMessage("system", "Request failed.", String(error));
       }
     }
 
-    async function runManualPrompt() {
-      const payload = {
-        message: document.getElementById("manualText").value,
-        branch_name: document.getElementById("manualBranch").value,
-        trust_score: Number(document.getElementById("manualTrust").value),
-        auto_approve: document.getElementById("autoApprove").checked
-      };
-      const data = await postJson("/demo/manual", payload);
-      lastStagedId = data.staged?.status === "pending" ? data.staged.id : null;
-      lastCommitId = data.commit?.id || lastCommitId;
-      renderManual(data);
+    async function approveStaged() {
+      if (!lastStagedId) {
+        appendMessage("system", "No reviewable staged commit to approve.");
+        return;
+      }
+      const approvedId = lastStagedId;
+      try {
+        const data = await postJson(`/staged/${lastStagedId}/approve`, {
+          reviewer: "demo-ui",
+          notes: "Approved during live demo.",
+          commit_message: "Manual approval from demo UI"
+        });
+        lastCommitId = data.commit.id;
+        lastStagedId = null;
+        const snapshot = await fetchSnapshot();
+        renderSnapshot(snapshot);
+        appendMessage("system", `Approved staged commit ${approvedId}.`, `Created commit #${lastCommitId}.`);
+      } catch (error) {
+        appendMessage("system", "Approval failed.", String(error));
+      }
     }
 
-    async function approveStaged() {
-      if (!lastStagedId) return;
-      const approvedId = lastStagedId;
-      const data = await postJson(`/staged/${lastStagedId}/approve`, {
-        reviewer: "demo-ui",
-        notes: "Approved during live demo.",
-        commit_message: "Manual approval from demo UI"
-      });
-      lastCommitId = data.commit.id;
-      lastStagedId = null;
-      await refreshSnapshot(`Approved staged ${approvedId}`, `commit #${lastCommitId}`);
+    async function loadBenchmarkCase() {
+      try {
+        appendMessage("system", "Loading one LongMemEval-style case through TruthGit...");
+        const data = await postJson("/demo/benchmark-case", {});
+        lastStagedId = null;
+        lastCommitId = data.commit?.id || null;
+        renderSnapshot(data.snapshot);
+        appendMessage("system", data.assistant_reply, benchmarkDetail(data));
+      } catch (error) {
+        appendMessage("system", "Benchmark case failed.", String(error));
+      }
     }
 
     async function rollbackLast() {
-      if (!lastCommitId) return;
-      const data = await postJson("/demo/rollback", {commit_id: lastCommitId});
-      lastCommitId = null;
-      renderSnapshot(data.snapshot);
-      document.getElementById("commitState").textContent = `rollback commit #${data.commit.id}`;
-      document.getElementById("stageState").textContent = `${data.retracted_versions.length} version(s) retracted, ${data.restored_versions.length} restored`;
+      if (!lastCommitId) {
+        appendMessage("system", "No last commit is selected for rollback.");
+        return;
+      }
+      try {
+        const data = await postJson("/demo/rollback", {commit_id: lastCommitId});
+        lastCommitId = data.commit.id;
+        renderSnapshot(data.snapshot);
+        appendMessage(
+          "system",
+          `Rollback commit #${data.commit.id} created.`,
+          `${data.retracted_versions.length} version(s) retracted, ${data.restored_versions.length} restored.`
+        );
+      } catch (error) {
+        appendMessage("system", "Rollback failed.", String(error));
+      }
     }
 
     async function resetDemo() {
-      const data = await postJson("/demo/reset", {confirm: true});
-      lastStagedId = null;
-      lastCommitId = null;
-      renderSnapshot(data.snapshot);
-      document.getElementById("extractState").textContent = "Reset complete.";
-      document.getElementById("stageState").textContent = "No staged commit.";
-      document.getElementById("commitState").textContent = "No commit.";
-      document.getElementById("auditState").textContent = "Database reset.";
+      try {
+        const data = await postJson("/demo/reset", {confirm: true});
+        lastStagedId = null;
+        lastCommitId = null;
+        renderSnapshot(data.snapshot);
+        document.getElementById("messages").innerHTML = "";
+        appendMessage("system", "Demo memory reset. The main branch has been recreated.");
+      } catch (error) {
+        appendMessage("system", "Reset failed.", String(error));
+      }
     }
 
-    async function refreshSnapshot(title, text) {
-      const response = await fetch("/viz/data");
+    async function fetchSnapshot() {
+      const response = await fetch("/viz/data", {headers: {"Accept": "application/json"}});
+      if (!response.ok) throw new Error(await response.text());
       const data = await response.json();
-      document.getElementById("commitState").textContent = text;
-      document.getElementById("stageState").textContent = title;
-      document.getElementById("auditState").textContent = `${data.audit_events.length} recent audit event(s)`;
-      document.getElementById("manualVersions").innerHTML = data.belief_versions.map(versionRow).join("") || emptyVersionRow();
-    }
-
-    function renderManual(data) {
-      document.getElementById("extractState").textContent = `${data.claims.length} claim(s): ${data.claims.map(c => `${c.subject} ${c.predicate} ${objectValue(c)}`).join("; ") || "none"}`;
-      document.getElementById("stageState").textContent = data.staged ? `${data.staged.status} ${data.staged.review_required ? "review required" : "auto-safe"} ${data.warnings.join(" ")}` : "No staged commit.";
-      document.getElementById("commitState").textContent = data.commit ? `commit #${data.commit.id} on branch ${data.branch.name}` : "Pending review.";
-      renderSnapshot(data.snapshot);
-    }
-
-    function objectValue(claim) {
-      return claim.object_value || claim.object || "";
-    }
-
-    function renderSnapshot(snapshot) {
-      const versions = snapshot?.versions || [];
-      const audit = snapshot?.audit || [];
-      document.getElementById("auditState").textContent = `${audit.length} recent audit event(s)`;
-      document.getElementById("manualVersions").innerHTML = versions.map(versionRow).join("") || emptyVersionRow();
-    }
-
-    function versionRow(row) {
-      return `<tr>
-        <td>#${row.id}</td>
-        <td><b>${escapeHtml(row.subject || "")}</b><br><span>${escapeHtml(row.predicate || "")}</span></td>
-        <td>${escapeHtml(row.object_value || "")}</td>
-        <td><span class="pill ${escapeHtml(row.status || "")}">${escapeHtml(row.status || "")}</span>${row.contradiction_group ? "<br>conflict" : ""}</td>
-        <td>${row.supersedes_version_id ? "supersedes #" + row.supersedes_version_id : "root"}<br>commit #${row.commit_id}<br>${escapeHtml(row.branch_name || "")}</td>
-      </tr>`;
-    }
-
-    function emptyVersionRow() {
-      return `<tr><td colspan="5">No belief versions yet.</td></tr>`;
+      const staged = data.staged_commits || [];
+      return {
+        counts: {
+          ...(data.counts || {}),
+          staged: staged.filter(row => !["applied", "rejected"].includes(row.status)).length,
+          quarantined: staged.filter(row => row.status === "quarantined").length
+        },
+        branches: data.branches,
+        commits: data.commits,
+        versions: data.belief_versions,
+        staged_commits: staged,
+        audit: data.audit_events
+      };
     }
 
     async function postJson(url, payload) {
@@ -812,34 +1240,245 @@ _HTML = """
         headers: {"Content-Type": "application/json"},
         body: JSON.stringify(payload)
       });
-      if (!response.ok) {
-        const text = await response.text();
-        throw new Error(text);
-      }
+      if (!response.ok) throw new Error(await response.text());
       return response.json();
     }
 
-    function renderScoreRows(summary) {
-      const rows = summary || [];
-      document.getElementById("scoreRows").innerHTML = rows.map(row => `
-        <tr><td>${escapeHtml(row.system_name)}</td><td>${escapeHtml(row.metric)}</td><td>${Number(row.score).toFixed(3)}</td><td>${row.n}</td></tr>
-      `).join("") || `<tr><td colspan="4">No scores yet.</td></tr>`;
+    function summarizeManual(data) {
+      const claims = data.claims.map(claim => `${claim.subject} ${claim.predicate} ${claim.object_value || claim.object || ""}`.trim());
+      if (!claims.length) return "No atomic claim was extracted from that prompt.";
+      const objectList = data.claims.map(claim => claim.object_value || claim.object || "").filter(Boolean).join(", ");
+      if (data.commit) return `Okay, I'll remember that. I saved ${objectList || "the update"} as a TruthGit commit on ${data.branch.name}.`;
+      return `Okay, I'll remember that after review. I staged ${claims.length} claim(s) on ${data.branch.name}.`;
     }
 
-    function renderBenchMetrics(summary) {
-      const truthgit = new Map((summary || []).filter(row => row.system_name === "truthgit").map(row => [row.metric, row.score]));
-      document.getElementById("benchMetrics").innerHTML = metrics.map(([key, label]) => `
-        <div class="metric"><span>${escapeHtml(label)}</span><strong>${truthgit.has(key) ? Number(truthgit.get(key)).toFixed(2) : "0.00"}</strong></div>
+    function detailLine(data) {
+      const parts = [];
+      if (data.extraction) {
+        parts.push(`${data.extraction.model_name}`);
+        parts.push(`trust ${Number(data.extraction.trust_score).toFixed(2)}`);
+        if (data.extraction.rationale) parts.push(data.extraction.rationale);
+      }
+      if (data.staged) parts.push(`staged ${data.staged.id}`);
+      if (data.commit) parts.push(`commit #${data.commit.id}`);
+      if (data.warnings?.length) parts.push(data.warnings.join(" "));
+      return parts.join(" | ");
+    }
+
+    function benchmarkDetail(data) {
+      const parts = [];
+      if (data.benchmark_case) {
+        parts.push(data.benchmark_case.mode);
+        parts.push(`question ${data.benchmark_case.question_id}`);
+        parts.push(data.benchmark_case.steps.join(" -> "));
+      }
+      if (data.staged) parts.push(`staged ${data.staged.id}`);
+      if (data.commit) parts.push(`commit #${data.commit.id}`);
+      if (data.warnings?.length) parts.push(data.warnings.join(" "));
+      return parts.join(" | ");
+    }
+
+    function appendMessage(role, text, detail = "") {
+      const messages = document.getElementById("messages");
+      const item = document.createElement("div");
+      item.className = `msg ${role}`;
+      item.innerHTML = `${escapeHtml(text)}${detail ? `<small>${escapeHtml(detail)}</small>` : ""}`;
+      messages.appendChild(item);
+      messages.scrollTop = messages.scrollHeight;
+    }
+
+    function renderSnapshot(snapshot) {
+      renderStats(snapshot?.counts || {});
+      renderLineage(snapshot?.versions || [], snapshot?.staged_commits || []);
+      renderGraph(snapshot || {});
+      renderVersions(snapshot?.versions || []);
+      renderAudit(snapshot?.staged_commits || [], snapshot?.audit || []);
+    }
+
+    function renderLineage(rows, stagedRows = []) {
+      const container = document.getElementById("lineageStrip");
+      const versions = [...rows].sort((left, right) => Number(left.id) - Number(right.id));
+      if (!versions.length) {
+        const pending = stagedRows.filter(row => !["applied", "rejected"].includes(row.status));
+        if (pending.length) {
+          container.innerHTML = pending.map(row => `
+            <div class="lineage-card hypothetical">
+              <b>staged write</b>
+              <small>${escapeHtml(row.source_ref || "staged source")}</small>
+              <strong>${escapeHtml(row.status || "staged")}</strong>
+              <small>${escapeHtml(row.quarantine_reason_summary || (row.risk_reasons || []).join(", ") || "manual action needed")}</small>
+              <small>${escapeHtml(row.id)}</small>
+            </div>
+          `).join("");
+          return;
+        }
+        container.innerHTML = `<span class="lineage-empty">No belief lineage yet. Click Load Benchmark Case or send a memory update.</span>`;
+        return;
+      }
+      container.innerHTML = versions.map((row, index) => `
+        ${index ? `<div class="lineage-arrow">-&gt;</div>` : ""}
+        <div class="lineage-card ${escapeHtml(row.status || "")}">
+          <b>#${row.id} ${escapeHtml(row.subject || "")}</b>
+          <small>${escapeHtml(row.predicate || "")}</small>
+          <strong>${escapeHtml(row.object_value || "")}</strong>
+          <small>${escapeHtml(row.status || "")} · commit #${row.commit_id} · ${escapeHtml(row.branch_name || "")}</small>
+          ${row.supersedes_version_id ? `<small>supersedes #${row.supersedes_version_id}</small>` : `<small>root belief</small>`}
+        </div>
       `).join("");
     }
 
-    function addFeed(title, text) {
-      const feed = document.getElementById("benchFeed");
-      const item = document.createElement("div");
-      item.className = "event";
-      item.innerHTML = `<b>${escapeHtml(title)}</b><small>${escapeHtml(text)}</small>`;
-      feed.prepend(item);
-      while (feed.children.length > 80) feed.removeChild(feed.lastChild);
+    function renderStats(counts) {
+      const entries = [
+        ["branches", "Branches"],
+        ["commits", "Commits"],
+        ["versions", "Versions"],
+        ["staged", "Staged"],
+        ["quarantined", "Quarantine"],
+        ["audit_events", "Audit"]
+      ];
+      document.getElementById("stats").innerHTML = entries.map(([key, label]) => `
+        <div class="stat"><span>${label}</span><strong>${Number(counts[key] || 0)}</strong></div>
+      `).join("");
+    }
+
+    function renderGraph(snapshot) {
+      const svg = document.getElementById("gitGraph");
+      const commits = [...(snapshot.commits || [])].sort((left, right) => Number(left.id) - Number(right.id));
+      const versions = [...(snapshot.versions || [])].sort((left, right) => Number(left.id) - Number(right.id));
+      const pendingStaged = [...(snapshot.staged_commits || [])].filter(row => !["applied", "rejected"].includes(row.status));
+      const branches = snapshot.branches || [];
+      const branchById = new Map(branches.map(branch => [branch.id, branch]));
+      const commitX = new Map(commits.map((commit, index) => [commit.id, 118 + index * 230]));
+      const versionX = new Map(versions.map((version, index) => [version.id, 110 + index * 250]));
+      const width = Math.max(920, 180 + Math.max(commits.length, versions.length) * 250);
+      const height = versions.length ? 340 : 190;
+      svg.setAttribute("width", width);
+      svg.setAttribute("height", height);
+      if (!commits.length && !versions.length) {
+        if (pendingStaged.length) {
+          svg.innerHTML = `
+            <text x="40" y="56" fill="#475467" font-size="15" font-weight="700">Memory CI staged write awaiting action</text>
+            <rect x="40" y="82" width="390" height="94" rx="10" fill="#f4f0ff" stroke="#6d3fc4" stroke-width="1.5"></rect>
+            <text x="62" y="113" fill="#1f2933" font-size="14" font-weight="800">${escapeSvg(pendingStaged[0].status || "staged")}</text>
+            <text x="62" y="137" fill="#667085" font-size="12">${escapeSvg(shorten(pendingStaged[0].source_ref || "staged memory write", 46))}</text>
+            <text x="62" y="159" fill="#667085" font-size="12">${escapeSvg(shorten((pendingStaged[0].risk_reasons || []).join(", ") || "manual approval needed", 48))}</text>
+            <text x="452" y="137" fill="#667085" font-size="14">${pendingStaged[0].status === "quarantined" ? "Quarantined writes need release or override." : "Click Approve Staged to create the first commit."}</text>
+          `;
+          return;
+        }
+        svg.innerHTML = `<text x="40" y="72" fill="#667085" font-size="15">No commits yet. Send a prompt to create the first memory commit.</text>`;
+        return;
+      }
+      const commitY = 74;
+      const versionY = 218;
+      const lines = [];
+      const nodes = [];
+      lines.push(`
+        <defs>
+          <marker id="arrow" markerWidth="10" markerHeight="10" refX="8" refY="3" orient="auto" markerUnits="strokeWidth">
+            <path d="M0,0 L0,6 L9,3 z" fill="#667085"></path>
+          </marker>
+        </defs>
+        <text x="34" y="28" fill="#475467" font-size="13" font-weight="700">Commit lane</text>
+        <line x1="34" y1="${commitY}" x2="${width - 42}" y2="${commitY}" stroke="#e4e7ec" stroke-width="2"></line>
+      `);
+      for (const commit of commits) {
+        const x = commitX.get(commit.id) || 118;
+        if (commit.parent_commit_id && commitX.has(commit.parent_commit_id)) {
+          const px = commitX.get(commit.parent_commit_id);
+          lines.push(`<line x1="${px + 16}" y1="${commitY}" x2="${x - 18}" y2="${commitY}" stroke="#98a2b3" stroke-width="2" marker-end="url(#arrow)" />`);
+        }
+        const color = commit.operation_type === "rollback" ? "#b42318" : commit.operation_type === "merge" ? "#6d3fc4" : "#1b7f5a";
+        const branch = branchById.get(commit.branch_id);
+        nodes.push(`
+          <circle cx="${x}" cy="${commitY}" r="16" fill="${color}" stroke="#ffffff" stroke-width="4"></circle>
+          <text x="${x + 26}" y="${commitY - 8}" fill="#1f2933" font-size="13" font-weight="700">#${commit.id} ${escapeSvg(commit.operation_type)}</text>
+          <text x="${x + 26}" y="${commitY + 10}" fill="#667085" font-size="12">${escapeSvg(branch?.name || String(commit.branch_id))}</text>
+          <text x="${x + 26}" y="${commitY + 27}" fill="#667085" font-size="12">${escapeSvg(shorten(commit.message || "", 44))}</text>
+        `);
+      }
+      if (versions.length) {
+        const versionById = new Map(versions.map(version => [version.id, version]));
+        lines.push(`
+          <text x="34" y="158" fill="#475467" font-size="13" font-weight="700">Belief lineage</text>
+          <line x1="34" y1="${versionY}" x2="${width - 42}" y2="${versionY}" stroke="#e4e7ec" stroke-width="2"></line>
+        `);
+        for (const version of versions) {
+          const x = versionX.get(version.id) || 110;
+          const cx = x + 76;
+          if (version.supersedes_version_id && versionX.has(version.supersedes_version_id)) {
+            const sx = (versionX.get(version.supersedes_version_id) || 110) + 152;
+            lines.push(`<line x1="${sx + 8}" y1="${versionY}" x2="${x - 12}" y2="${versionY}" stroke="#667085" stroke-width="2" marker-end="url(#arrow)" />`);
+            lines.push(`<text x="${Math.min(sx + 26, x - 86)}" y="${versionY - 14}" fill="#667085" font-size="11">supersedes</text>`);
+          }
+          if (commitX.has(version.commit_id)) {
+            const commitCenterX = commitX.get(version.commit_id);
+            lines.push(`<line x1="${commitCenterX}" y1="${commitY + 22}" x2="${cx}" y2="${versionY - 42}" stroke="#d0d5dd" stroke-width="1.5" stroke-dasharray="4 5"></line>`);
+          }
+          const style = versionStyle(version.status);
+          nodes.push(`
+            <rect x="${x}" y="${versionY - 42}" width="152" height="84" rx="8" fill="${style.fill}" stroke="${style.stroke}" stroke-width="1.5"></rect>
+            <text x="${x + 12}" y="${versionY - 19}" fill="#1f2933" font-size="13" font-weight="700">#${version.id} ${escapeSvg(version.subject || "")}</text>
+            <text x="${x + 12}" y="${versionY - 1}" fill="#475467" font-size="12">${escapeSvg(version.predicate || "")}</text>
+            <text x="${x + 12}" y="${versionY + 20}" fill="#1f2933" font-size="15" font-weight="800">${escapeSvg(shorten(version.object_value || "", 16))}</text>
+            <text x="${x + 98}" y="${versionY + 20}" fill="${style.text}" font-size="11" font-weight="700">${escapeSvg(version.status || "")}</text>
+            <text x="${x + 12}" y="${versionY + 36}" fill="#667085" font-size="11">commit #${version.commit_id} ${escapeSvg(version.branch_name || "")}</text>
+          `);
+        }
+      }
+      svg.innerHTML = lines.join("") + nodes.join("");
+    }
+
+    function versionStyle(status) {
+      if (status === "active") return {fill: "#ecfdf3", stroke: "#1b7f5a", text: "#166534"};
+      if (status === "superseded") return {fill: "#fffaeb", stroke: "#d89a00", text: "#a65f00"};
+      if (status === "retracted") return {fill: "#fef3f2", stroke: "#b42318", text: "#b42318"};
+      if (status === "hypothetical") return {fill: "#f4f0ff", stroke: "#6d3fc4", text: "#6d3fc4"};
+      return {fill: "#f8fafc", stroke: "#98a2b3", text: "#475467"};
+    }
+
+    function renderVersions(rows) {
+      document.getElementById("versionRows").innerHTML = rows.map(row => `
+        <tr>
+          <td>#${row.id}</td>
+          <td><b>${escapeHtml(row.subject || "")}</b><br><span class="muted">${escapeHtml(row.predicate || "")}</span></td>
+          <td>${escapeHtml(row.object_value || "")}</td>
+          <td><span class="pill ${escapeHtml(row.status || "")}">${escapeHtml(row.status || "")}</span>${row.contradiction_group ? "<br><span class='muted'>conflict</span>" : ""}</td>
+          <td>${row.supersedes_version_id ? "supersedes #" + row.supersedes_version_id : "root"}<br>commit #${row.commit_id}<br>${escapeHtml(row.branch_name || "")}</td>
+        </tr>
+      `).join("") || `<tr><td colspan="5" class="muted">No belief versions yet.</td></tr>`;
+    }
+
+    function renderAudit(staged, audit) {
+      const stagedRows = staged.map(row => `
+        <tr>
+          <td><b>staged</b><br><span class="muted">${escapeHtml(row.id)}</span></td>
+          <td><span class="pill ${escapeHtml(row.status)}">${escapeHtml(row.status)}</span><br>${stagedDetail(row)}</td>
+        </tr>
+      `);
+      const auditRows = audit.slice(0, 12).map(row => `
+        <tr>
+          <td><b>${escapeHtml(row.event_type)}</b><br><span class="muted">${escapeHtml(row.entity_key || row.entity_id || "")}</span></td>
+          <td>${escapeHtml(row.entity_type)}<br><span class="muted">${escapeHtml(row.created_at || "")}</span></td>
+        </tr>
+      `);
+      document.getElementById("auditRows").innerHTML = stagedRows.concat(auditRows).join("") || `<tr><td colspan="2" class="muted">No staged writes or audit events yet.</td></tr>`;
+    }
+
+    function stagedDetail(row) {
+      const check = row.checks?.run ? `CI ${row.checks.run.overall_status} / ${row.checks.run.decision}` : "CI not run";
+      if (row.status === "quarantined") return `${check}<br>${escapeHtml(row.quarantine_reason_summary || "blocked")}`;
+      if (["pending", "proposed", "checked", "review_required"].includes(row.status)) return row.review_required ? `${check}<br>review required` : `${check}<br>review clear`;
+      if (row.applied_commit_id) return `commit #${row.applied_commit_id}`;
+      return "reviewed";
+    }
+
+    function isApproveableStaged(row) {
+      return row && ["pending", "proposed", "checked", "review_required"].includes(row.status);
+    }
+
+    function shorten(value, maxLength) {
+      return value.length > maxLength ? `${value.slice(0, maxLength - 1)}...` : value;
     }
 
     function escapeHtml(value) {
@@ -847,7 +1486,13 @@ _HTML = """
         "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#039;"
       }[character]));
     }
-    renderBenchMetrics([]);
+
+    function escapeSvg(value) {
+      return escapeHtml(value);
+    }
+
+    renderStats({});
+    fetchSnapshot().then(renderSnapshot).catch(() => renderSnapshot({}));
   </script>
 </body>
 </html>

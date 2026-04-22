@@ -8,12 +8,16 @@ ANSWER_MODEL="${OPENAI_MODEL:-gpt-4o-mini}"
 EXTRACTION_MODEL="${LONGMEMEVAL_EXTRACTION_MODEL:-$ANSWER_MODEL}"
 JUDGE_MODEL="${LONGMEMEVAL_JUDGE_MODEL:-gpt-4o}"
 EXTRACTION_MODE="${LONGMEMEVAL_EXTRACTION_MODE:-per_session}"
-MAX_SESSIONS="${LONGMEMEVAL_MAX_SESSIONS:-12}"
+CONTEXT_MODE="${LONGMEMEVAL_CONTEXT_MODE:-beliefs_and_excerpts}"
+MAX_SESSIONS="${LONGMEMEVAL_MAX_SESSIONS:-0}"
+MAX_SOURCE_EXCERPTS="${LONGMEMEVAL_MAX_SOURCE_EXCERPTS:-0}"
 LIMIT="${LONGMEMEVAL_LIMIT:-}"
+START_INDEX="${LONGMEMEVAL_START_INDEX:-0}"
 SAMPLE_SIZE="${LONGMEMEVAL_SAMPLE_SIZE:-}"
 SAMPLE_SEED="${LONGMEMEVAL_SAMPLE_SEED:-0}"
 SKIP_EVALUATION="${LONGMEMEVAL_SKIP_EVALUATION:-0}"
 TRACE="${LONGMEMEVAL_TRACE:-0}"
+NO_RESUME="${LONGMEMEVAL_NO_RESUME:-0}"
 
 if command -v py >/dev/null 2>&1; then
   PYTHON_CMD=(py -3)
@@ -41,18 +45,30 @@ if [[ -n "$LIMIT" && -n "$SAMPLE_SIZE" ]]; then
   echo "Use either LONGMEMEVAL_LIMIT or LONGMEMEVAL_SAMPLE_SIZE, not both." >&2
   exit 2
 fi
+if [[ -n "$SAMPLE_SIZE" && "$START_INDEX" != "0" ]]; then
+  echo "Use LONGMEMEVAL_START_INDEX only with deterministic LONGMEMEVAL_LIMIT shards, not random samples." >&2
+  exit 2
+fi
 if [[ -n "$SAMPLE_SIZE" ]]; then
   RUN_LABEL="random_${SAMPLE_SIZE}_seed_${SAMPLE_SEED}"
   LIMIT_ARGS=(--sample-size "$SAMPLE_SIZE" --sample-seed "$SAMPLE_SEED")
 elif [[ -n "$LIMIT" ]]; then
-  RUN_LABEL="sample_${LIMIT}"
-  LIMIT_ARGS=(--limit "$LIMIT")
+  RUN_LABEL="shard_${START_INDEX}_limit_${LIMIT}"
+  LIMIT_ARGS=(--limit "$LIMIT" --start-index "$START_INDEX")
+elif [[ "$START_INDEX" != "0" ]]; then
+  RUN_LABEL="from_${START_INDEX}"
+  LIMIT_ARGS=(--start-index "$START_INDEX")
 else
   RUN_LABEL="full"
   LIMIT_ARGS=()
 fi
 
-BASE_NAME="${SPLIT_LABEL}_truthgit_${SAFE_MODEL}_${EXTRACTION_MODE}_${RUN_LABEL}"
+if [[ "$MAX_SESSIONS" == "0" ]]; then
+  SESSION_LABEL="fullhistory"
+else
+  SESSION_LABEL="ms${MAX_SESSIONS}"
+fi
+BASE_NAME="${SPLIT_LABEL}_truthgit_${SAFE_MODEL}_${EXTRACTION_MODE}_${SESSION_LABEL}_${CONTEXT_MODE}_${RUN_LABEL}"
 HYPOTHESES="${OUTPUT_DIR}/${BASE_NAME}.hypotheses.jsonl"
 EVAL_LOG="${OUTPUT_DIR}/${BASE_NAME}.eval-results-${JUDGE_MODEL}.jsonl"
 SUMMARY="${OUTPUT_DIR}/${BASE_NAME}.summary.json"
@@ -61,6 +77,10 @@ TRACE_ARGS=()
 if [[ "$TRACE" == "1" ]]; then
   TRACE_ARGS=(--trace-dir "$TRACE_DIR")
 fi
+RESUME_ARGS=()
+if [[ "$NO_RESUME" == "1" ]]; then
+  RESUME_ARGS=(--no-resume)
+fi
 
 "${PYTHON_CMD[@]}" -m experiments.public_benchmarks.longmemeval_truthgit generate \
   --data "$DATA_FILE" \
@@ -68,9 +88,12 @@ fi
   --answer-model "$ANSWER_MODEL" \
   --extraction-model "$EXTRACTION_MODEL" \
   --extraction-mode "$EXTRACTION_MODE" \
+  --context-mode "$CONTEXT_MODE" \
   --max-sessions "$MAX_SESSIONS" \
+  --max-source-excerpts "$MAX_SOURCE_EXCERPTS" \
   "${LIMIT_ARGS[@]}" \
-  "${TRACE_ARGS[@]}"
+  "${TRACE_ARGS[@]}" \
+  "${RESUME_ARGS[@]}"
 
 if [[ "$SKIP_EVALUATION" != "1" ]]; then
   "${PYTHON_CMD[@]}" -m experiments.public_benchmarks.longmemeval evaluate \

@@ -54,3 +54,65 @@ def test_low_trust_conflict_does_not_supersede_high_trust_current(db_session) ->
     assert decision.action == "unresolved_conflict"
     assert decision.supersede_version_ids == []
     assert decision.contradiction_group is not None
+
+
+def test_conflicting_claims_record_opposition_sources(db_session) -> None:
+    main = crud.get_branch_by_name(db_session, "main")
+    trusted_source = crud.create_source(
+        db_session,
+        source_type="manual",
+        source_ref="trusted",
+        excerpt="Alice lives in Seoul.",
+        trust_score=0.95,
+    )
+    weak_source = crud.create_source(
+        db_session,
+        source_type="manual",
+        source_ref="weak",
+        excerpt="A weak source says Alice lives in Atlantis.",
+        trust_score=0.2,
+    )
+    first = apply_claims(
+        db_session,
+        claims=[
+            NormalizedClaim(
+                subject="Alice",
+                predicate="lives_in",
+                object_value="Seoul",
+                normalized_object_value="seoul",
+                confidence=0.9,
+                valid_from=None,
+                valid_to=None,
+            )
+        ],
+        branch_id=main.id,
+        source=trusted_source,
+        message="trusted seed",
+    )
+    second = apply_claims(
+        db_session,
+        claims=[
+            NormalizedClaim(
+                subject="Alice",
+                predicate="lives_in",
+                object_value="Atlantis",
+                normalized_object_value="atlantis",
+                confidence=0.6,
+                valid_from=None,
+                valid_to=None,
+            )
+        ],
+        branch_id=main.id,
+        source=weak_source,
+        message="weak conflict",
+    )
+
+    seoul_graph = crud.support_graph_payload(db_session, first.introduced_versions[0])
+    atlantis_graph = crud.support_graph_payload(db_session, second.introduced_versions[0])
+
+    assert seoul_graph["active_support_count"] == 1
+    assert seoul_graph["active_opposition_count"] == 1
+    assert seoul_graph["opposition_sources"][0]["source_ref"] == "weak"
+    assert atlantis_graph["active_support_count"] == 1
+    assert atlantis_graph["active_opposition_count"] == 1
+    assert atlantis_graph["opposition_sources"][0]["source_ref"] == "trusted"

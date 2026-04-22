@@ -6,6 +6,7 @@ low_trust_warning_rate,10.0,0.0,embedding_rag
 merge_conflict_resolution_score,20.0,0.4,embedding_rag
 provenance_accuracy,59.0,0.7288135593220338,embedding_rag
 rollback_recovery_rate,8.0,0.0,embedding_rag
+support_set_accuracy,10.0,0.6,embedding_rag
 branch_isolation_score,20.0,0.5,naive_chat_history
 current_truth_accuracy,22.0,0.5454545454545454,naive_chat_history
 historical_truth_accuracy,22.0,0.5454545454545454,naive_chat_history
@@ -13,6 +14,7 @@ low_trust_warning_rate,10.0,0.0,naive_chat_history
 merge_conflict_resolution_score,20.0,0.4,naive_chat_history
 provenance_accuracy,59.0,0.6610169491525424,naive_chat_history
 rollback_recovery_rate,8.0,0.0,naive_chat_history
+support_set_accuracy,10.0,0.4,naive_chat_history
 branch_isolation_score,20.0,0.5,simple_rag
 current_truth_accuracy,22.0,1.0,simple_rag
 historical_truth_accuracy,22.0,0.5454545454545454,simple_rag
@@ -20,6 +22,7 @@ low_trust_warning_rate,10.0,0.0,simple_rag
 merge_conflict_resolution_score,20.0,0.35,simple_rag
 provenance_accuracy,59.0,0.7288135593220338,simple_rag
 rollback_recovery_rate,8.0,0.0,simple_rag
+support_set_accuracy,10.0,0.6,simple_rag
 branch_isolation_score,20.0,1.0,truthgit
 current_truth_accuracy,22.0,1.0,truthgit
 historical_truth_accuracy,22.0,1.0,truthgit
@@ -27,6 +30,7 @@ low_trust_warning_rate,10.0,1.0,truthgit
 merge_conflict_resolution_score,20.0,1.0,truthgit
 provenance_accuracy,59.0,1.0,truthgit
 rollback_recovery_rate,8.0,1.0,truthgit
+support_set_accuracy,10.0,1.0,truthgit
 branch_isolation_score,20.0,0.5,truthgit_no_branches
 current_truth_accuracy,22.0,1.0,truthgit_no_branches
 historical_truth_accuracy,22.0,1.0,truthgit_no_branches
@@ -34,6 +38,7 @@ low_trust_warning_rate,10.0,1.0,truthgit_no_branches
 merge_conflict_resolution_score,20.0,0.85,truthgit_no_branches
 provenance_accuracy,59.0,0.864406779661017,truthgit_no_branches
 rollback_recovery_rate,8.0,1.0,truthgit_no_branches
+support_set_accuracy,10.0,0.8,truthgit_no_branches
 branch_isolation_score,20.0,1.0,truthgit_no_review_gate
 current_truth_accuracy,22.0,1.0,truthgit_no_review_gate
 historical_truth_accuracy,22.0,1.0,truthgit_no_review_gate
@@ -41,6 +46,7 @@ low_trust_warning_rate,10.0,0.0,truthgit_no_review_gate
 merge_conflict_resolution_score,20.0,1.0,truthgit_no_review_gate
 provenance_accuracy,59.0,1.0,truthgit_no_review_gate
 rollback_recovery_rate,8.0,1.0,truthgit_no_review_gate
+support_set_accuracy,10.0,1.0,truthgit_no_review_gate
 branch_isolation_score,20.0,1.0,truthgit_no_rollback
 current_truth_accuracy,22.0,1.0,truthgit_no_rollback
 historical_truth_accuracy,22.0,0.8181818181818182,truthgit_no_rollback
@@ -48,6 +54,7 @@ low_trust_warning_rate,10.0,1.0,truthgit_no_rollback
 merge_conflict_resolution_score,20.0,1.0,truthgit_no_rollback
 provenance_accuracy,59.0,0.864406779661017,truthgit_no_rollback
 rollback_recovery_rate,8.0,0.0,truthgit_no_rollback
+support_set_accuracy,10.0,0.8,truthgit_no_rollback
 branch_isolation_score,20.0,1.0,truthgit_no_trust_scoring
 current_truth_accuracy,22.0,0.5454545454545454,truthgit_no_trust_scoring
 historical_truth_accuracy,22.0,1.0,truthgit_no_trust_scoring
@@ -55,3 +62,4 @@ low_trust_warning_rate,10.0,0.0,truthgit_no_trust_scoring
 merge_conflict_resolution_score,20.0,1.0,truthgit_no_trust_scoring
 provenance_accuracy,59.0,0.9322033898305084,truthgit_no_trust_scoring
 rollback_recovery_rate,8.0,1.0,truthgit_no_trust_scoring
+support_set_accuracy,10.0,0.8,truthgit_no_trust_scoring

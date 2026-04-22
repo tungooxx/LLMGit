@@ -3,6 +3,7 @@ from __future__ import annotations
 from datetime import date
 
 from app.normalization import (
+    canonical_key,
     deterministic_extract_simple_claims,
     normalize_extracted_claim,
     normalize_predicate,
@@ -27,4 +28,21 @@ def test_normalizes_moved_to_busan_claim() -> None:
 def test_predicate_aliases_are_stable() -> None:
     assert normalize_predicate("moved to") == "lives_in"
     assert normalize_predicate("resides_in") == "lives_in"
+    assert normalize_predicate("current_residence") == "lives_in"
+    assert normalize_predicate("current residence") == "lives_in"
+    assert normalize_predicate("home_city") == "lives_in"
+    assert normalize_predicate("based_in") == "lives_in"
     assert normalize_predicate("will stay in") == "stays_in"
+
+
+def test_fallback_extractor_keeps_source_attribution_out_of_subject() -> None:
+    extracted = deterministic_extract_simple_claims("A verified city registry says Alice lives in Busan.")
+
+    assert extracted[0]["subject"] == "Alice"
+    assert extracted[0]["predicate"] == "lives_in"
+    assert extracted[0]["object"] == "Busan"
+    assert extracted[0]["source_quote"] == "A verified city registry says Alice lives in Busan."
+
+
+def test_residence_predicate_variants_share_canonical_key() -> None:
+    assert canonical_key("Alice", "lives_in") == canonical_key("Alice", "current_residence")

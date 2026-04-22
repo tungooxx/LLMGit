@@ -16,6 +16,16 @@ PREDICATE_ALIASES: dict[str, str] = {
     "living in": "lives_in",
     "resides in": "lives_in",
     "resides_in": "lives_in",
+    "residence": "lives_in",
+    "current residence": "lives_in",
+    "current_residence": "lives_in",
+    "current location": "lives_in",
+    "current_location": "lives_in",
+    "home": "lives_in",
+    "home city": "lives_in",
+    "home_city": "lives_in",
+    "based in": "lives_in",
+    "based_in": "lives_in",
     "location": "lives_in",
     "moved to": "lives_in",
     "move to": "lives_in",
@@ -175,13 +185,14 @@ def deterministic_extract_simple_claims(text: str) -> list[dict[str, Any]]:
         sentence = sentence.strip()
         if not sentence:
             continue
+        claim_sentence = _strip_source_attribution(sentence)
 
         moved = re.search(
             r"^(?P<subject>[A-Z][\w\s.'-]*?)\s+moved\s+to\s+(?P<object>[A-Z][\w\s.'-]*?)(?:\s+in\s+(?P<when>[A-Za-z]+\s+\d{4}))?[.!]?$",
-            sentence,
+            claim_sentence,
         )
         if moved:
-            when_text = moved.group("when") or sentence
+            when_text = moved.group("when") or claim_sentence
             claims.append(
                 {
                     "subject": moved.group("subject").strip(),
@@ -199,7 +210,7 @@ def deterministic_extract_simple_claims(text: str) -> list[dict[str, Any]]:
 
         lives = re.search(
             r"^(?P<subject>[A-Z][\w\s.'-]*?)\s+(?:lives|resides)\s+in\s+(?P<object>[A-Z][\w\s.'-]*?)[.!]?$",
-            sentence,
+            claim_sentence,
         )
         if lives:
             claims.append(
@@ -219,7 +230,7 @@ def deterministic_extract_simple_claims(text: str) -> list[dict[str, Any]]:
 
         stay = re.search(
             r"^(?:During\s+(?P<context>.*?),\s+)?(?P<subject>[A-Z][\w\s.'-]*?)\s+(?:will\s+)?stay\s+in\s+(?P<object>[A-Z][\w\s.'-]*?)[.!]?$",
-            sentence,
+            claim_sentence,
         )
         if stay:
             claims.append(
@@ -238,3 +249,17 @@ def deterministic_extract_simple_claims(text: str) -> list[dict[str, Any]]:
             continue
 
     return claims
+
+
+def _strip_source_attribution(sentence: str) -> str:
+    """Return the quoted claim part from simple "source says X" wording."""
+
+    attribution = re.search(
+        r"\b(?:also\s+)?(?:says|said|confirms|confirmed|reports|reported|states|stated|claims|claimed)\s+"
+        r"(?P<claim>[A-Z][^.!?]*[.!?]?)$",
+        sentence,
+        flags=re.IGNORECASE,
+    )
+    if attribution:
+        return attribution.group("claim").strip()
+    return sentence

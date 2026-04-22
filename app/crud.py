@@ -12,6 +12,7 @@ from app import models
 from app.normalization import canonical_key
 
 CURRENT_STATUSES = {"active", "hypothetical"}
+ACTIVE_SUPPORT_STATUSES = {"active"}
 
 
 def add_audit_event(
@@ -236,12 +237,24 @@ def list_commits(
     return list(db.scalars(stmt).unique())
 
 
-def list_audit_events(db: Session, limit: int = 100) -> list[models.AuditEvent]:
+def list_audit_events(
+    db: Session,
+    limit: int = 100,
+    *,
+    entity_type: str | None = None,
+    entity_id: int | None = None,
+    entity_key: str | None = None,
+) -> list[models.AuditEvent]:
     """Return recent audit events."""
 
-    return list(
-        db.scalars(select(models.AuditEvent).order_by(models.AuditEvent.id.desc()).limit(limit))
-    )
+    stmt = select(models.AuditEvent).order_by(models.AuditEvent.id.desc()).limit(limit)
+    if entity_type is not None:
+        stmt = stmt.where(models.AuditEvent.entity_type == entity_type)
+    if entity_id is not None:
+        stmt = stmt.where(models.AuditEvent.entity_id == entity_id)
+    if entity_key is not None:
+        stmt = stmt.where(models.AuditEvent.entity_key == entity_key)
+    return list(db.scalars(stmt))
 
 
 def source_trust(db: Session, source_id: int) -> float:
@@ -249,6 +262,156 @@ def source_trust(db: Session, source_id: int) -> float:
 
     source = db.get(models.Source, source_id)
     return source.trust_score if source else 0.5
+
+
+def add_belief_source_link(
+    db: Session,
+    *,
+    belief_version_id: int,
+    source_id: int,
+    relation_type: str,
+    commit_id: int | None = None,
+    status: str = "active",
+    reason: str | None = None,
+    metadata: dict[str, Any] | None = None,
+) -> models.BeliefVersionSourceLink:
+    """Attach a support or opposition source to a belief version."""
+
+    existing = db.scalar(
+        select(models.BeliefVersionSourceLink).where(
+            models.BeliefVersionSourceLink.belief_version_id == belief_version_id,
+            models.BeliefVersionSourceLink.source_id == source_id,
+            models.BeliefVersionSourceLink.relation_type == relation_type,
+            models.BeliefVersionSourceLink.status == status,
+        )
+    )
+    if existing is not None:
+        return existing
+
+    link = models.BeliefVersionSourceLink(
+        belief_version_id=belief_version_id,
+        source_id=source_id,
+        commit_id=commit_id,
+        relation_type=relation_type,
+        status=status,
+        reason=reason,
+        metadata_json=metadata or {},
+    )
+    db.add(link)
+    db.flush()
+    add_audit_event(
+        db,
+        event_type=f"belief_source.{relation_type}_added",
+        entity_type="belief_version",
+        entity_id=belief_version_id,
+        payload={
+            "belief_version_id": belief_version_id,
+            "source_id": source_id,
+            "commit_id": commit_id,
+            "relation_type": relation_type,
+            "status": status,
+            "reason": reason,
+        },
+    )
+    return link
+
+
+def list_belief_source_links(
+    db: Session,
+    *,
+    belief_version_id: int,
+    relation_type: str | None = None,
+    statuses: set[str] | None = None,
+) -> list[models.BeliefVersionSourceLink]:
+    """List support/opposition source links for a belief version."""
+
+    stmt = select(models.BeliefVersionSourceLink).where(
+        models.BeliefVersionSourceLink.belief_version_id == belief_version_id
+    )
+    if relation_type is not None:
+        stmt = stmt.where(models.BeliefVersionSourceLink.relation_type == relation_type)
+    if statuses is not None:
+        stmt = stmt.where(models.BeliefVersionSourceLink.status.in_(statuses))
+    return list(db.scalars(stmt.order_by(models.BeliefVersionSourceLink.id)))
+
+
+def active_support_links(db: Session, belief_version_id: int) -> list[models.BeliefVersionSourceLink]:
+    """Return active support links for one belief version."""
+
+    return list_belief_source_links(
+        db,
+        belief_version_id=belief_version_id,
+        relation_type="support",
+        statuses=ACTIVE_SUPPORT_STATUSES,
+    )
+
+
+def active_opposition_links(db: Session, belief_version_id: int) -> list[models.BeliefVersionSourceLink]:
+    """Return active opposition links for one belief version."""
+
+    return list_belief_source_links(
+        db,
+        belief_version_id=belief_version_id,
+        relation_type="opposition",
+        statuses=ACTIVE_SUPPORT_STATUSES,
+    )
+
+
+def belief_version_support_score(db: Session, version: models.BeliefVersion) -> float:
+    """Compute current source-weighted support minus opposition for a belief version."""
+
+    supports = active_support_links(db, version.id)
+    oppositions = active_opposition_links(db, version.id)
+    any_support_links = list_belief_source_links(db, belief_version_id=version.id, relation_type="support")
+    if not any_support_links:
+        support_score = source_trust(db, version.source_id)
+    else:
+        support_score = sum(source_trust(db, link.source_id) for link in supports)
+    opposition_score = sum(source_trust(db, link.source_id) for link in oppositions)
+    return round(max(0.0, support_score - opposition_score) * version.confidence, 4)
+
+
+def source_link_payload(db: Session, link: models.BeliefVersionSourceLink) -> dict[str, Any]:
+    """Serialize a source link with source details for API/tool responses."""
+
+    source = db.get(models.Source, link.source_id)
+    return {
+        "id": link.id,
+        "source_id": link.source_id,
+        "source_type": source.source_type if source else None,
+        "source_ref": source.source_ref if source else None,
+        "excerpt": source.excerpt if source else None,
+        "trust_score": source.trust_score if source else None,
+        "relation_type": link.relation_type,
+        "status": link.status,
+        "commit_id": link.commit_id,
+        "removed_by_commit_id": link.removed_by_commit_id,
+        "reason": link.reason,
+        "metadata_json": link.metadata_json,
+        "created_at": link.created_at,
+    }
+
+
+def support_graph_payload(db: Session, version: models.BeliefVersion) -> dict[str, Any]:
+    """Return support/opposition sources and current support score for a version."""
+
+    support_links = list_belief_source_links(db, belief_version_id=version.id, relation_type="support")
+    opposition_links = list_belief_source_links(db, belief_version_id=version.id, relation_type="opposition")
+    active_supports = [link for link in support_links if link.status in ACTIVE_SUPPORT_STATUSES]
+    active_oppositions = [link for link in opposition_links if link.status in ACTIVE_SUPPORT_STATUSES]
+    support_trust_total = round(sum(source_trust(db, link.source_id) for link in active_supports), 4)
+    opposition_trust_total = round(sum(source_trust(db, link.source_id) for link in active_oppositions), 4)
+    return {
+        "support_score": belief_version_support_score(db, version),
+        "governing_source_id": version.source_id,
+        "active_support_trust_total": support_trust_total,
+        "active_opposition_trust_total": opposition_trust_total,
+        "net_evidence_trust": round(max(0.0, support_trust_total - opposition_trust_total), 4),
+        "active_support_count": len(active_supports),
+        "active_opposition_count": len(active_oppositions),
+        "support_sources": [source_link_payload(db, link) for link in support_links],
+        "opposition_sources": [source_link_payload(db, link) for link in opposition_links],
+    }
 
 
 def ids(items: Iterable[Any]) -> list[int]:

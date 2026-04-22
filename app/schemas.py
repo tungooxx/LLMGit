@@ -19,6 +19,7 @@ AnswerMode = Literal[
     "historical_answer",
     "branch_answer",
 ]
+WriteAction = Literal["commit_now", "stage_for_review", "reject", "branch_hypothetical"]
 
 
 class ExtractedClaim(BaseModel):
@@ -51,6 +52,19 @@ class AnswerPlan(BaseModel):
     requires_memory_update: bool = False
     proposed_commit_message: str | None = None
     explanation_style: str = "concise"
+
+
+class MemoryWritePlan(BaseModel):
+    """Structured write plan chosen by the model."""
+
+    claims: list[ExtractedClaim] = Field(default_factory=list)
+    branch_name: str = "main"
+    trust_score: float = Field(default=0.7, ge=0.0, le=1.0)
+    write_action: WriteAction = "commit_now"
+    risk_reasons: list[str] = Field(default_factory=list)
+    warnings: list[str] = Field(default_factory=list)
+    rationale: str = "Model selected the default write policy."
+    assistant_reply: str = "Okay, I'll remember that in TruthGit memory."
 
 
 class SourceCreate(BaseModel):
@@ -123,6 +137,15 @@ class BeliefVersionRead(BaseModel):
     contradiction_group: str | None
     metadata_json: dict[str, Any]
     created_at: datetime
+    support_score: float | None = None
+    governing_source_id: int | None = None
+    active_support_trust_total: float = 0.0
+    active_opposition_trust_total: float = 0.0
+    net_evidence_trust: float = 0.0
+    active_support_count: int = 0
+    active_opposition_count: int = 0
+    support_sources: list[dict[str, Any]] = Field(default_factory=list)
+    opposition_sources: list[dict[str, Any]] = Field(default_factory=list)
 
     model_config = ConfigDict(from_attributes=True)
 
@@ -183,8 +206,8 @@ class ChatResponse(BaseModel):
 
 class IngestResponse(BaseModel):
     extracted_claims: list[ExtractedClaim]
-    staged_commit_id: str
-    staged_status: str = "pending"
+    staged_commit_id: str | None = None
+    staged_status: str | None = None
     review_required: bool = False
     memory_updated: bool
     created_commit_id: int | None
@@ -215,6 +238,13 @@ class StagedCommitRead(BaseModel):
     review_required: bool
     risk_reasons: list[str]
     warnings_json: list[str]
+    latest_check_run_id: int | None = None
+    checked_at: datetime | None = None
+    quarantined_at: datetime | None = None
+    quarantine_reason_summary: str | None = None
+    quarantine_release_status: str | None = None
+    quarantine_reviewer: str | None = None
+    quarantine_notes: str | None = None
     reviewer: str | None
     review_notes: str | None
     applied_commit_id: int | None
@@ -233,6 +263,51 @@ class StagedReviewRequest(BaseModel):
 class StagedRejectRequest(BaseModel):
     reviewer: str = "user"
     notes: str | None = None
+
+
+class MemoryCheckRunRead(BaseModel):
+    id: int
+    staged_commit_id: str
+    suite_version: str
+    overall_status: str
+    decision: str
+    score: float | None
+    metadata_json: dict[str, Any]
+    created_at: datetime
+    completed_at: datetime | None
+
+    model_config = ConfigDict(from_attributes=True)
+
+
+class MemoryCheckResultRead(BaseModel):
+    id: int
+    run_id: int
+    check_name: str
+    severity: str
+    passed: bool
+    reason_code: str
+    message: str
+    payload_json: dict[str, Any]
+    created_at: datetime
+
+    model_config = ConfigDict(from_attributes=True)
+
+
+class MemoryCheckReport(BaseModel):
+    staged_commit: StagedCommitRead
+    run: MemoryCheckRunRead | None
+    results: list[MemoryCheckResultRead] = Field(default_factory=list)
+
+
+class QuarantineReleaseRequest(BaseModel):
+    reviewer: str = "user"
+    notes: str
+
+
+class QuarantineApproveRequest(BaseModel):
+    reviewer: str = "user"
+    notes: str
+    commit_message: str | None = None
 
 
 class CommitResultRead(BaseModel):

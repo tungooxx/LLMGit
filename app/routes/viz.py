@@ -34,6 +34,10 @@ def visualization_data(db: Session = Depends(get_db)) -> dict[str, Any]:
     )
     staged = list(db.scalars(select(models.StagedCommit).order_by(models.StagedCommit.created_at.desc()).limit(30)))
     audit = list(db.scalars(select(models.AuditEvent).order_by(models.AuditEvent.id.desc()).limit(40)))
+    check_runs = {
+        run.id: run
+        for run in db.scalars(select(models.MemoryCheckRun).order_by(models.MemoryCheckRun.id.desc()).limit(80))
+    }
     sources = {
         source.id: source
         for source in db.scalars(select(models.Source).order_by(models.Source.id))
@@ -58,6 +62,7 @@ def visualization_data(db: Session = Depends(get_db)) -> dict[str, Any]:
             "beliefs": len(beliefs),
             "versions": len(versions),
             "staged": len(staged),
+            "quarantined": sum(1 for item in staged if item.status == "quarantined"),
             "active_versions": len(active_versions),
             "conflict_versions": len(conflict_versions),
             "audit_events": len(audit),
@@ -104,6 +109,16 @@ def visualization_data(db: Session = Depends(get_db)) -> dict[str, Any]:
                 "source_ref": item.source_ref,
                 "source_trust_score": item.source_trust_score,
                 "applied_commit_id": item.applied_commit_id,
+                "latest_check_run_id": item.latest_check_run_id,
+                "check_overall_status": check_runs[item.latest_check_run_id].overall_status
+                if item.latest_check_run_id in check_runs
+                else None,
+                "check_decision": check_runs[item.latest_check_run_id].decision
+                if item.latest_check_run_id in check_runs
+                else None,
+                "quarantined_at": _iso(item.quarantined_at),
+                "quarantine_reason_summary": item.quarantine_reason_summary,
+                "quarantine_release_status": item.quarantine_release_status,
                 "created_at": _iso(item.created_at),
             }
             for item in staged
@@ -358,7 +373,7 @@ _HTML = """
     <section class="metrics" id="metrics"></section>
     <section class="pipeline">
       <div class="step"><b>Extract</b><small>Claims enter as normalized subject, predicate, object records.</small></div>
-      <div class="step"><b>Stage</b><small>Risk gates keep proposed writes reviewable before commit.</small></div>
+      <div class="step"><b>Memory CI</b><small>Deterministic checks route writes to pass, review, or quarantine.</small></div>
       <div class="step"><b>Approve</b><small>Reviewed staged commits become deterministic memory operations.</small></div>
       <div class="step"><b>Version</b><small>Belief versions preserve supersession, branch, rollback, and source lineage.</small></div>
       <div class="step"><b>Audit</b><small>Every durable operation is visible in the append-only event log.</small></div>
@@ -411,6 +426,7 @@ _HTML = """
     const metricLabels = [
       ["branches", "Branches"],
       ["staged", "Staged"],
+      ["quarantined", "Quarantined"],
       ["commits", "Commits"],
       ["beliefs", "Beliefs"],
       ["active_versions", "Active versions"],
@@ -462,9 +478,9 @@ _HTML = """
       document.getElementById("staged").innerHTML = rows.map(row => `
         <tr>
           <td>${escapeHtml(row.id.slice(0, 8))}</td>
-          <td><span class="pill">${escapeHtml(row.status)}</span></td>
+          <td><span class="pill">${escapeHtml(row.status)}</span><br><span class="muted">${escapeHtml(row.check_overall_status || "not checked")} / ${escapeHtml(row.check_decision || "none")}</span></td>
           <td>${escapeHtml(row.branch_name)}</td>
-          <td>${row.review_required ? "required" : "optional"}<br><span class="muted">${escapeHtml((row.risk_reasons || []).join(", "))}</span></td>
+          <td>${row.review_required ? "required" : "optional"}<br><span class="muted">${escapeHtml(row.quarantine_reason_summary || (row.risk_reasons || []).join(", "))}</span></td>
           <td>${escapeHtml(row.source_ref || "inline")}<br><span class="muted">trust ${formatTrust(row.source_trust_score)}</span></td>
         </tr>
       `).join("") || `<tr><td colspan="5" class="muted">No staged writes.</td></tr>`;

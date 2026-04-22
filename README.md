@@ -12,7 +12,12 @@ flowchart LR
     API --> LLM[OpenAI Responses API]
     LLM -->|structured claims/tool calls| API
     API --> Tools[Validated Tool Registry]
-    Tools --> CommitEngine[Commit Engine]
+    Tools --> Stage[Durable Staged Commit]
+    Stage --> MemoryCI[Memory CI Checks]
+    MemoryCI -->|pass| CommitEngine[Commit Engine]
+    MemoryCI -->|warn| Review[Human Review]
+    MemoryCI -->|fail| Quarantine[Quarantine Queue]
+    Review --> CommitEngine
     CommitEngine --> ConflictEngine[Conflict Engine]
     CommitEngine --> DB[(SQLite TruthGit Store)]
     DB --> API
@@ -32,14 +37,54 @@ TruthGit has two memory layers:
 - `Commit`: version-control operation such as add, update, merge, rollback, or retract.
 - `Belief`: stable subject+predicate identity, using `canonical_key`.
 - `BeliefVersion`: the actual claim object, confidence, temporal window, status, source, lineage, contradiction group, and metadata.
-- `StagedCommit`: reviewable proposed memory write containing extracted claims, source metadata, risk reasons, reviewer notes, and the applied commit id once approved.
+- `BeliefVersionSourceLink`: support/opposition graph edges connecting each belief version to all sources that currently support it, oppose it, were rolled back, or were superseded.
+- `StagedCommit`: reviewable proposed memory write containing extracted claims, source metadata, lifecycle status, risk reasons, latest CI run, quarantine fields, reviewer notes, and the applied commit id once approved.
+- `MemoryCheckRun`: one durable Memory CI execution against a staged commit, with suite version, pass/warn/fail status, deterministic decision, score, timestamps, and metadata.
+- `MemoryCheckResult`: one named check result in a CI run, including severity, pass/fail bit, reason code, message, payload, and timestamp.
 - `AuditEvent`: append-only operation log with integer `entity_id` plus optional string `entity_key` for UUID-backed entities such as staged commits.
 
 ## Belief Versioning
 
 If Alice lives in Seoul and a later supported claim says Alice moved to Busan in March 2026, TruthGit does not overwrite the old belief. It creates a new `BeliefVersion`, marks the old one `superseded`, and links the new version through `supersedes_version_id`.
 
-Memory writes are reviewable. `/chat` and `/ingest` persist extracted claims as staged commits first. Low-risk staged writes may auto-apply when `auto_commit=true`; low-trust sources, low-confidence claims, and important predicates such as `lives_in` or `works_at` require explicit approval.
+Memory writes are model-proposed and CI-governed. The LLM returns a structured `MemoryWritePlan` with open predicates, branch name, trust score, `write_action`, risk reasons, warnings, and a short assistant reply. Python validates the shape and always creates a durable staged commit before mutation. Memory CI then routes the proposal:
+
+- `PASS`: low-risk write can auto-apply when `auto_commit=true`;
+- `WARN`: write becomes `review_required` and needs reviewer approval;
+- `FAIL`: write becomes `quarantined` and cannot become active truth until release, rejection, or explicit override;
+- `REJECT`: invalid proposal is recorded and rejected without belief mutation.
+
+The LLM still cannot write raw SQL or bypass deterministic validation.
+
+## Memory CI/CD And Quarantine
+
+TruthGit treats proposed memory writes like code going through CI. The initial check suite is deterministic and repo-local:
+
+- low-trust source check;
+- protected predicate review check;
+- contradiction spike check;
+- temporal overlap check;
+- branch leakage risk check;
+- rollback regression check;
+- suspicious same-object corroboration check;
+- merge conflict policy check;
+- duplicate source anomaly check;
+- support gap check.
+
+Checks are registered through a policy/config layer rather than embedded as one-off conditionals. Predicate policy classes such as `low_risk`, `identity_state`, `financial`, and `operational_deadline` define trust thresholds, review requirements, support-count expectations, and branch-leakage sensitivity. Predicates remain model-generated open labels; the deterministic layer maps them into policy classes by generic exact/regex rules, not benchmark IDs.
+
+Quarantine is not a boolean flag. It is a durable lifecycle state on `StagedCommit` with timestamps, reason summary, release status, reviewer, notes, CI run records, per-check results, and audit events. Quarantined items remain visible through `/quarantine`, `/viz`, `/demo`, and `/audit`, but they do not create active belief versions unless a reviewer explicitly releases or overrides them.
+
+## Support-Set Truth Maintenance
+
+TruthGit now tracks provenance as a source graph, not only as one winning `source_id`. Every belief version has:
+
+- active support sources that currently justify the belief
+- opposition sources that contradict it
+- rolled-back sources that no longer justify it
+- superseded opposition sources that remain historical but no longer govern current truth
+
+Same-object corroboration no longer creates a redundant replacement version. It adds another active support edge to the existing version. Rolling back that corroborating commit removes only that support edge; the belief remains active if other support sources still justify it. Conflicting claims add opposition edges in both directions, while branch-only hypothetical opposition does not weaken main-branch truth. Current truth ranking uses the evolving support graph rather than trusting one retrieved record directly.
 
 ```mermaid
 gitGraph
@@ -73,6 +118,28 @@ Run tests:
 pytest
 ```
 
+Run the governance benchmark extension:
+
+```powershell
+python -m experiments.governance_benchmark --output-dir experiments/results
+```
+
+This writes:
+
+- `experiments/results/governance_benchmark_results.json`
+- `experiments/results/governance_metric_summary.csv`
+- `experiments/results/governance_case_results.csv`
+- `experiments/results/governance_routing_counts.csv`
+- `experiments/results/governance_quarantine_metrics.png`
+
+Run the qualitative Memory CI/CD case study:
+
+```powershell
+python -m experiments.memory_ci_case_study --output experiments/results/memory_ci_case_study.json
+```
+
+The narrative is documented in `docs/case_study_memory_ci_quarantine.md`.
+
 Run the demo seed script:
 
 ```powershell
@@ -93,7 +160,7 @@ Open the professor demo UI:
 start http://127.0.0.1:8000/demo
 ```
 
-`/demo` plays the changing-world benchmark as a live event stream, shows TruthGit metric cards as questions are scored, and includes a manual prompt panel for staging, approving, superseding, branching, and rolling back beliefs during a live walkthrough.
+`/demo` provides a professor-facing chat panel and live git-style memory graph. It shows extraction, staging, model commit/review/reject decisions, supersession, branch-local beliefs, rollback, staged writes, and audit entries as prompts are sent.
 
 ## Example API Calls
 
@@ -109,17 +176,17 @@ Sample response:
 
 ```json
 {
-  "answer": "Staged 1 claim(s) for review as 64cf... TruthGit memory was not updated yet.",
+  "answer": "Okay, I'll remember that in TruthGit memory. Staged 1 claim(s) as 64cf...",
   "memory_updated": false,
   "created_commit_id": null,
   "staged_commit_id": "64cf...",
   "review_required": true,
   "branch": {"id": 1, "name": "main", "status": "active"},
-  "warnings": ["Important predicate 'lives_in' requires review."]
+  "warnings": ["Protected predicates require review before automatic durable truth updates."]
 }
 ```
 
-Approve the staged write:
+If the model returns `stage_for_review`, approve the staged write:
 
 ```powershell
 curl -X POST http://127.0.0.1:8000/staged/64cf.../approve `
@@ -139,14 +206,27 @@ Sample response:
 
 ```json
 {
-  "answer": "Staged 1 claim(s) for review as 91ad... TruthGit memory was not updated yet.",
-  "memory_updated": false,
+  "answer": "Recorded: Alice lives_in Busan as version 2 on branch 'main', superseding version 1.",
+  "memory_updated": true,
+  "created_commit_id": 2,
   "staged_commit_id": "91ad...",
-  "review_required": true
+  "review_required": false
 }
 ```
 
-After approval, the applied commit records Busan as a new belief version that supersedes Seoul.
+Inspect CI results:
+
+```powershell
+curl "http://127.0.0.1:8000/staged/64cf.../checks"
+```
+
+Quarantined low-trust or unsafe writes are visible here:
+
+```powershell
+curl "http://127.0.0.1:8000/quarantine"
+```
+
+The applied commit records Busan as a new belief version that supersedes Seoul.
 
 ### 3. Query Active Truth
 
@@ -228,7 +308,7 @@ RAG usually answers from retrieved chunks and leaves truth state implicit. Truth
 
 ## Changing-World Benchmark V3
 
-The `experiments/` package adds a deterministic synthetic benchmark for research comparisons. Benchmark v3 phase 2 generates 86 changing-world cases and 161 structured questions with:
+The `experiments/` package adds a deterministic synthetic benchmark for research comparisons. Benchmark v4 generates 94 changing-world cases and 171 structured questions with:
 
 - superseded facts
 - conflicting sources
@@ -241,6 +321,7 @@ The `experiments/` package adds a deterministic synthetic benchmark for research
 - harder temporal supersession chains
 - exact source-tracking questions
 - multiple-source current-justification questions
+- exact active support-set questions
 - rollback-cleaned provenance questions
 - branch-specific provenance questions
 - unresolved/manual-review merge questions
@@ -249,13 +330,17 @@ The `experiments/` package adds a deterministic synthetic benchmark for research
 - two-competing-branch merge questions
 - temporal coexistence merge questions
 
-Run the first paper table with one backbone label, `gpt-4o-mini`:
+Run the structural memory correctness table:
 
 ```powershell
 python -m experiments.run_benchmark `
   --output-dir experiments\results `
   --backbone gpt-4o-mini
 ```
+
+`--backbone` is a metadata label in this structural runner. The loop is deterministic:
+each system ingests events, its adapter answers structured questions, and the scorer
+checks exact state fields. This table is not a live LLM reasoning result.
 
 Run the ablation table:
 
@@ -273,6 +358,34 @@ This writes:
 - `experiments/results/question_scores.csv`
 - `experiments/results/predictions.csv`
 
+Run the separate model-in-the-loop table, where every system exposes retrieved
+memory context and the same reader model parses that context into a structured
+answer:
+
+```powershell
+$env:OPENAI_API_KEY = "..."
+$env:OPENAI_MODEL = "gpt-4o-mini"
+python -m experiments.reader_benchmark `
+  --output-dir experiments\results `
+  --reader openai `
+  --reader-model gpt-4o-mini
+```
+
+For no-network smoke tests of the runner itself:
+
+```powershell
+python -m experiments.reader_benchmark `
+  --output-dir experiments\results `
+  --reader heuristic
+```
+
+This writes:
+
+- `experiments/results/reader_benchmark_results.json`
+- `experiments/results/reader_metric_summary.csv`
+- `experiments/results/reader_question_scores.csv`
+- `experiments/results/reader_predictions.csv`
+
 Plot the metric summary:
 
 ```powershell
@@ -281,7 +394,7 @@ python -m experiments.plot_results `
   --output-png experiments\results\metric_summary.png
 ```
 
-The frozen paper draft for the final Benchmark v3 phase 2 table is in `docs/paper_draft.md`.
+The frozen paper draft for the final Benchmark v4 support/CI table is in `docs/paper_draft.md`.
 The final reproducibility pack is in `RESULTS.md`; it locks the benchmark version, backbone label, prompt template, benchmark logic commit, expected result files, and figure paths.
 LongMemEval is added as the first public benchmark track in `docs/public_benchmarks/longmemeval.md`; it is supplementary and does not change the frozen TruthGit main table.
 
@@ -350,6 +463,7 @@ Metrics:
 - `branch_isolation_score`
 - `merge_conflict_resolution_score`
 - `low_trust_warning_rate`
+- `support_set_accuracy`
 
 ## Paper-Oriented Notes
 
@@ -363,24 +477,24 @@ The synthetic benchmark feeds each system the same sequence of world-changing ev
 
 TruthGit is evaluated through its real deterministic service layer: `Source`, `Branch`, `Commit`, `Belief`, `BeliefVersion`, and `AuditEvent` records are created in SQLite, and answers are read from active branch state or lineage history. Baselines keep simplified in-memory records so the comparison isolates the value of version-control semantics.
 
-### Current Benchmark Interpretation
+### Structural Benchmark Interpretation
 
-The current table uses `gpt-4o-mini` as the backbone label and deterministic benchmark adapters for all memory systems. The strongest result is structural: TruthGit reaches 1.0 on current truth, exact ordered history, exact current provenance, rollback recovery, branch isolation, low-trust warning, and merge conflict resolution, while the flat and RAG baselines fail the columns that require explicit version-control state.
+The current table uses deterministic benchmark adapters for all memory systems. The strongest result is structural: TruthGit reaches 1.0 on current truth, exact ordered history, exact current provenance, rollback recovery, branch isolation, low-trust warning, and merge conflict resolution, while the flat and RAG baselines fail the columns that require explicit version-control state. This should be described as a structural memory correctness benchmark, not as a broad live LLM benchmark.
 
-| System | Current | History | Provenance | Rollback | Branch | Merge | Low-trust |
-| --- | ---: | ---: | ---: | ---: | ---: | ---: | ---: |
-| naive chat history | 0.545 | 0.545 | 0.661 | 0.000 | 0.500 | 0.400 | 0.000 |
-| simple RAG | 1.000 | 0.545 | 0.729 | 0.000 | 0.500 | 0.350 | 0.000 |
-| embedding RAG | 1.000 | 0.273 | 0.729 | 0.000 | 0.500 | 0.400 | 0.000 |
-| TruthGit | 1.000 | 1.000 | 1.000 | 1.000 | 1.000 | 1.000 | 1.000 |
+| System | Current | History | Provenance | Rollback | Branch | Merge | Low-trust | Support set |
+| --- | ---: | ---: | ---: | ---: | ---: | ---: | ---: | ---: |
+| naive chat history | 0.545 | 0.545 | 0.661 | 0.000 | 0.500 | 0.400 | 0.000 | 0.400 |
+| simple RAG | 1.000 | 0.545 | 0.729 | 0.000 | 0.500 | 0.350 | 0.000 | 0.600 |
+| embedding RAG | 1.000 | 0.273 | 0.729 | 0.000 | 0.500 | 0.400 | 0.000 | 0.600 |
+| TruthGit | 1.000 | 1.000 | 1.000 | 1.000 | 1.000 | 1.000 | 1.000 | 1.000 |
 
-Benchmark v3 phase 2 makes provenance discriminative. The generator now includes same-object corroboration, rollback-invalidated sources, branch-specific current sources, and merge-governing sources. TruthGit handles these by making stronger same-object corroboration a versioned provenance update instead of treating it as a no-op duplicate.
+Benchmark v4 makes provenance and support sets discriminative. The generator now includes same-object corroboration, rollback-invalidated sources, branch-specific current sources, merge-governing sources, exact active support-source questions, branch-scoped support, and opposition exclusion. TruthGit handles these through support-set truth maintenance: corroborating sources become active support edges, rolled-back sources lose active support status, branch-local support is scoped by branch ancestry, and weaker contradictory sources remain opposition rather than silently replacing the governing source.
 
 The merge column is also more discriminative. Resolved high-trust branch merges, unresolved manual-review merges, concurrent main-vs-branch updates, two competing branches, and temporal coexistence cases are scored. Flat baselines can sometimes return the right object, but they cannot mark concurrent branch-vs-main changes as unresolved conflicts or answer time-sliced merge questions because they do not maintain branch-local lineage, contradiction groups, or temporal validity windows.
 
 ### Limitations
 
-The benchmark is synthetic and still much smaller than a deployed agent workload. It measures structured memory correctness rather than full natural-language response quality. The embedding baseline is local TF-IDF rather than a production neural retriever with reranking and temporal post-processing. TruthGit still uses hand-written conflict and merge policies rather than learned or probabilistic trust calibration. Same-object corroboration is currently represented by a new governing belief version, while a fuller system should retain all corroborating sources as a support set.
+The benchmark is synthetic and still much smaller than a deployed agent workload. It measures structured memory correctness rather than full natural-language response quality. The embedding baseline is local TF-IDF rather than a production neural retriever with reranking and temporal post-processing. TruthGit still uses hand-written conflict and merge policies rather than learned or probabilistic trust calibration. Support-set truth maintenance is deterministic and auditable, but it is not yet a full probabilistic truth-maintenance system with calibrated source independence.
 
 ### Future Work
 

@@ -19,6 +19,7 @@ def test_default_benchmark_covers_required_metrics() -> None:
     assert "branch_isolation_score" in metrics
     assert "merge_conflict_resolution_score" in metrics
     assert "low_trust_warning_rate" in metrics
+    assert "support_set_accuracy" in metrics
     time_slice_questions = [
         question
         for case in cases
@@ -49,6 +50,7 @@ def test_default_benchmark_covers_required_metrics() -> None:
     assert len(unresolved_merge_questions) >= 9
     assert branch_provenance_questions
     assert rollback_provenance_questions
+    assert sum(1 for case in cases for question in case.questions if question.metric == "support_set_accuracy") >= 10
     assert sum(1 for case in cases for question in case.questions if question.metric == "provenance_accuracy") >= 50
 
 
@@ -62,6 +64,8 @@ def test_benchmark_run_exports_all_system_scores() -> None:
     assert len(results["predictions"]) == question_count * 4
     assert len(results["question_scores"]) == question_count * 4
     assert results["metadata"]["backbone"] == BACKBONE
+    assert results["metadata"]["evaluation_mode"] == "structural_memory_correctness"
+    assert "does not call an LLM reader" in results["metadata"]["backbone_note"]
     assert results["metadata"]["benchmark_version"] == BENCHMARK_VERSION
     assert results["metadata"]["prompt_template_path"] == PROMPT_TEMPLATE_PATH.as_posix()
     assert isinstance(results["metadata"]["prompt_template_sha256"], str)
@@ -163,6 +167,36 @@ def test_merge_scoring_supports_unresolved_conflicts() -> None:
     ) == 0.0
 
 
+def test_support_set_scoring_requires_exact_active_sources() -> None:
+    question = next(
+        question
+        for case in default_benchmark()
+        for question in case.questions
+        if question.question_id == "support-set-joint-00-support-set"
+    )
+
+    assert score_answer(
+        question,
+        SystemAnswer(
+            question_id=question.question_id,
+            system_name="test",
+            answer_text="",
+            object_value=question.expected_object_value,
+            support_source_refs=list(reversed(question.expected_support_source_refs)),
+        ),
+    ) == 1.0
+    assert score_answer(
+        question,
+        SystemAnswer(
+            question_id=question.question_id,
+            system_name="test",
+            answer_text="",
+            object_value=question.expected_object_value,
+            support_source_refs=[question.expected_support_source_refs[0]],
+        ),
+    ) == 0.0
+
+
 def test_truthgit_scores_branch_and_rollback() -> None:
     results = run_benchmark(default_benchmark())
     summary = aggregate_scores(
@@ -181,3 +215,4 @@ def test_truthgit_scores_branch_and_rollback() -> None:
     assert truthgit["rollback_recovery_rate"] == 1.0
     assert truthgit["provenance_accuracy"] == 1.0
     assert truthgit["merge_conflict_resolution_score"] == 1.0
+    assert truthgit["support_set_accuracy"] == 1.0

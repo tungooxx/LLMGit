@@ -99,6 +99,27 @@ class BeliefVersion(Base):
     created_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), default=utc_now)
 
 
+class BeliefVersionSourceLink(Base):
+    """Support or opposition edge between a belief version and a provenance source."""
+
+    __tablename__ = "belief_version_source_links"
+    __table_args__ = (
+        Index("ix_belief_source_links_version_relation", "belief_version_id", "relation_type", "status"),
+        Index("ix_belief_source_links_source_relation", "source_id", "relation_type", "status"),
+    )
+
+    id: Mapped[int] = mapped_column(primary_key=True)
+    belief_version_id: Mapped[int] = mapped_column(ForeignKey("belief_versions.id"), index=True)
+    source_id: Mapped[int] = mapped_column(ForeignKey("sources.id"), index=True)
+    commit_id: Mapped[int | None] = mapped_column(ForeignKey("commits.id"), nullable=True, index=True)
+    relation_type: Mapped[str] = mapped_column(String(30), index=True)
+    status: Mapped[str] = mapped_column(String(30), default="active", index=True)
+    removed_by_commit_id: Mapped[int | None] = mapped_column(ForeignKey("commits.id"), nullable=True, index=True)
+    reason: Mapped[str | None] = mapped_column(Text, nullable=True)
+    metadata_json: Mapped[dict[str, Any]] = mapped_column(JSON, default=dict)
+    created_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), default=utc_now)
+
+
 class StagedCommit(Base):
     """Durable review queue entry for proposed belief-memory writes."""
 
@@ -106,7 +127,7 @@ class StagedCommit(Base):
 
     id: Mapped[str] = mapped_column(String(36), primary_key=True)
     branch_id: Mapped[int] = mapped_column(ForeignKey("branches.id"), index=True)
-    status: Mapped[str] = mapped_column(String(30), default="pending", index=True)
+    status: Mapped[str] = mapped_column(String(30), default="proposed", index=True)
     claims_json: Mapped[list[dict[str, Any]]] = mapped_column(JSON, default=list)
     source_type: Mapped[str] = mapped_column(String(50))
     source_ref: Mapped[str | None] = mapped_column(String(500), nullable=True)
@@ -118,11 +139,57 @@ class StagedCommit(Base):
     review_required: Mapped[bool] = mapped_column(Boolean, default=False)
     risk_reasons: Mapped[list[str]] = mapped_column(JSON, default=list)
     warnings_json: Mapped[list[str]] = mapped_column(JSON, default=list)
+    latest_check_run_id: Mapped[int | None] = mapped_column(nullable=True, index=True)
+    checked_at: Mapped[datetime | None] = mapped_column(DateTime(timezone=True), nullable=True)
+    quarantined_at: Mapped[datetime | None] = mapped_column(DateTime(timezone=True), nullable=True)
+    quarantine_reason_summary: Mapped[str | None] = mapped_column(Text, nullable=True)
+    quarantine_release_status: Mapped[str | None] = mapped_column(String(30), nullable=True)
+    quarantine_reviewer: Mapped[str | None] = mapped_column(String(80), nullable=True)
+    quarantine_notes: Mapped[str | None] = mapped_column(Text, nullable=True)
     reviewer: Mapped[str | None] = mapped_column(String(80), nullable=True)
     review_notes: Mapped[str | None] = mapped_column(Text, nullable=True)
     applied_commit_id: Mapped[int | None] = mapped_column(ForeignKey("commits.id"), nullable=True, index=True)
     created_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), default=utc_now)
     reviewed_at: Mapped[datetime | None] = mapped_column(DateTime(timezone=True), nullable=True)
+
+
+class MemoryCheckRun(Base):
+    """One deterministic Memory CI execution against a staged commit."""
+
+    __tablename__ = "memory_check_runs"
+    __table_args__ = (
+        Index("ix_memory_check_runs_staged_status", "staged_commit_id", "overall_status"),
+    )
+
+    id: Mapped[int] = mapped_column(primary_key=True)
+    staged_commit_id: Mapped[str] = mapped_column(ForeignKey("staged_commits.id"), index=True)
+    suite_version: Mapped[str] = mapped_column(String(80))
+    overall_status: Mapped[str] = mapped_column(String(30), index=True)
+    decision: Mapped[str] = mapped_column(String(30), index=True)
+    score: Mapped[float | None] = mapped_column(Float, nullable=True)
+    metadata_json: Mapped[dict[str, Any]] = mapped_column(JSON, default=dict)
+    created_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), default=utc_now)
+    completed_at: Mapped[datetime | None] = mapped_column(DateTime(timezone=True), nullable=True)
+
+
+class MemoryCheckResult(Base):
+    """One named Memory CI check outcome."""
+
+    __tablename__ = "memory_check_results"
+    __table_args__ = (
+        Index("ix_memory_check_results_run_check", "run_id", "check_name"),
+        Index("ix_memory_check_results_severity_passed", "severity", "passed"),
+    )
+
+    id: Mapped[int] = mapped_column(primary_key=True)
+    run_id: Mapped[int] = mapped_column(ForeignKey("memory_check_runs.id"), index=True)
+    check_name: Mapped[str] = mapped_column(String(120), index=True)
+    severity: Mapped[str] = mapped_column(String(20), index=True)
+    passed: Mapped[bool] = mapped_column(Boolean)
+    reason_code: Mapped[str] = mapped_column(String(120))
+    message: Mapped[str] = mapped_column(Text)
+    payload_json: Mapped[dict[str, Any]] = mapped_column(JSON, default=dict)
+    created_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), default=utc_now)
 
 
 class AuditEvent(Base):

@@ -10,7 +10,7 @@ from sqlalchemy.orm import Session
 
 from app import crud, models
 from app.conflict_engine import classify_claim_against_current
-from app.normalization import NormalizedClaim
+from app.normalization import NormalizedClaim, windows_overlap
 
 
 @dataclass
@@ -20,6 +20,7 @@ class CommitResult:
     commit: models.Commit
     introduced_versions: list[models.BeliefVersion] = field(default_factory=list)
     restored_versions: list[models.BeliefVersion] = field(default_factory=list)
+    source_links: list[models.BeliefVersionSourceLink] = field(default_factory=list)
     warnings: list[str] = field(default_factory=list)
 
 
@@ -127,6 +128,57 @@ def _merge_metadata(base: dict[str, Any], extra: dict[str, Any] | None) -> dict[
     return merged
 
 
+def _same_object_current_versions(
+    current_versions: list[models.BeliefVersion],
+    claim: NormalizedClaim,
+) -> list[models.BeliefVersion]:
+    return [
+        version
+        for version in current_versions
+        if version.normalized_object_value == claim.normalized_object_value
+        and windows_overlap(version.valid_from, version.valid_to, claim.valid_from, claim.valid_to)
+    ]
+
+
+def _conflicting_current_versions(
+    current_versions: list[models.BeliefVersion],
+    claim: NormalizedClaim,
+) -> list[models.BeliefVersion]:
+    return [
+        version
+        for version in current_versions
+        if version.normalized_object_value != claim.normalized_object_value
+        and windows_overlap(version.valid_from, version.valid_to, claim.valid_from, claim.valid_to)
+    ]
+
+
+def _support_source_ids(db: Session, version: models.BeliefVersion) -> list[int]:
+    links = crud.active_support_links(db, version.id)
+    if not links:
+        return [version.source_id]
+    return [link.source_id for link in links]
+
+
+def _mark_links_removed(
+    db: Session,
+    *,
+    belief_version_id: int,
+    removed_by_commit_id: int,
+    status: str,
+    reason: str,
+) -> list[models.BeliefVersionSourceLink]:
+    links = crud.list_belief_source_links(db, belief_version_id=belief_version_id)
+    changed: list[models.BeliefVersionSourceLink] = []
+    for link in links:
+        if link.status != "active":
+            continue
+        link.status = status
+        link.removed_by_commit_id = removed_by_commit_id
+        link.reason = reason if link.reason is None else f"{link.reason}; {reason}"
+        changed.append(link)
+    return changed
+
+
 def _apply_claim_to_commit(
     db: Session,
     *,
@@ -149,12 +201,26 @@ def _apply_claim_to_commit(
         branch_is_hypothetical=branch_is_hypothetical,
     )
     warnings = list(decision.warnings)
-    if source.trust_score < 0.4:
-        warnings.append("Low-trust source was used; review before relying on this belief.")
-    if decision.action == "duplicate":
+    same_object_versions = _same_object_current_versions(current_versions, claim)
+    if decision.action in {"duplicate", "corroborate"} and same_object_versions:
+        for target in same_object_versions:
+            crud.add_belief_source_link(
+                db,
+                belief_version_id=target.id,
+                source_id=source.id,
+                relation_type="support",
+                commit_id=commit.id,
+                reason=f"{decision.action} source for same belief value",
+                metadata={"claim_confidence": claim.confidence, "source_quote": claim.source_quote},
+            )
+            target.metadata_json = _merge_metadata(
+                target.metadata_json,
+                {"support_graph_updated_by_commit_id": commit.id},
+            )
         return None, warnings
 
     supersedes_id = decision.supersede_version_ids[0] if decision.supersede_version_ids else None
+    conflicting_versions = _conflicting_current_versions(current_versions, claim)
     for version in current_versions:
         if version.id in decision.supersede_version_ids and version.branch_id == branch.id:
             version.status = "superseded"
@@ -193,6 +259,37 @@ def _apply_claim_to_commit(
     )
     db.add(version)
     db.flush()
+    crud.add_belief_source_link(
+        db,
+        belief_version_id=version.id,
+        source_id=source.id,
+        relation_type="support",
+        commit_id=commit.id,
+        reason="introduced belief version",
+        metadata={"claim_confidence": claim.confidence, "source_quote": claim.source_quote},
+    )
+    for conflicting in conflicting_versions:
+        if not (branch_is_hypothetical and conflicting.branch_id != branch.id):
+            crud.add_belief_source_link(
+                db,
+                belief_version_id=conflicting.id,
+                source_id=source.id,
+                relation_type="opposition",
+                commit_id=commit.id,
+                reason=f"contradicted by belief version {version.id}",
+                metadata={"opposing_belief_version_id": version.id},
+            )
+        for opposing_source_id in _support_source_ids(db, conflicting):
+            crud.add_belief_source_link(
+                db,
+                belief_version_id=version.id,
+                source_id=opposing_source_id,
+                relation_type="opposition",
+                commit_id=commit.id,
+                status="superseded" if conflicting.id in decision.supersede_version_ids else "active",
+                reason=f"opposes existing belief version {conflicting.id}",
+                metadata={"opposing_belief_version_id": conflicting.id},
+            )
     crud.add_audit_event(
         db,
         event_type="belief_version.created",
@@ -271,6 +368,13 @@ def retract_version(
     )
     version.status = "retracted"
     version.metadata_json = _merge_metadata(version.metadata_json, {"retracted_by_commit_id": commit.id})
+    _mark_links_removed(
+        db,
+        belief_version_id=version.id,
+        removed_by_commit_id=commit.id,
+        status="removed",
+        reason="belief version retracted",
+    )
     crud.add_audit_event(
         db,
         event_type="belief_version.retracted",
@@ -315,6 +419,13 @@ def rollback_commit(
                 version.metadata_json,
                 {"rolled_back_by_commit_id": rollback.id},
             )
+            _mark_links_removed(
+                db,
+                belief_version_id=version.id,
+                removed_by_commit_id=rollback.id,
+                status="rolled_back",
+                reason=f"source links rolled back with commit {target.id}",
+            )
             result.introduced_versions.append(version)
         if version.supersedes_version_id is None:
             continue
@@ -339,6 +450,39 @@ def rollback_commit(
                     {"restored_by_rollback_commit_id": rollback.id},
                 )
                 result.restored_versions.append(previous)
+    added_links = list(
+        db.scalars(
+            select(models.BeliefVersionSourceLink)
+            .where(
+                models.BeliefVersionSourceLink.commit_id == target.id,
+                models.BeliefVersionSourceLink.status == "active",
+            )
+            .order_by(models.BeliefVersionSourceLink.id)
+        )
+    )
+    for link in added_links:
+        link.status = "rolled_back"
+        link.removed_by_commit_id = rollback.id
+        link.reason = (
+            f"{link.reason}; rolled back with commit {target.id}"
+            if link.reason
+            else f"rolled back with commit {target.id}"
+        )
+        result.source_links.append(link)
+        linked_version = db.get(models.BeliefVersion, link.belief_version_id)
+        if (
+            linked_version is not None
+            and linked_version.commit_id != target.id
+            and link.relation_type == "support"
+            and linked_version.status in crud.CURRENT_STATUSES
+            and not crud.active_support_links(db, linked_version.id)
+        ):
+            linked_version.status = "retracted"
+            linked_version.metadata_json = _merge_metadata(
+                linked_version.metadata_json,
+                {"retracted_by_support_rollback_commit_id": rollback.id},
+            )
+            result.introduced_versions.append(linked_version)
     crud.add_audit_event(
         db,
         event_type="commit.rolled_back",
@@ -348,6 +492,7 @@ def rollback_commit(
             "rollback_commit_id": rollback.id,
             "retracted_version_ids": [version.id for version in result.introduced_versions],
             "restored_version_ids": [version.id for version in result.restored_versions],
+            "rolled_back_source_link_ids": [link.id for link in result.source_links],
         },
     )
     db.flush()

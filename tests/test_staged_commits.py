@@ -94,8 +94,9 @@ def test_staged_commit_audit_uses_entity_key(db_session) -> None:
         )
     )
 
-    assert [event.event_type for event in events] == [
-        "staged_commit.created",
-        "staged_commit.approved",
-    ]
+    event_types = [event.event_type for event in events]
+    assert "staged_commit.created" in event_types
+    assert "memory_ci.started" in event_types
+    assert "memory_ci.completed" in event_types
+    assert "staged_commit.approved" in event_types
     assert all(event.entity_id == 0 for event in events)

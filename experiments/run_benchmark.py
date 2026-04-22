@@ -1,4 +1,4 @@
-"""Run the changing-world memory benchmark and export JSON/CSV results."""
+"""Run the structural changing-world memory benchmark and export results."""
 
 from __future__ import annotations
 
@@ -25,7 +25,7 @@ def run_benchmark(
     include_ablations: bool = False,
     backbone: str = BACKBONE,
 ) -> dict[str, object]:
-    """Run all systems on all benchmark cases."""
+    """Run deterministic memory adapters on all benchmark cases."""
 
     all_questions: list[BenchmarkQuestion] = [
         question for case in cases for question in case.questions
@@ -57,7 +57,9 @@ def run_benchmark(
     return {
         "metadata": {
             "benchmark_version": BENCHMARK_VERSION,
+            "evaluation_mode": "structural_memory_correctness",
             "backbone": backbone,
+            "backbone_note": "Metadata label only; this structural runner does not call an LLM reader.",
             "prompt_template_path": PROMPT_TEMPLATE_PATH.as_posix(),
             "prompt_template_sha256": _sha256_file(PROMPT_TEMPLATE_PATH),
             "benchmark_logic_commit_sha": BENCHMARK_LOGIC_COMMIT_SHA,
@@ -108,7 +110,7 @@ def _sha256_file(path: Path) -> str:
 def main() -> None:
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("--output-dir", default="experiments/results")
-    parser.add_argument("--backbone", default=BACKBONE)
+    parser.add_argument("--backbone", default=BACKBONE, help="Metadata label only for the structural table.")
     parser.add_argument("--include-ablations", action="store_true")
     args = parser.parse_args()
     results = run_benchmark(
