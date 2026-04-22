@@ -6,15 +6,20 @@ This file freezes the final experiment setup for the TruthGit submission draft.
 
 | Item | Value |
 | --- | --- |
-| Benchmark version | `truthgit-benchmark-v3-phase2-final` |
+| Benchmark version | `truthgit-benchmark-v4-support-ci-final` |
 | Structural table backbone label | `gpt-4o-mini` metadata only |
-| Benchmark logic commit | `6b5e6d5478baa67eb0c767fcfad162d3a2b4919f` |
+| Benchmark logic commit | `pending-next-commit` |
 | Prompt template | `experiments/prompt_templates/final_answer_prompt.txt` |
 | Manifest | `experiments/results/final_manifest.json` |
 | Paper draft | `docs/paper_draft.md` |
 | Qualitative figure | `docs/figures/truthgit_qualitative_lineage.svg` |
 | Qualitative case study | `docs/case_study_project_assistant.md` |
 | Metric figure | `experiments/results/metric_summary.png` |
+| Governance result JSON | `experiments/results/governance_benchmark_results.json` |
+| Governance metric CSV | `experiments/results/governance_metric_summary.csv` |
+| Governance routing CSV | `experiments/results/governance_routing_counts.csv` |
+| Governance metric figure | `experiments/results/governance_quarantine_metrics.png` |
+| Memory CI case study JSON | `experiments/results/memory_ci_case_study.json` |
 
 The benchmark generator and scoring rules are frozen at this version. Do not change them unless an implementation bug is found. The main frozen table is a structural memory correctness benchmark, not a live LLM reasoning benchmark.
 
@@ -32,6 +37,8 @@ Equivalent individual commands:
 python -m compileall app experiments tests
 python -m pytest -q
 python -m experiments.run_benchmark --output-dir experiments/results --backbone gpt-4o-mini --include-ablations
+python -m experiments.governance_benchmark --output-dir experiments/results
+python -m experiments.memory_ci_case_study --output experiments/results/memory_ci_case_study.json
 python -m experiments.plot_results --summary-csv experiments/results/metric_summary.csv --output-png experiments/results/metric_summary.png
 python scripts/write_final_manifest.py
 ```
@@ -48,6 +55,12 @@ python -m experiments.reader_benchmark --output-dir experiments/results --reader
 - `experiments/results/metric_summary.csv`
 - `experiments/results/question_scores.csv`
 - `experiments/results/predictions.csv`
+- `experiments/results/governance_benchmark_results.json`
+- `experiments/results/governance_metric_summary.csv`
+- `experiments/results/governance_case_results.csv`
+- `experiments/results/governance_routing_counts.csv`
+- `experiments/results/governance_quarantine_metrics.png`
+- `experiments/results/memory_ci_case_study.json`
 - `experiments/results/reader_benchmark_results.json`
 - `experiments/results/reader_metric_summary.csv`
 - `experiments/results/reader_question_scores.csv`
@@ -106,16 +119,16 @@ Predicate labels are open model-generated relation names. The deterministic laye
 
 ## Structural Memory Correctness Table
 
-| System | Current | History | Provenance | Rollback | Branch | Merge | Low-trust |
-| --- | ---: | ---: | ---: | ---: | ---: | ---: | ---: |
-| naive chat history | 0.545 | 0.545 | 0.661 | 0.000 | 0.500 | 0.400 | 0.000 |
-| simple RAG | 1.000 | 0.545 | 0.729 | 0.000 | 0.500 | 0.350 | 0.000 |
-| embedding RAG | 1.000 | 0.273 | 0.729 | 0.000 | 0.500 | 0.400 | 0.000 |
-| TruthGit | 1.000 | 1.000 | 1.000 | 1.000 | 1.000 | 1.000 | 1.000 |
+| System | Current | History | Provenance | Rollback | Branch | Merge | Low-trust | Support set |
+| --- | ---: | ---: | ---: | ---: | ---: | ---: | ---: | ---: |
+| naive chat history | 0.545 | 0.545 | 0.661 | 0.000 | 0.500 | 0.400 | 0.000 | 0.400 |
+| simple RAG | 1.000 | 0.545 | 0.729 | 0.000 | 0.500 | 0.350 | 0.000 | 0.600 |
+| embedding RAG | 1.000 | 0.273 | 0.729 | 0.000 | 0.500 | 0.400 | 0.000 | 0.600 |
+| TruthGit | 1.000 | 1.000 | 1.000 | 1.000 | 1.000 | 1.000 | 1.000 | 1.000 |
 
 ## Final Interpretation
 
-The retrieval baselines can often recover the current fact, but they fail when the question requires changing-world state management: exact history, exact current provenance, rollback recovery, branch isolation, merge conflict state, and low-trust review warnings.
+The retrieval baselines can often recover the current fact, but they fail when the question requires changing-world state management: exact history, exact current provenance, rollback recovery, branch isolation, merge conflict state, low-trust review warnings, and exact active support-source sets.
 
 Report this as a structural systems result. The deterministic runner calls `system.ingest_event(event)` and `system.answer(question)`; it does not call `gpt-4o-mini` in the scoring loop. The separate model-in-the-loop runner is `python -m experiments.reader_benchmark`, which feeds each system's retrieved memory context to the same reader model and writes `reader_*` result files.
 
@@ -125,3 +138,27 @@ The ablations show that each TruthGit mechanism protects a separate capability:
 - rollback protects bad-commit recovery and invalidated source cleanup;
 - review gates protect low-trust warning behavior;
 - trust scoring protects current truth under poisoning and source selection.
+
+## Governance Memory CI/CD Table
+
+The v4 governance extension tests the staged-write pipeline before belief mutation. It is separate from the frozen structural table and measures whether unsafe memory writes are blocked or routed correctly.
+
+| Metric | Score | n |
+| --- | ---: | ---: |
+| quarantine_precision | 1.000 | 4 |
+| quarantine_recall | 1.000 | 4 |
+| unsafe_commit_block_rate | 1.000 | 6 |
+| benign_commit_pass_rate | 1.000 | 1 |
+| review_routing_accuracy | 1.000 | 2 |
+
+The cases include a benign low-risk write, protected-predicate review, poisoned low-trust contradiction, rollback-regression attempt, branch leakage into `main`, unsafe merge-like auto-resolution, and duplicate provenance. This supports the updated paper framing: TruthGit is governed truth maintenance with CI/quarantine, not only version-controlled memory after the fact.
+
+Routing counts:
+
+| Expected decision | Observed status | Count |
+| --- | --- | ---: |
+| auto_apply | applied | 1 |
+| quarantine | quarantined | 4 |
+| require_review | review_required | 2 |
+
+The governance figure is `experiments/results/governance_quarantine_metrics.png`. The qualitative Memory CI/CD case study is `docs/case_study_memory_ci_quarantine.md` with exported trace `experiments/results/memory_ci_case_study.json`.

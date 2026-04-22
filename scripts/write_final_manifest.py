@@ -45,6 +45,8 @@ def main() -> None:
             "python -m pytest -q",
             "python -m compileall app experiments tests",
             "python -m experiments.run_benchmark --output-dir experiments/results --backbone gpt-4o-mini --include-ablations",
+            "python -m experiments.governance_benchmark --output-dir experiments/results",
+            "python -m experiments.memory_ci_case_study --output experiments/results/memory_ci_case_study.json",
             "python -m experiments.plot_results --summary-csv experiments/results/metric_summary.csv --output-png experiments/results/metric_summary.png",
             "python scripts/write_final_manifest.py",
         ],

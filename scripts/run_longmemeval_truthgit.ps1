@@ -7,7 +7,10 @@ param(
     [string]$JudgeModel = "gpt-4o",
     [ValidateSet("per_session", "record_batch")]
     [string]$ExtractionMode = "per_session",
-    [int]$MaxSessions = 12,
+    [ValidateSet("beliefs_only", "beliefs_and_excerpts")]
+    [string]$ContextMode = "beliefs_and_excerpts",
+    [int]$MaxSessions = 0,
+    [int]$MaxSourceExcerpts = 0,
     [int]$Limit = 0,
     [int]$StartIndex = 0,
     [int]$SampleSize = 0,
@@ -33,7 +36,8 @@ if (-not $env:OPENAI_API_KEY) {
 New-Item -ItemType Directory -Force -Path $OutputDir | Out-Null
 $SafeAnswerModel = $AnswerModel -replace '[^A-Za-z0-9_.-]', '_'
 $RunLabel = if ($SampleSize -gt 0) { "random_$SampleSize`_seed_$SampleSeed" } elseif ($Limit -gt 0) { "shard_$StartIndex`_limit_$Limit" } elseif ($StartIndex -gt 0) { "from_$StartIndex" } else { "full" }
-$BaseName = "$SplitLabel`_truthgit`_$SafeAnswerModel`_$ExtractionMode`_$RunLabel"
+$SessionLabel = if ($MaxSessions -gt 0) { "ms$MaxSessions" } else { "fullhistory" }
+$BaseName = "$SplitLabel`_truthgit`_$SafeAnswerModel`_$ExtractionMode`_$SessionLabel`_$ContextMode`_$RunLabel"
 $Hypotheses = Join-Path $OutputDir "$BaseName.hypotheses.jsonl"
 $EvalLog = Join-Path $OutputDir "$BaseName.eval-results-$JudgeModel.jsonl"
 $SummaryJson = Join-Path $OutputDir "$BaseName.summary.json"
@@ -67,7 +71,9 @@ python -m experiments.public_benchmarks.longmemeval_truthgit generate `
     --answer-model $AnswerModel `
     --extraction-model $ExtractionModel `
     --extraction-mode $ExtractionMode `
+    --context-mode $ContextMode `
     --max-sessions $MaxSessions `
+    --max-source-excerpts $MaxSourceExcerpts `
     @LimitArgs `
     @TraceArgs `
     @ResumeArgs

@@ -16,6 +16,7 @@ MetricName = Literal[
     "branch_isolation_score",
     "merge_conflict_resolution_score",
     "low_trust_warning_rate",
+    "support_set_accuracy",
 ]
 
 
@@ -62,6 +63,7 @@ class BenchmarkQuestion:
     expected_historical_objects: list[str] = field(default_factory=list)
     as_of: date | None = None
     expected_source_ref: str | None = None
+    expected_support_source_refs: list[str] = field(default_factory=list)
     expected_low_trust_warning: bool = False
     expected_conflict_resolution: bool = False
     expected_unresolved_conflict: bool = False
@@ -142,6 +144,7 @@ class SyntheticBenchmarkGenerator:
         cases.extend(self._merge_conflict_cases(5))
         cases.extend(self._provenance_cases(5))
         cases.extend(self._provenance_hardening_cases(24))
+        cases.extend(self._support_set_cases(8))
         cases.extend(self._merge_hardening_cases(12))
         return cases
 
@@ -935,6 +938,235 @@ class SyntheticBenchmarkGenerator:
         return BenchmarkCase(
             case_id=case_id,
             description="After a winning merge and a weaker conflicting merge, the current justification should remain the winning branch source.",
+            events=events,
+            questions=questions,
+        )
+
+    def _support_set_cases(self, count: int) -> list[BenchmarkCase]:
+        cases: list[BenchmarkCase] = []
+        for idx in range(count):
+            mode = idx % 4
+            if mode == 0:
+                cases.append(self._joint_support_case(idx))
+            elif mode == 1:
+                cases.append(self._rollback_support_cleanup_case(idx))
+            elif mode == 2:
+                cases.append(self._branch_scoped_support_case(idx))
+            else:
+                cases.append(self._opposition_exclusion_case(idx))
+        return cases
+
+    def _joint_support_case(self, idx: int) -> BenchmarkCase:
+        person = f"SupportJoint{idx}"
+        city = self.cities[(idx + 3) % len(self.cities)]
+        case_id = f"support-set-joint-{idx:02d}"
+        source_a = f"verified-registry-support-{idx}"
+        source_b = f"university-profile-support-{idx}"
+        events = [
+            BenchmarkEvent(
+                event_id=f"{case_id}-registry",
+                event_type="fact",
+                text=f"Verified city registry says {person} lives in {city}.",
+                subject=person,
+                predicate="lives_in",
+                object_value=city,
+                source_ref=source_a,
+                trust_score=0.9,
+                confidence=0.88,
+            ),
+            BenchmarkEvent(
+                event_id=f"{case_id}-profile",
+                event_type="fact",
+                text=f"University profile also says {person} lives in {city}.",
+                subject=person,
+                predicate="lives_in",
+                object_value=city,
+                source_ref=source_b,
+                trust_score=0.86,
+                confidence=0.84,
+            ),
+        ]
+        questions = [
+            BenchmarkQuestion(
+                question_id=f"{case_id}-support-set",
+                metric="support_set_accuracy",
+                prompt=f"Which active sources currently support {person}'s residence?",
+                subject=person,
+                predicate="lives_in",
+                expected_object_value=city,
+                expected_support_source_refs=[source_a, source_b],
+            )
+        ]
+        return BenchmarkCase(
+            case_id=case_id,
+            description="Two independent same-object sources should jointly support one active belief version.",
+            events=events,
+            questions=questions,
+        )
+
+    def _rollback_support_cleanup_case(self, idx: int) -> BenchmarkCase:
+        person = f"SupportRollback{idx}"
+        city = self.cities[(idx + 4) % len(self.cities)]
+        case_id = f"support-set-rollback-cleanup-{idx:02d}"
+        source_a = f"municipal-file-support-{idx}"
+        source_b = f"corrupted-mirror-support-{idx}"
+        events = [
+            BenchmarkEvent(
+                event_id=f"{case_id}-municipal",
+                event_type="fact",
+                text=f"Municipal file says {person} lives in {city}.",
+                subject=person,
+                predicate="lives_in",
+                object_value=city,
+                source_ref=source_a,
+                trust_score=0.82,
+                confidence=0.8,
+            ),
+            BenchmarkEvent(
+                event_id=f"{case_id}-mirror",
+                event_type="bad_fact",
+                text=f"Corrupted mirror also says {person} lives in {city}.",
+                subject=person,
+                predicate="lives_in",
+                object_value=city,
+                source_ref=source_b,
+                trust_score=0.99,
+                confidence=0.95,
+            ),
+            BenchmarkEvent(
+                event_id=f"{case_id}-rollback",
+                event_type="rollback",
+                text=f"Rollback corrupted mirror support for {person}.",
+                rollback_target_event_id=f"{case_id}-mirror",
+            ),
+        ]
+        questions = [
+            BenchmarkQuestion(
+                question_id=f"{case_id}-support-set",
+                metric="support_set_accuracy",
+                prompt=f"After rollback, which active sources support {person}'s residence?",
+                subject=person,
+                predicate="lives_in",
+                expected_object_value=city,
+                expected_support_source_refs=[source_a],
+                related_event_id=f"{case_id}-rollback",
+            )
+        ]
+        return BenchmarkCase(
+            case_id=case_id,
+            description="Rollback should remove a same-object support source without deleting the remaining belief.",
+            events=events,
+            questions=questions,
+        )
+
+    def _branch_scoped_support_case(self, idx: int) -> BenchmarkCase:
+        person = f"SupportBranch{idx}"
+        lab = self.labs[(idx + 1) % len(self.labs)]
+        case_id = f"support-set-branch-scoped-{idx:02d}"
+        branch_name = f"support-audit-branch-{idx}"
+        source_main = f"main-support-file-{idx}"
+        source_branch = f"branch-support-confirmation-{idx}"
+        events = [
+            BenchmarkEvent(
+                event_id=f"{case_id}-main",
+                event_type="fact",
+                text=f"Main file says {person} works at {lab}.",
+                subject=person,
+                predicate="works_at",
+                object_value=lab,
+                source_ref=source_main,
+                trust_score=0.82,
+                confidence=0.8,
+            ),
+            BenchmarkEvent(
+                event_id=f"{case_id}-branch",
+                event_type="branch_fact",
+                text=f"Audit branch independently confirms {person} works at {lab}.",
+                subject=person,
+                predicate="works_at",
+                object_value=lab,
+                branch_name=branch_name,
+                source_ref=source_branch,
+                trust_score=0.95,
+                confidence=0.9,
+            ),
+        ]
+        questions = [
+            BenchmarkQuestion(
+                question_id=f"{case_id}-main-support",
+                metric="support_set_accuracy",
+                prompt=f"On main, which active sources support where {person} works?",
+                subject=person,
+                predicate="works_at",
+                branch_name="main",
+                expected_object_value=lab,
+                expected_support_source_refs=[source_main],
+            ),
+            BenchmarkQuestion(
+                question_id=f"{case_id}-branch-support",
+                metric="support_set_accuracy",
+                prompt=f"On {branch_name}, which active sources support where {person} works?",
+                subject=person,
+                predicate="works_at",
+                branch_name=branch_name,
+                expected_object_value=lab,
+                expected_support_source_refs=[source_main, source_branch],
+            ),
+        ]
+        return BenchmarkCase(
+            case_id=case_id,
+            description="Branch-local corroboration should support branch context without changing main support.",
+            events=events,
+            questions=questions,
+        )
+
+    def _opposition_exclusion_case(self, idx: int) -> BenchmarkCase:
+        person = f"SupportOpposition{idx}"
+        trusted_city = self.cities[(idx + 5) % len(self.cities)]
+        poison_city = ["Atlantis", "El Dorado", "Narnia", "Gotham"][idx % 4]
+        case_id = f"support-set-opposition-exclusion-{idx:02d}"
+        source_good = f"trusted-support-registry-{idx}"
+        source_bad = f"opposing-rumor-source-{idx}"
+        events = [
+            BenchmarkEvent(
+                event_id=f"{case_id}-trusted",
+                event_type="fact",
+                text=f"Trusted registry says {person} lives in {trusted_city}.",
+                subject=person,
+                predicate="lives_in",
+                object_value=trusted_city,
+                source_ref=source_good,
+                trust_score=0.94,
+                confidence=0.9,
+            ),
+            BenchmarkEvent(
+                event_id=f"{case_id}-opposition",
+                event_type="bad_fact",
+                text=f"Low-trust rumor says {person} lives in {poison_city}.",
+                subject=person,
+                predicate="lives_in",
+                object_value=poison_city,
+                source_ref=source_bad,
+                trust_score=0.22,
+                confidence=0.72,
+            ),
+        ]
+        questions = [
+            BenchmarkQuestion(
+                question_id=f"{case_id}-support-set",
+                metric="support_set_accuracy",
+                prompt=f"Which active support sources justify {person}'s current residence, excluding opposition?",
+                subject=person,
+                predicate="lives_in",
+                expected_object_value=trusted_city,
+                forbidden_object_value=poison_city,
+                expected_support_source_refs=[source_good],
+                related_event_id=f"{case_id}-opposition",
+            )
+        ]
+        return BenchmarkCase(
+            case_id=case_id,
+            description="Contradictory low-trust sources should become opposition, not active support for current truth.",
             events=events,
             questions=questions,
         )

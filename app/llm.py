@@ -119,6 +119,7 @@ class LLMClient:
         *,
         fallback_branch_name: str = "main",
         fallback_trust_score: float = 0.7,
+        memory_context: dict[str, Any] | None = None,
     ) -> MemoryWritePlan:
         """Extract claims and propose bounded memory-write metadata."""
 
@@ -136,27 +137,59 @@ class LLMClient:
                         "role": "system",
                         "content": (
                             "Extract explicit atomic factual claims for TruthGit memory. "
-                            "Also choose safe metadata for reviewable staging. "
-                            "Use concise model-generated snake_case predicates; examples are not a closed list. "
-                            "For current residence or where someone lives, prefer predicate lives_in. "
-                            "For temporary travel lodging, prefer predicate stays_in. "
-                            "Use branch_name='main' for current durable facts. "
-                            "Use a short branch name such as 'trip-plan' or 'what-if' for hypothetical, future, "
-                            "temporary, planning, or counterfactual claims. "
-                            "If the user says 'during the conference week', 'trip plan', 'will stay', "
-                            "or asks you to suppose a scenario, use branch_name='trip-plan' unless they explicitly "
-                            "say it is current ground truth. "
-                            "Choose trust_score from source wording only: around 0.85 for clear direct statements, "
-                            "around 0.55 for uncertain or hearsay claims, and around 0.25 for suspicious, joke, "
-                            "impossible, or low-trust claims. "
-                            "Return no claims for pure questions. "
+                            "Choose concise model-generated snake_case predicates without using a closed label set. "
+                            "Extract claims only from the message field; default_branch_name and default_trust_score "
+                            "are controls, not facts to remember. Choose branch_name, trust_score, and write_action "
+                            "from the user's wording and context. Use branch_name='main' for normal durable facts. "
+                            "Only choose a non-main branch when the message explicitly describes a hypothetical, "
+                            "counterfactual, plan, temporary scenario, or named branch/workspace. Never invent generic "
+                            "branch names such as 'userprovidedinformation' for ordinary factual statements. "
+                            "Separate claim confidence from trust_score: confidence means the sentence clearly states "
+                            "an extractable claim; trust_score means the claim/source is credible as real-world memory. "
+                            "A clear but implausible statement can have high claim confidence and low trust_score. "
+                            "For example, 'Alice lives in Seoul' can be confidence about 0.9 and trust_score about 0.8; "
+                            "'Alice lives in Atlantis' should be confidence about 0.9 but trust_score about 0.2 to 0.3 "
+                            "unless the user explicitly frames it as fiction or a game. "
+                            "Branch policy is strict: stable current facts and scheduled real-world facts belong "
+                            "on main, even when their valid_from is in the future. Temporary, speculative, "
+                            "conference-week, itinerary, trip, planning, what-if, or branch-local facts must use "
+                            "a non-main branch name. If the user says someone will stay somewhere during a "
+                            "conference, trip, visit, or other bounded scenario, choose a short branch such as "
+                            "'trip-plan' or 'conference-week' and do not choose main. A branch-local plausible claim may still use "
+                            "write_action='branch_hypothetical' for branch-only claims, or commit_now if you already "
+                            "selected a non-main branch and judge the claim safe to write there. "
+                            "Use truthgit_memory only to decide branch, trust, and write_action; never extract new "
+                            "claims from truthgit_memory. Direct dated updates such as moved/changed/started/stopped "
+                            "with a month, date, tomorrow, or later timestamp are normal scheduled or supersession "
+                            "events on main; choose commit_now when they are clear and plausible so TruthGit can "
+                            "preserve the old version as superseded or schedule the new fact with valid_from. "
+                            "If the new claim conflicts with active memory but is undated, very low trust, impossible, "
+                            "joking, rumored, or would overwrite current truth without enough evidence, choose "
+                            "stage_for_review or reject and explain why in warnings/risk_reasons. "
+                            "write_action must be commit_now when you judge the memory should be written now on the "
+                            "chosen branch, branch_hypothetical when the write belongs only on a non-main branch, "
+                            "stage_for_review when you judge a human should review first, and reject when the text "
+                            "should not become memory. Python will still enforce generic safety invariants before "
+                            "anything becomes durable. Include risk_reasons and warnings only when useful. "
+                            "Return no claims for pure questions unless the user explicitly asks you to remember "
+                            "the question itself. "
                             "Write assistant_reply as a concise, natural chat response. Start with an acknowledgement "
-                            "such as 'Okay, I'll remember that' for normal memory updates. Explain briefly if the "
-                            "memory is branch-only, low-trust, or needs review. "
-                            "Do not claim that memory was written directly; Python will validate and apply it."
+                            "such as 'Okay, I'll remember that' when write_action is commit_now. Explain briefly "
+                            "when you choose review or reject. Do not claim Python has written the memory yet."
                         ),
                     },
-                    {"role": "user", "content": text},
+                    {
+                        "role": "user",
+                        "content": json.dumps(
+                            {
+                                "message": text,
+                                "default_branch_name": fallback_branch_name,
+                                "default_trust_score": fallback_trust_score,
+                                "truthgit_memory": memory_context or {},
+                            },
+                            ensure_ascii=False,
+                        ),
+                    },
                 ],
                 text={
                     "format": {
@@ -195,6 +228,13 @@ class LLMClient:
                             "the supplied version-controlled memory context. For current-truth questions, "
                             "prefer current_beliefs from the selected branch. For history or why questions, "
                             "use timelines and mention superseded, retracted, or hypothetical status when relevant. "
+                            "For provenance or support questions, use each belief's support_sources and "
+                            "opposition_sources. Prefer human-readable source excerpts or source_ref values; "
+                            "do not summarize internal refs like demo-ui as if they were the actual evidence. "
+                            "Say which sources actively support the belief and which sources are opposition, "
+                            "rolled back, or pending when that information is present. "
+                            "For audit-trail questions, use audit_events and staged_commits. Explain staged, "
+                            "checked, quarantined, approved, applied, released, or rejected transitions in order. "
                             "If the memory context does not support an answer, say that TruthGit has no evidence yet. "
                             "Do not mutate memory and do not invent facts."
                         ),
@@ -323,42 +363,18 @@ def _fallback_memory_write_plan(
     claims = claims_from_dicts(deterministic_extract_simple_claims(text))
     return MemoryWritePlan(
         claims=claims,
-        branch_name=_fallback_branch_name(text, fallback_branch_name),
-        trust_score=_fallback_trust_score(text, fallback_trust_score),
+        branch_name=fallback_branch_name.strip() or "main",
+        trust_score=max(0.0, min(1.0, fallback_trust_score)),
+        write_action="commit_now" if claims else "reject",
+        risk_reasons=[] if claims else ["no_explicit_claim"],
+        warnings=[] if claims else ["No explicit memory claim was found."],
         rationale="Local fallback chose metadata from simple wording heuristics.",
-        assistant_reply=_fallback_assistant_reply(text, len(claims)),
+        assistant_reply=(
+            "Okay, I'll remember that in TruthGit memory."
+            if claims
+            else "I did not find an explicit memory claim to remember."
+        ),
     )
-
-
-def _fallback_branch_name(text: str, fallback_branch_name: str) -> str:
-    lower = text.lower()
-    if any(token in lower for token in ("conference", "trip", "vacation", "itinerary")):
-        return "trip-plan"
-    if any(token in lower for token in ("what if", "hypothetical", "suppose", "maybe later", "will stay")):
-        return "what-if"
-    return fallback_branch_name.strip() or "main"
-
-
-def _fallback_trust_score(text: str, fallback_trust_score: float) -> float:
-    lower = text.lower()
-    if any(token in lower for token in ("atlantis", "fake", "joke", "impossible", "poison")):
-        return 0.25
-    if any(token in lower for token in ("rumor", "heard", "maybe", "not sure", "unverified")):
-        return 0.45
-    if any(token in lower for token in ("confirmed", "official", "verified")):
-        return 0.85
-    return max(0.0, min(1.0, fallback_trust_score))
-
-
-def _fallback_assistant_reply(text: str, claim_count: int) -> str:
-    lower = text.lower()
-    if claim_count == 0:
-        return "I did not find an explicit memory claim to stage."
-    if any(token in lower for token in ("conference", "trip", "what if", "hypothetical", "will stay")):
-        return "Okay, I'll keep that as a branch-specific hypothetical memory so it does not overwrite main truth."
-    if any(token in lower for token in ("atlantis", "fake", "joke", "impossible", "rumor", "heard")):
-        return "Okay, I'll treat that cautiously and stage it for review because the source sounds low-trust or uncertain."
-    return "Okay, I'll remember that in TruthGit memory and preserve any previous version."
 
 
 def _fallback_answer_from_memory(message: str, memory_context: dict[str, Any]) -> str:
@@ -366,9 +382,14 @@ def _fallback_answer_from_memory(message: str, memory_context: dict[str, Any]) -
 
     current = memory_context.get("current_beliefs") or []
     timelines = memory_context.get("timelines") or []
+    staged_commits = memory_context.get("staged_commits") or memory_context.get("pending_staged_commits") or []
+    audit_events = memory_context.get("audit_events") or []
     branch_name = (memory_context.get("branch") or {}).get("name", "main")
     lower = message.lower()
     subject_hint = _subject_hint(message)
+
+    if any(token in lower for token in ("audit", "trail", "staged", "quarantine", "quarantined", "rejected")):
+        return _fallback_audit_answer(staged_commits, audit_events, subject_hint)
 
     if any(token in lower for token in ("why", "previous", "previously", "history", "timeline")):
         relevant_timeline = [
@@ -388,6 +409,30 @@ def _fallback_answer_from_memory(message: str, memory_context: dict[str, Any]) -
         for item in current
         if subject_hint is None or str(item.get("subject", "")).lower() == subject_hint
     ]
+    if any(token in lower for token in ("source", "sources", "support", "supports", "provenance", "justify", "justifies")):
+        lines = []
+        for item in relevant_current:
+            supports = [
+                _memory_source_label(source)
+                for source in item.get("support_sources", [])
+                if source.get("status") == "active"
+            ]
+            oppositions = [
+                _memory_source_label(source)
+                for source in item.get("opposition_sources", [])
+                if source.get("status") == "active"
+            ]
+            if not supports and item.get("source_ref"):
+                supports = [str(item["source_ref"])]
+            support_text = ", ".join(supports) if supports else "no active support sources"
+            opposition_text = f"; opposition: {', '.join(oppositions)}" if oppositions else ""
+            lines.append(
+                f"{item.get('subject')} {item.get('predicate')} {item.get('object_value')} "
+                f"is supported by {support_text}{opposition_text}."
+            )
+        if lines:
+            return " ".join(lines)
+
     if any(token in lower for token in ("where", "live", "lives", "residence", "current")):
         location = [
             item
@@ -412,8 +457,91 @@ def _fallback_answer_from_memory(message: str, memory_context: dict[str, Any]) -
     return f"TruthGit has no evidence-backed memory for that on branch '{branch_name}' yet."
 
 
+def _fallback_audit_answer(
+    staged_commits: list[dict[str, Any]],
+    audit_events: list[dict[str, Any]],
+    subject_hint: str | None,
+) -> str:
+    """Summarize staged-write and audit state without an LLM."""
+
+    relevant_staged = []
+    for staged in staged_commits:
+        text = " ".join(
+            [
+                str(staged.get("source_excerpt") or ""),
+                str(staged.get("source_ref") or ""),
+                json.dumps(staged.get("claims_json") or [], default=str),
+            ]
+        ).lower()
+        if subject_hint is None or subject_hint in text:
+            relevant_staged.append(staged)
+    relevant_events = []
+    staged_ids = {str(item.get("id")) for item in relevant_staged if item.get("id")}
+    for event in audit_events:
+        entity_key = str(event.get("entity_key") or "")
+        payload = json.dumps(event.get("payload_json") or {}, default=str).lower()
+        if entity_key in staged_ids or subject_hint is None or (subject_hint and subject_hint in payload):
+            relevant_events.append(event)
+
+    if not relevant_staged and not relevant_events:
+        return "TruthGit has no staged or audit trail evidence matching that request yet."
+
+    lines: list[str] = []
+    for staged in relevant_staged[:5]:
+        claim_text = _staged_claim_text(staged)
+        reason = staged.get("quarantine_reason_summary") or ", ".join(staged.get("risk_reasons") or [])
+        reason_suffix = f" Reason: {reason}." if reason else ""
+        lines.append(
+            f"Staged write {staged.get('id')} is {staged.get('status')}"
+            f"{f' for {claim_text}' if claim_text else ''}.{reason_suffix}"
+        )
+    if relevant_events:
+        ordered = sorted(relevant_events, key=lambda row: int(row.get("id") or 0))
+        events = " -> ".join(
+            f"#{event.get('id')} {event.get('event_type')}" for event in ordered[-12:]
+        )
+        lines.append(f"Audit sequence: {events}.")
+    return " ".join(lines)
+
+
+def _staged_claim_text(staged: dict[str, Any]) -> str:
+    claims = staged.get("claims_json") or []
+    pieces = []
+    for claim in claims[:3]:
+        if not isinstance(claim, dict):
+            continue
+        subject = claim.get("subject")
+        predicate = claim.get("predicate")
+        object_value = claim.get("object") or claim.get("object_value")
+        pieces.append(" ".join(str(value) for value in (subject, predicate, object_value) if value))
+    return "; ".join(pieces)
+
+
+def _memory_source_label(source: dict[str, Any]) -> str:
+    source_ref = str(source.get("source_ref") or "")
+    if source_ref and not source_ref.startswith(("demo-ui:", "chat", "source-")):
+        return source_ref
+    excerpt = re.sub(r"\s+", " ", str(source.get("excerpt") or "")).strip()
+    return excerpt[:140] + ("..." if len(excerpt) > 140 else "")
+
+
 def _subject_hint(message: str) -> str | None:
-    ignored = {"what", "where", "when", "why", "how", "who", "which"}
+    ignored = {
+        "what",
+        "where",
+        "when",
+        "why",
+        "how",
+        "who",
+        "which",
+        "show",
+        "list",
+        "display",
+        "explain",
+        "summarize",
+        "tell",
+        "truthgit",
+    }
     for match in re.finditer(r"\b([A-Z][a-zA-Z0-9_-]+)\b", message):
         candidate = match.group(1).lower()
         if candidate not in ignored:

@@ -11,7 +11,8 @@ param(
     [string]$ReaderMode = "con",
     [int]$MaxOutputTokens = 256,
     [int]$StartIndex = 0,
-    [switch]$SkipEvaluation
+    [switch]$SkipEvaluation,
+    [switch]$NoResume
 )
 
 $ErrorActionPreference = "Stop"
@@ -49,6 +50,10 @@ if ($SampleSize -gt 0) {
 } elseif ($StartIndex -gt 0) {
     $LimitArgs = @("--start-index", "$StartIndex")
 }
+$ResumeArgs = @()
+if ($NoResume) {
+    $ResumeArgs = @("--no-resume")
+}
 
 python -m experiments.public_benchmarks.longmemeval inspect `
     --data $DataFile `
@@ -70,6 +75,7 @@ python -m experiments.public_benchmarks.longmemeval generate `
     --history-format $HistoryFormat `
     --reader-mode $ReaderMode `
     --max-output-tokens $MaxOutputTokens `
+    @ResumeArgs `
     @LimitArgs
 
 if (-not $SkipEvaluation) {

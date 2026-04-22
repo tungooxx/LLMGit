@@ -40,6 +40,8 @@ def score_answer(question: BenchmarkQuestion, answer: SystemAnswer) -> float:
         return 1.0 if _truth_match(question, answer) == 1.0 and answer.conflict_resolved else 0.0
     if question.metric == "low_trust_warning_rate":
         return 1.0 if answer.had_low_trust_warning == question.expected_low_trust_warning else 0.0
+    if question.metric == "support_set_accuracy":
+        return _support_set_match(question, answer)
     raise ValueError(f"Unknown metric: {question.metric}")
 
 
@@ -101,6 +103,8 @@ def _expected_value(question: BenchmarkQuestion) -> str | None:
         return " -> ".join(question.expected_historical_objects)
     if question.metric == "provenance_accuracy":
         return question.expected_source_ref
+    if question.metric == "support_set_accuracy":
+        return ", ".join(sorted(question.expected_support_source_refs))
     if question.metric == "merge_conflict_resolution_score" and question.expected_unresolved_conflict:
         return "unresolved_conflict"
     return question.expected_object_value or question.expected_source_ref
@@ -111,6 +115,8 @@ def _observed_value(question: BenchmarkQuestion, answer: SystemAnswer) -> str | 
         return " -> ".join(answer.historical_objects)
     if question.metric == "provenance_accuracy":
         return answer.source_ref
+    if question.metric == "support_set_accuracy":
+        return ", ".join(sorted(answer.support_source_refs))
     if question.metric == "merge_conflict_resolution_score" and question.expected_unresolved_conflict:
         return "unresolved_conflict" if answer.unresolved_conflict else answer.object_value
     return answer.object_value or answer.source_ref
@@ -135,4 +141,12 @@ def _historical_match(question: BenchmarkQuestion, answer: SystemAnswer) -> floa
         return _truth_match(question, answer)
     expected = [value.lower() for value in question.expected_historical_objects]
     observed = [value.lower() for value in answer.historical_objects]
+    return 1.0 if observed == expected else 0.0
+
+
+def _support_set_match(question: BenchmarkQuestion, answer: SystemAnswer) -> float:
+    if _truth_match(question, answer) == 0.0:
+        return 0.0
+    expected = {value.lower() for value in question.expected_support_source_refs}
+    observed = {value.lower() for value in answer.support_source_refs}
     return 1.0 if observed == expected else 0.0

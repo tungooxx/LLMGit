@@ -145,6 +145,16 @@ Seoul,municipal-file-21,provenance_accuracy,corrupted-mirror-21,provenance-same-
 Lab F,main-personnel-file-22,provenance_accuracy,branch-audit-confirmation-22,provenance-same-object-branch-22-main-source,0.0,naive_chat_history
 Lab F,branch-audit-confirmation-22,provenance_accuracy,branch-audit-confirmation-22,provenance-same-object-branch-22-branch-source,1.0,naive_chat_history
 Lab D,signed-winning-reorg-source-23,provenance_accuracy,rumor-reorg-source-23,provenance-merge-governing-source-23-source,0.0,naive_chat_history
+Madrid,"university-profile-support-0, verified-registry-support-0",support_set_accuracy,"university-profile-support-0, verified-registry-support-0",support-set-joint-00-support-set,1.0,naive_chat_history
+Berlin,municipal-file-support-1,support_set_accuracy,"corrupted-mirror-support-1, municipal-file-support-1",support-set-rollback-cleanup-01-support-set,0.0,naive_chat_history
+Lab D,main-support-file-2,support_set_accuracy,"branch-support-confirmation-2, main-support-file-2",support-set-branch-scoped-02-main-support,0.0,naive_chat_history
+Lab D,"branch-support-confirmation-2, main-support-file-2",support_set_accuracy,"branch-support-confirmation-2, main-support-file-2",support-set-branch-scoped-02-branch-support,1.0,naive_chat_history
+Gotham,trusted-support-registry-3,support_set_accuracy,opposing-rumor-source-3,support-set-opposition-exclusion-03-support-set,0.0,naive_chat_history
+Lisbon,"university-profile-support-4, verified-registry-support-4",support_set_accuracy,"university-profile-support-4, verified-registry-support-4",support-set-joint-04-support-set,1.0,naive_chat_history
+Oslo,municipal-file-support-5,support_set_accuracy,"corrupted-mirror-support-5, municipal-file-support-5",support-set-rollback-cleanup-05-support-set,0.0,naive_chat_history
+Lab B,main-support-file-6,support_set_accuracy,"branch-support-confirmation-6, main-support-file-6",support-set-branch-scoped-06-main-support,0.0,naive_chat_history
+Lab B,"branch-support-confirmation-6, main-support-file-6",support_set_accuracy,"branch-support-confirmation-6, main-support-file-6",support-set-branch-scoped-06-branch-support,1.0,naive_chat_history
+Gotham,trusted-support-registry-7,support_set_accuracy,opposing-rumor-source-7,support-set-opposition-exclusion-07-support-set,0.0,naive_chat_history
 Lab B,unresolved_conflict,merge_conflict_resolution_score,Lab B,merge-manual-review-00-unresolved,0.0,naive_chat_history
 Lab F,unresolved_conflict,merge_conflict_resolution_score,Lab F,merge-concurrent-update-01-unresolved,0.0,naive_chat_history
 Lab B,unresolved_conflict,merge_conflict_resolution_score,Lab B,merge-competing-branches-02-unresolved,0.0,naive_chat_history
@@ -306,6 +316,16 @@ Seoul,municipal-file-21,provenance_accuracy,corrupted-mirror-21,provenance-same-
 Lab F,main-personnel-file-22,provenance_accuracy,branch-audit-confirmation-22,provenance-same-object-branch-22-main-source,0.0,simple_rag
 Lab F,branch-audit-confirmation-22,provenance_accuracy,branch-audit-confirmation-22,provenance-same-object-branch-22-branch-source,1.0,simple_rag
 Lab B,signed-winning-reorg-source-23,provenance_accuracy,signed-winning-reorg-source-23,provenance-merge-governing-source-23-source,1.0,simple_rag
+Madrid,"university-profile-support-0, verified-registry-support-0",support_set_accuracy,"university-profile-support-0, verified-registry-support-0",support-set-joint-00-support-set,1.0,simple_rag
+Berlin,municipal-file-support-1,support_set_accuracy,"corrupted-mirror-support-1, municipal-file-support-1",support-set-rollback-cleanup-01-support-set,0.0,simple_rag
+Lab D,main-support-file-2,support_set_accuracy,"branch-support-confirmation-2, main-support-file-2",support-set-branch-scoped-02-main-support,0.0,simple_rag
+Lab D,"branch-support-confirmation-2, main-support-file-2",support_set_accuracy,"branch-support-confirmation-2, main-support-file-2",support-set-branch-scoped-02-branch-support,1.0,simple_rag
+Dublin,trusted-support-registry-3,support_set_accuracy,trusted-support-registry-3,support-set-opposition-exclusion-03-support-set,1.0,simple_rag
+Lisbon,"university-profile-support-4, verified-registry-support-4",support_set_accuracy,"university-profile-support-4, verified-registry-support-4",support-set-joint-04-support-set,1.0,simple_rag
+Oslo,municipal-file-support-5,support_set_accuracy,"corrupted-mirror-support-5, municipal-file-support-5",support-set-rollback-cleanup-05-support-set,0.0,simple_rag
+Lab B,main-support-file-6,support_set_accuracy,"branch-support-confirmation-6, main-support-file-6",support-set-branch-scoped-06-main-support,0.0,simple_rag
+Lab B,"branch-support-confirmation-6, main-support-file-6",support_set_accuracy,"branch-support-confirmation-6, main-support-file-6",support-set-branch-scoped-06-branch-support,1.0,simple_rag
+Lima,trusted-support-registry-7,support_set_accuracy,trusted-support-registry-7,support-set-opposition-exclusion-07-support-set,1.0,simple_rag
 Lab C,unresolved_conflict,merge_conflict_resolution_score,Lab C,merge-manual-review-00-unresolved,0.0,simple_rag
 Lab F,unresolved_conflict,merge_conflict_resolution_score,Lab F,merge-concurrent-update-01-unresolved,0.0,simple_rag
 Lab E,unresolved_conflict,merge_conflict_resolution_score,Lab E,merge-competing-branches-02-unresolved,0.0,simple_rag
@@ -467,6 +487,16 @@ Seoul,municipal-file-21,provenance_accuracy,corrupted-mirror-21,provenance-same-
 Lab F,main-personnel-file-22,provenance_accuracy,branch-audit-confirmation-22,provenance-same-object-branch-22-main-source,0.0,embedding_rag
 Lab F,branch-audit-confirmation-22,provenance_accuracy,branch-audit-confirmation-22,provenance-same-object-branch-22-branch-source,1.0,embedding_rag
 Lab B,signed-winning-reorg-source-23,provenance_accuracy,signed-winning-reorg-source-23,provenance-merge-governing-source-23-source,1.0,embedding_rag
+Madrid,"university-profile-support-0, verified-registry-support-0",support_set_accuracy,"university-profile-support-0, verified-registry-support-0",support-set-joint-00-support-set,1.0,embedding_rag
+Berlin,municipal-file-support-1,support_set_accuracy,"corrupted-mirror-support-1, municipal-file-support-1",support-set-rollback-cleanup-01-support-set,0.0,embedding_rag
+Lab D,main-support-file-2,support_set_accuracy,"branch-support-confirmation-2, main-support-file-2",support-set-branch-scoped-02-main-support,0.0,embedding_rag
+Lab D,"branch-support-confirmation-2, main-support-file-2",support_set_accuracy,"branch-support-confirmation-2, main-support-file-2",support-set-branch-scoped-02-branch-support,1.0,embedding_rag
+Dublin,trusted-support-registry-3,support_set_accuracy,trusted-support-registry-3,support-set-opposition-exclusion-03-support-set,1.0,embedding_rag
+Lisbon,"university-profile-support-4, verified-registry-support-4",support_set_accuracy,"university-profile-support-4, verified-registry-support-4",support-set-joint-04-support-set,1.0,embedding_rag
+Oslo,municipal-file-support-5,support_set_accuracy,"corrupted-mirror-support-5, municipal-file-support-5",support-set-rollback-cleanup-05-support-set,0.0,embedding_rag
+Lab B,main-support-file-6,support_set_accuracy,"branch-support-confirmation-6, main-support-file-6",support-set-branch-scoped-06-main-support,0.0,embedding_rag
+Lab B,"branch-support-confirmation-6, main-support-file-6",support_set_accuracy,"branch-support-confirmation-6, main-support-file-6",support-set-branch-scoped-06-branch-support,1.0,embedding_rag
+Lima,trusted-support-registry-7,support_set_accuracy,trusted-support-registry-7,support-set-opposition-exclusion-07-support-set,1.0,embedding_rag
 Lab A,unresolved_conflict,merge_conflict_resolution_score,Lab A,merge-manual-review-00-unresolved,0.0,embedding_rag
 Lab F,unresolved_conflict,merge_conflict_resolution_score,Lab F,merge-concurrent-update-01-unresolved,0.0,embedding_rag
 Lab E,unresolved_conflict,merge_conflict_resolution_score,Lab E,merge-competing-branches-02-unresolved,0.0,embedding_rag
@@ -628,6 +658,16 @@ Seoul,municipal-file-21,provenance_accuracy,municipal-file-21,provenance-same-ob
 Lab F,main-personnel-file-22,provenance_accuracy,main-personnel-file-22,provenance-same-object-branch-22-main-source,1.0,truthgit
 Lab F,branch-audit-confirmation-22,provenance_accuracy,branch-audit-confirmation-22,provenance-same-object-branch-22-branch-source,1.0,truthgit
 Lab B,signed-winning-reorg-source-23,provenance_accuracy,signed-winning-reorg-source-23,provenance-merge-governing-source-23-source,1.0,truthgit
+Madrid,"university-profile-support-0, verified-registry-support-0",support_set_accuracy,"university-profile-support-0, verified-registry-support-0",support-set-joint-00-support-set,1.0,truthgit
+Berlin,municipal-file-support-1,support_set_accuracy,municipal-file-support-1,support-set-rollback-cleanup-01-support-set,1.0,truthgit
+Lab D,main-support-file-2,support_set_accuracy,main-support-file-2,support-set-branch-scoped-02-main-support,1.0,truthgit
+Lab D,"branch-support-confirmation-2, main-support-file-2",support_set_accuracy,"branch-support-confirmation-2, main-support-file-2",support-set-branch-scoped-02-branch-support,1.0,truthgit
+Dublin,trusted-support-registry-3,support_set_accuracy,trusted-support-registry-3,support-set-opposition-exclusion-03-support-set,1.0,truthgit
+Lisbon,"university-profile-support-4, verified-registry-support-4",support_set_accuracy,"university-profile-support-4, verified-registry-support-4",support-set-joint-04-support-set,1.0,truthgit
+Oslo,municipal-file-support-5,support_set_accuracy,municipal-file-support-5,support-set-rollback-cleanup-05-support-set,1.0,truthgit
+Lab B,main-support-file-6,support_set_accuracy,main-support-file-6,support-set-branch-scoped-06-main-support,1.0,truthgit
+Lab B,"branch-support-confirmation-6, main-support-file-6",support_set_accuracy,"branch-support-confirmation-6, main-support-file-6",support-set-branch-scoped-06-branch-support,1.0,truthgit
+Lima,trusted-support-registry-7,support_set_accuracy,trusted-support-registry-7,support-set-opposition-exclusion-07-support-set,1.0,truthgit
 Lab A,unresolved_conflict,merge_conflict_resolution_score,unresolved_conflict,merge-manual-review-00-unresolved,1.0,truthgit
 Lab F,unresolved_conflict,merge_conflict_resolution_score,unresolved_conflict,merge-concurrent-update-01-unresolved,1.0,truthgit
 Lab E,unresolved_conflict,merge_conflict_resolution_score,unresolved_conflict,merge-competing-branches-02-unresolved,1.0,truthgit
@@ -789,6 +829,16 @@ Seoul,municipal-file-21,provenance_accuracy,municipal-file-21,provenance-same-ob
 Lab F,main-personnel-file-22,provenance_accuracy,branch-audit-confirmation-22,provenance-same-object-branch-22-main-source,0.0,truthgit_no_branches
 Lab F,branch-audit-confirmation-22,provenance_accuracy,branch-audit-confirmation-22,provenance-same-object-branch-22-branch-source,1.0,truthgit_no_branches
 Lab B,signed-winning-reorg-source-23,provenance_accuracy,signed-winning-reorg-source-23,provenance-merge-governing-source-23-source,1.0,truthgit_no_branches
+Madrid,"university-profile-support-0, verified-registry-support-0",support_set_accuracy,"university-profile-support-0, verified-registry-support-0",support-set-joint-00-support-set,1.0,truthgit_no_branches
+Berlin,municipal-file-support-1,support_set_accuracy,municipal-file-support-1,support-set-rollback-cleanup-01-support-set,1.0,truthgit_no_branches
+Lab D,main-support-file-2,support_set_accuracy,"branch-support-confirmation-2, main-support-file-2",support-set-branch-scoped-02-main-support,0.0,truthgit_no_branches
+Lab D,"branch-support-confirmation-2, main-support-file-2",support_set_accuracy,"branch-support-confirmation-2, main-support-file-2",support-set-branch-scoped-02-branch-support,1.0,truthgit_no_branches
+Dublin,trusted-support-registry-3,support_set_accuracy,trusted-support-registry-3,support-set-opposition-exclusion-03-support-set,1.0,truthgit_no_branches
+Lisbon,"university-profile-support-4, verified-registry-support-4",support_set_accuracy,"university-profile-support-4, verified-registry-support-4",support-set-joint-04-support-set,1.0,truthgit_no_branches
+Oslo,municipal-file-support-5,support_set_accuracy,municipal-file-support-5,support-set-rollback-cleanup-05-support-set,1.0,truthgit_no_branches
+Lab B,main-support-file-6,support_set_accuracy,"branch-support-confirmation-6, main-support-file-6",support-set-branch-scoped-06-main-support,0.0,truthgit_no_branches
+Lab B,"branch-support-confirmation-6, main-support-file-6",support_set_accuracy,"branch-support-confirmation-6, main-support-file-6",support-set-branch-scoped-06-branch-support,1.0,truthgit_no_branches
+Lima,trusted-support-registry-7,support_set_accuracy,trusted-support-registry-7,support-set-opposition-exclusion-07-support-set,1.0,truthgit_no_branches
 Lab A,unresolved_conflict,merge_conflict_resolution_score,unresolved_conflict,merge-manual-review-00-unresolved,1.0,truthgit_no_branches
 Lab F,unresolved_conflict,merge_conflict_resolution_score,Lab F,merge-concurrent-update-01-unresolved,0.0,truthgit_no_branches
 Lab E,unresolved_conflict,merge_conflict_resolution_score,unresolved_conflict,merge-competing-branches-02-unresolved,1.0,truthgit_no_branches
@@ -950,6 +1000,16 @@ Seoul,municipal-file-21,provenance_accuracy,corrupted-mirror-21,provenance-same-
 Lab F,main-personnel-file-22,provenance_accuracy,main-personnel-file-22,provenance-same-object-branch-22-main-source,1.0,truthgit_no_rollback
 Lab F,branch-audit-confirmation-22,provenance_accuracy,branch-audit-confirmation-22,provenance-same-object-branch-22-branch-source,1.0,truthgit_no_rollback
 Lab B,signed-winning-reorg-source-23,provenance_accuracy,signed-winning-reorg-source-23,provenance-merge-governing-source-23-source,1.0,truthgit_no_rollback
+Madrid,"university-profile-support-0, verified-registry-support-0",support_set_accuracy,"university-profile-support-0, verified-registry-support-0",support-set-joint-00-support-set,1.0,truthgit_no_rollback
+Berlin,municipal-file-support-1,support_set_accuracy,"corrupted-mirror-support-1, municipal-file-support-1",support-set-rollback-cleanup-01-support-set,0.0,truthgit_no_rollback
+Lab D,main-support-file-2,support_set_accuracy,main-support-file-2,support-set-branch-scoped-02-main-support,1.0,truthgit_no_rollback
+Lab D,"branch-support-confirmation-2, main-support-file-2",support_set_accuracy,"branch-support-confirmation-2, main-support-file-2",support-set-branch-scoped-02-branch-support,1.0,truthgit_no_rollback
+Dublin,trusted-support-registry-3,support_set_accuracy,trusted-support-registry-3,support-set-opposition-exclusion-03-support-set,1.0,truthgit_no_rollback
+Lisbon,"university-profile-support-4, verified-registry-support-4",support_set_accuracy,"university-profile-support-4, verified-registry-support-4",support-set-joint-04-support-set,1.0,truthgit_no_rollback
+Oslo,municipal-file-support-5,support_set_accuracy,"corrupted-mirror-support-5, municipal-file-support-5",support-set-rollback-cleanup-05-support-set,0.0,truthgit_no_rollback
+Lab B,main-support-file-6,support_set_accuracy,main-support-file-6,support-set-branch-scoped-06-main-support,1.0,truthgit_no_rollback
+Lab B,"branch-support-confirmation-6, main-support-file-6",support_set_accuracy,"branch-support-confirmation-6, main-support-file-6",support-set-branch-scoped-06-branch-support,1.0,truthgit_no_rollback
+Lima,trusted-support-registry-7,support_set_accuracy,trusted-support-registry-7,support-set-opposition-exclusion-07-support-set,1.0,truthgit_no_rollback
 Lab A,unresolved_conflict,merge_conflict_resolution_score,unresolved_conflict,merge-manual-review-00-unresolved,1.0,truthgit_no_rollback
 Lab F,unresolved_conflict,merge_conflict_resolution_score,unresolved_conflict,merge-concurrent-update-01-unresolved,1.0,truthgit_no_rollback
 Lab E,unresolved_conflict,merge_conflict_resolution_score,unresolved_conflict,merge-competing-branches-02-unresolved,1.0,truthgit_no_rollback
@@ -1111,6 +1171,16 @@ Seoul,municipal-file-21,provenance_accuracy,municipal-file-21,provenance-same-ob
 Lab F,main-personnel-file-22,provenance_accuracy,main-personnel-file-22,provenance-same-object-branch-22-main-source,1.0,truthgit_no_review_gate
 Lab F,branch-audit-confirmation-22,provenance_accuracy,branch-audit-confirmation-22,provenance-same-object-branch-22-branch-source,1.0,truthgit_no_review_gate
 Lab B,signed-winning-reorg-source-23,provenance_accuracy,signed-winning-reorg-source-23,provenance-merge-governing-source-23-source,1.0,truthgit_no_review_gate
+Madrid,"university-profile-support-0, verified-registry-support-0",support_set_accuracy,"university-profile-support-0, verified-registry-support-0",support-set-joint-00-support-set,1.0,truthgit_no_review_gate
+Berlin,municipal-file-support-1,support_set_accuracy,municipal-file-support-1,support-set-rollback-cleanup-01-support-set,1.0,truthgit_no_review_gate
+Lab D,main-support-file-2,support_set_accuracy,main-support-file-2,support-set-branch-scoped-02-main-support,1.0,truthgit_no_review_gate
+Lab D,"branch-support-confirmation-2, main-support-file-2",support_set_accuracy,"branch-support-confirmation-2, main-support-file-2",support-set-branch-scoped-02-branch-support,1.0,truthgit_no_review_gate
+Dublin,trusted-support-registry-3,support_set_accuracy,trusted-support-registry-3,support-set-opposition-exclusion-03-support-set,1.0,truthgit_no_review_gate
+Lisbon,"university-profile-support-4, verified-registry-support-4",support_set_accuracy,"university-profile-support-4, verified-registry-support-4",support-set-joint-04-support-set,1.0,truthgit_no_review_gate
+Oslo,municipal-file-support-5,support_set_accuracy,municipal-file-support-5,support-set-rollback-cleanup-05-support-set,1.0,truthgit_no_review_gate
+Lab B,main-support-file-6,support_set_accuracy,main-support-file-6,support-set-branch-scoped-06-main-support,1.0,truthgit_no_review_gate
+Lab B,"branch-support-confirmation-6, main-support-file-6",support_set_accuracy,"branch-support-confirmation-6, main-support-file-6",support-set-branch-scoped-06-branch-support,1.0,truthgit_no_review_gate
+Lima,trusted-support-registry-7,support_set_accuracy,trusted-support-registry-7,support-set-opposition-exclusion-07-support-set,1.0,truthgit_no_review_gate
 Lab A,unresolved_conflict,merge_conflict_resolution_score,unresolved_conflict,merge-manual-review-00-unresolved,1.0,truthgit_no_review_gate
 Lab F,unresolved_conflict,merge_conflict_resolution_score,unresolved_conflict,merge-concurrent-update-01-unresolved,1.0,truthgit_no_review_gate
 Lab E,unresolved_conflict,merge_conflict_resolution_score,unresolved_conflict,merge-competing-branches-02-unresolved,1.0,truthgit_no_review_gate
@@ -1272,6 +1342,16 @@ Seoul,municipal-file-21,provenance_accuracy,municipal-file-21,provenance-same-ob
 Lab F,main-personnel-file-22,provenance_accuracy,main-personnel-file-22,provenance-same-object-branch-22-main-source,1.0,truthgit_no_trust_scoring
 Lab F,branch-audit-confirmation-22,provenance_accuracy,branch-audit-confirmation-22,provenance-same-object-branch-22-branch-source,1.0,truthgit_no_trust_scoring
 Lab D,signed-winning-reorg-source-23,provenance_accuracy,rumor-reorg-source-23,provenance-merge-governing-source-23-source,0.0,truthgit_no_trust_scoring
+Madrid,"university-profile-support-0, verified-registry-support-0",support_set_accuracy,"university-profile-support-0, verified-registry-support-0",support-set-joint-00-support-set,1.0,truthgit_no_trust_scoring
+Berlin,municipal-file-support-1,support_set_accuracy,municipal-file-support-1,support-set-rollback-cleanup-01-support-set,1.0,truthgit_no_trust_scoring
+Lab D,main-support-file-2,support_set_accuracy,main-support-file-2,support-set-branch-scoped-02-main-support,1.0,truthgit_no_trust_scoring
+Lab D,"branch-support-confirmation-2, main-support-file-2",support_set_accuracy,"branch-support-confirmation-2, main-support-file-2",support-set-branch-scoped-02-branch-support,1.0,truthgit_no_trust_scoring
+Gotham,trusted-support-registry-3,support_set_accuracy,opposing-rumor-source-3,support-set-opposition-exclusion-03-support-set,0.0,truthgit_no_trust_scoring
+Lisbon,"university-profile-support-4, verified-registry-support-4",support_set_accuracy,"university-profile-support-4, verified-registry-support-4",support-set-joint-04-support-set,1.0,truthgit_no_trust_scoring
+Oslo,municipal-file-support-5,support_set_accuracy,municipal-file-support-5,support-set-rollback-cleanup-05-support-set,1.0,truthgit_no_trust_scoring
+Lab B,main-support-file-6,support_set_accuracy,main-support-file-6,support-set-branch-scoped-06-main-support,1.0,truthgit_no_trust_scoring
+Lab B,"branch-support-confirmation-6, main-support-file-6",support_set_accuracy,"branch-support-confirmation-6, main-support-file-6",support-set-branch-scoped-06-branch-support,1.0,truthgit_no_trust_scoring
+Gotham,trusted-support-registry-7,support_set_accuracy,opposing-rumor-source-7,support-set-opposition-exclusion-07-support-set,0.0,truthgit_no_trust_scoring
 Lab B,unresolved_conflict,merge_conflict_resolution_score,unresolved_conflict,merge-manual-review-00-unresolved,1.0,truthgit_no_trust_scoring
 Lab D,unresolved_conflict,merge_conflict_resolution_score,unresolved_conflict,merge-concurrent-update-01-unresolved,1.0,truthgit_no_trust_scoring
 Lab B,unresolved_conflict,merge_conflict_resolution_score,unresolved_conflict,merge-competing-branches-02-unresolved,1.0,truthgit_no_trust_scoring

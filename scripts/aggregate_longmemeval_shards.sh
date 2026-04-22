@@ -4,7 +4,7 @@ set -euo pipefail
 DATA_FILE="${LONGMEMEVAL_DATA:-data/longmemeval_s_cleaned.json}"
 OUTPUT_DIR="${LONGMEMEVAL_OUTPUT_DIR:-experiments/public_results/longmemeval}"
 SPLIT_LABEL="${LONGMEMEVAL_SPLIT_LABEL:-longmemeval_s_cleaned}"
-SYSTEM_LABEL="${LONGMEMEVAL_SYSTEM_LABEL:-truthgit_gpt-4o-mini_record_batch}"
+SYSTEM_LABEL="${LONGMEMEVAL_SYSTEM_LABEL:-truthgit_gpt-4o-mini_record_batch_ms12_beliefs_and_excerpts}"
 JUDGE_MODEL="${LONGMEMEVAL_JUDGE_MODEL:-gpt-4o}"
 ALLOW_INCOMPLETE="${LONGMEMEVAL_ALLOW_INCOMPLETE:-0}"
 

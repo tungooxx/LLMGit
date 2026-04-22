@@ -17,9 +17,11 @@ from app.commit_engine import create_branch, ensure_main_branch, rollback_commit
 from app.config import get_settings
 from app.db import get_db
 from app.llm import LLMClient
+from app.memory_ci import check_report_payload
 from app.normalization import deterministic_extract_simple_claims
 from app.schemas import ExtractedClaim, MemoryWritePlan, SourceCreate
-from app.tools import approve_staged_commit, stage_belief_changes
+from app.tools import apply_staged_commit, approve_staged_commit, stage_belief_changes
+from app.write_policy import enforce_write_policy, safe_branch_name
 
 router = APIRouter(tags=["demo"])
 
@@ -90,8 +92,9 @@ def manual_prompt(
             "snapshot": _demo_snapshot(db),
         }
 
-    write_plan, extraction_info, extraction_warnings = _build_demo_write_plan(request)
-    branch = _resolve_demo_branch(db, write_plan.branch_name)
+    write_plan, extraction_info, extraction_warnings = _build_demo_write_plan(request, db)
+    branch_name = write_plan.branch_name if write_plan.write_action != "reject" else request.branch_name
+    branch = _resolve_demo_branch(db, branch_name)
     claims = write_plan.claims
     source = SourceCreate(
         source_type="user_message" if request.extraction_mode == "llm" else "manual",
@@ -99,21 +102,25 @@ def manual_prompt(
         excerpt=request.message,
         trust_score=write_plan.trust_score,
     )
-    if not claims:
-        answer = LLMClient(get_settings()).answer_from_memory(
-            request.message,
-            _demo_memory_context(db, branch),
+    if not claims or write_plan.write_action == "reject":
+        answer = (
+            write_plan.assistant_reply
+            if write_plan.write_action == "reject"
+            else LLMClient(get_settings()).answer_from_memory(
+                request.message,
+                _demo_memory_context(db, branch),
+            )
         )
         db.commit()
         return {
             "branch": _branch_payload(branch),
-            "claims": [],
+            "claims": [claim.model_dump(mode="json") for claim in claims],
             "staged": None,
             "commit": None,
             "versions": [],
             "timelines": [],
             "assistant_reply": answer,
-            "warnings": sorted(set(extraction_warnings)),
+            "warnings": sorted(set([*extraction_warnings, *write_plan.warnings, *_write_plan_risk_reasons(write_plan)])),
             "extraction": extraction_info,
             "snapshot": _demo_snapshot(db),
         }
@@ -126,28 +133,39 @@ def manual_prompt(
         proposed_commit_message="Demo prompt memory update",
         created_by="demo-ui",
         model_name=extraction_info["model_name"],
+        review_required=bool(extraction_info["review_required"]),
+        risk_reasons=_write_plan_risk_reasons(write_plan),
+        warnings=write_plan.warnings,
     )
     warnings = [*extraction_warnings, *list(staged.warnings_json)]
     result = None
-    if request.auto_approve and not staged.review_required:
-        result = approve_staged_commit(
-            db,
-            staged_commit_id=staged.id,
-            reviewer="demo-ui",
-            notes="Approved from professor demo panel.",
-            commit_message=staged.proposed_commit_message,
-            model_name=extraction_info["model_name"],
+    if request.auto_approve and staged.status == "quarantined":
+        warnings.append(
+            f"TruthGit Memory CI quarantined staged write {staged.id}; release or reject it manually."
         )
-        warnings.extend(result.warnings)
     elif request.auto_approve and staged.review_required:
-        warnings.append("Review gate blocked auto-approval; approve or reject this staged write manually.")
+        warnings.append(
+            f"TruthGit policy requires review; approve or reject staged write {staged.id} manually."
+        )
+    elif request.auto_approve:
+        try:
+            result = apply_staged_commit(
+                db,
+                staged_commit_id=staged.id,
+                commit_message=staged.proposed_commit_message,
+                created_by="demo-ui",
+                model_name=extraction_info["model_name"],
+            )
+            warnings.extend(result.warnings)
+        except ValueError as exc:
+            warnings.append(str(exc))
     db.commit()
 
     affected_timelines = _affected_timelines(db, claims)
     return {
         "branch": _branch_payload(branch),
         "claims": [claim.model_dump(mode="json") for claim in claims],
-        "staged": _staged_payload(staged),
+        "staged": _staged_payload(db, staged),
         "commit": _commit_payload(result.commit) if result else None,
         "versions": [_version_payload(db, version) for version in result.introduced_versions] if result else [],
         "timelines": affected_timelines,
@@ -251,7 +269,7 @@ def load_demo_benchmark_case(db: Session = Depends(get_db)) -> dict[str, Any]:
         },
         "sessions": sessions,
         "claims": [claim.model_dump(mode="json") for claim in claims],
-        "staged": _staged_payload(staged),
+        "staged": _staged_payload(db, staged),
         "commit": _commit_payload(result.commit),
         "versions": [_version_payload(db, version) for version in result.introduced_versions],
         "assistant_reply": (
@@ -268,7 +286,10 @@ def _reset_demo_tables(db: Session) -> None:
 
     for model in (
         models.AuditEvent,
+        models.MemoryCheckResult,
+        models.MemoryCheckRun,
         models.StagedCommit,
+        models.BeliefVersionSourceLink,
         models.BeliefVersion,
         models.Belief,
         models.Commit,
@@ -342,7 +363,7 @@ def _demo_session_text(session: dict[str, Any]) -> str:
     return "\n".join(lines)
 
 
-def _build_demo_write_plan(request: DemoPromptRequest) -> tuple[MemoryWritePlan, dict[str, Any], list[str]]:
+def _build_demo_write_plan(request: DemoPromptRequest, db: Session) -> tuple[MemoryWritePlan, dict[str, Any], list[str]]:
     """Return claims plus branch/trust metadata for the demo prompt."""
 
     settings = get_settings()
@@ -354,10 +375,12 @@ def _build_demo_write_plan(request: DemoPromptRequest) -> tuple[MemoryWritePlan,
         llm = LLMClient(settings)
         used_fallback = llm.client is None
         if request.auto_metadata:
+            context_branch = _demo_context_branch(db, request.branch_name)
             plan = llm.plan_memory_write(
                 request.message,
                 fallback_branch_name=request.branch_name,
                 fallback_trust_score=request.trust_score,
+                memory_context=_demo_memory_context(db, context_branch),
             )
         else:
             extracted = llm.extract_claims(request.message)
@@ -365,6 +388,7 @@ def _build_demo_write_plan(request: DemoPromptRequest) -> tuple[MemoryWritePlan,
                 claims=extracted.claims,
                 branch_name=request.branch_name,
                 trust_score=request.trust_score,
+                write_action="commit_now",
                 rationale="LLM extracted claims; branch and trust came from demo controls.",
             )
         model_name = settings.openai_model if not used_fallback else "deterministic-demo-fallback"
@@ -376,18 +400,46 @@ def _build_demo_write_plan(request: DemoPromptRequest) -> tuple[MemoryWritePlan,
             claims=claims,
             branch_name=request.branch_name,
             trust_score=request.trust_score,
+            write_action="commit_now",
             rationale="Local deterministic demo extractor; branch and trust came from demo controls.",
         )
 
     if not request.auto_metadata:
-        plan = plan.model_copy(update={"branch_name": request.branch_name, "trust_score": request.trust_score})
+        plan = plan.model_copy(
+            update={
+                "branch_name": request.branch_name,
+                "trust_score": request.trust_score,
+                "write_action": "commit_now",
+                "risk_reasons": [],
+                "warnings": [],
+            }
+        )
     plan = _sanitize_demo_write_plan(plan, fallback_branch_name=request.branch_name)
+    policy = enforce_write_policy(
+        db,
+        plan=plan,
+        source_excerpt=request.message,
+        fallback_branch_name=request.branch_name,
+    )
+    plan = plan.model_copy(
+        update={
+            "branch_name": policy.branch_name,
+            "trust_score": policy.trust_score,
+            "write_action": policy.write_action,
+            "risk_reasons": policy.risk_reasons,
+            "warnings": policy.warnings,
+        }
+    )
     info = {
         "mode": request.extraction_mode,
         "auto_metadata": request.auto_metadata,
         "model_name": model_name,
         "branch_name": plan.branch_name,
         "trust_score": plan.trust_score,
+        "write_action": plan.write_action,
+        "review_required": policy.review_required,
+        "risk_reasons": plan.risk_reasons,
+        "warnings": plan.warnings,
         "rationale": plan.rationale,
         "used_fallback": used_fallback,
     }
@@ -400,9 +452,36 @@ def _is_demo_question(message: str) -> bool:
     stripped = message.strip()
     if not stripped:
         return False
+    if _is_what_if_memory_scenario(stripped):
+        return False
     if stripped.endswith("?"):
         return True
-    return bool(re.match(r"^(why|what|where|when|how|who|which|do you|can you|tell me)\b", stripped, re.I))
+    return bool(
+        re.match(
+            r"^(why|what|where|when|how|who|which|show|list|display|explain|summarize|do you|can you|tell me)\b",
+            stripped,
+            re.I,
+        )
+    )
+
+
+def _is_what_if_memory_scenario(message: str) -> bool:
+    """Return True for mixed what-if prompts that introduce branch-local claims."""
+
+    lowered = message.lower()
+    if not re.match(r"^what\s+if\b", lowered):
+        return False
+    if "?" not in message:
+        return True
+    after_question = message.split("?", 1)[1].strip().lower()
+    if not after_question:
+        return False
+    return bool(
+        re.search(
+            r"\b(will|would|could|during|plan|scenario|fellowship|conference|trip|stay|work from)\b",
+            after_question,
+        )
+    )
 
 
 def _sanitize_demo_write_plan(plan: MemoryWritePlan, *, fallback_branch_name: str) -> MemoryWritePlan:
@@ -414,23 +493,25 @@ def _sanitize_demo_write_plan(plan: MemoryWritePlan, *, fallback_branch_name: st
 
 
 def _safe_branch_name(value: str) -> str:
-    clean = value.strip().lower().replace("_", "-")
-    clean = "".join(character for character in clean if character.isalnum() or character == "-")
-    clean = "-".join(part for part in clean.split("-") if part)
-    return clean[:40] or "main"
+    return safe_branch_name(value)
 
 
 def _assistant_reply_with_outcome(reply: str, committed: bool, staged_id: str) -> str:
     if not committed:
-        return (
-            "I found a memory update, but it needs review before it becomes TruthGit truth. "
-            f"I staged it as {staged_id}. Click Approve Staged to apply it, or leave it pending."
-        )
+        clean_reply = reply.strip() or "I found a memory update."
+        return f"{clean_reply} I staged it as {staged_id}. Click Approve Staged to apply it, or leave it pending."
     suffix = (
         "I saved it as a TruthGit commit."
     )
     clean_reply = reply.strip() or "Okay, I'll remember that in TruthGit memory."
     return f"{clean_reply} {suffix}"
+
+
+def _write_plan_risk_reasons(plan: MemoryWritePlan) -> list[str]:
+    reasons = list(plan.risk_reasons)
+    if plan.write_action in {"stage_for_review", "reject"}:
+        reasons.append(f"model_write_action:{plan.write_action}")
+    return reasons
 
 
 def _resolve_demo_branch(db: Session, name: str) -> models.Branch:
@@ -443,6 +524,22 @@ def _resolve_demo_branch(db: Session, name: str) -> models.Branch:
     if branch is not None:
         return branch
     branch = create_branch(db, name=clean_name, description=f"Demo branch {clean_name}")
+    db.flush()
+    return branch
+
+
+def _demo_context_branch(db: Session, name: str) -> models.Branch:
+    """Return an existing branch for context without creating a fallback branch."""
+
+    clean_name = safe_branch_name(name or "main")
+    if clean_name == "main":
+        branch = ensure_main_branch(db)
+        db.flush()
+        return branch
+    branch = crud.get_branch_by_name(db, clean_name)
+    if branch is not None:
+        return branch
+    branch = ensure_main_branch(db)
     db.flush()
     return branch
 
@@ -484,13 +581,14 @@ def _demo_snapshot(db: Session) -> dict[str, Any]:
             "branches": len(branches),
             "commits": len(commits),
             "versions": len(versions),
-            "staged": sum(1 for item in staged if item.status == "pending"),
+            "staged": sum(1 for item in staged if item.status not in {"applied", "rejected"}),
+            "quarantined": sum(1 for item in staged if item.status == "quarantined"),
             "audit_events": len(audit),
         },
         "branches": [_branch_payload(branch) for branch in branches],
         "commits": [_commit_payload(commit) for commit in commits],
         "versions": [_version_payload(db, version) for version in versions],
-        "staged_commits": [_staged_payload(item) for item in staged],
+        "staged_commits": [_staged_payload(db, item) for item in staged],
         "audit": [
             {
                 "id": event.id,
@@ -498,6 +596,7 @@ def _demo_snapshot(db: Session) -> dict[str, Any]:
                 "entity_type": event.entity_type,
                 "entity_id": event.entity_id,
                 "entity_key": event.entity_key,
+                "payload_json": event.payload_json,
                 "created_at": _iso(event.created_at),
             }
             for event in audit
@@ -514,19 +613,36 @@ def _demo_memory_context(db: Session, branch: models.Branch) -> dict[str, Any]:
         versions = crud.get_current_versions(db, belief_id=belief.id, branch_id=branch.id)
         current.extend(_version_payload(db, version) for version in versions)
     timelines = crud.search_beliefs(db, query="", include_inactive=True, limit=80)
+    staged = list(
+        db.scalars(
+            select(models.StagedCommit)
+            .order_by(models.StagedCommit.created_at.desc())
+            .limit(30)
+        )
+    )
+    audit = crud.list_audit_events(db, limit=40)
     return {
         "branch": _branch_payload(branch),
         "current_beliefs": current,
         "timelines": [_version_payload(db, version) for version in timelines],
         "commits": [_commit_payload(commit) for commit in crud.list_commits(db)[:30]],
+        "staged_commits": [_staged_payload(db, item) for item in staged],
         "pending_staged_commits": [
-            _staged_payload(staged)
-            for staged in db.scalars(
-                select(models.StagedCommit)
-                .where(models.StagedCommit.status == "pending")
-                .order_by(models.StagedCommit.created_at.desc())
-                .limit(20)
-            )
+            _staged_payload(db, item)
+            for item in staged
+            if item.status in {"pending", "proposed", "checked", "review_required", "quarantined"}
+        ],
+        "audit_events": [
+            {
+                "id": event.id,
+                "event_type": event.event_type,
+                "entity_type": event.entity_type,
+                "entity_id": event.entity_id,
+                "entity_key": event.entity_key,
+                "payload_json": event.payload_json,
+                "created_at": _iso(event.created_at),
+            }
+            for event in audit
         ],
     }
 
@@ -541,18 +657,26 @@ def _branch_payload(branch: models.Branch) -> dict[str, Any]:
     }
 
 
-def _staged_payload(staged: models.StagedCommit) -> dict[str, Any]:
+def _staged_payload(db: Session, staged: models.StagedCommit) -> dict[str, Any]:
     return {
         "id": staged.id,
         "status": staged.status,
         "branch_id": staged.branch_id,
+        "claims_json": staged.claims_json,
         "review_required": staged.review_required,
         "risk_reasons": staged.risk_reasons,
         "warnings": staged.warnings_json,
+        "latest_check_run_id": staged.latest_check_run_id,
+        "checked_at": _iso(staged.checked_at),
+        "quarantined_at": _iso(staged.quarantined_at),
+        "quarantine_reason_summary": staged.quarantine_reason_summary,
+        "quarantine_release_status": staged.quarantine_release_status,
         "applied_commit_id": staged.applied_commit_id,
         "source_ref": staged.source_ref,
+        "source_excerpt": staged.source_excerpt,
         "source_trust_score": staged.source_trust_score,
         "created_at": _iso(staged.created_at),
+        "checks": check_report_payload(db, staged),
     }
 
 
@@ -572,7 +696,7 @@ def _version_payload(db: Session, version: models.BeliefVersion) -> dict[str, An
     belief = crud.get_belief(db, version.belief_id)
     source = db.get(models.Source, version.source_id)
     branch = crud.get_branch(db, version.branch_id)
-    return {
+    payload = {
         "id": version.id,
         "belief_id": version.belief_id,
         "subject": belief.subject if belief else None,
@@ -590,6 +714,8 @@ def _version_payload(db: Session, version: models.BeliefVersion) -> dict[str, An
         "valid_to": _iso(version.valid_to),
         "created_at": _iso(version.created_at),
     }
+    payload.update(crud.support_graph_payload(db, version))
+    return payload
 
 
 def _iso(value: Any) -> str | None:
@@ -894,6 +1020,9 @@ _HTML = """
     .superseded { color: var(--amber); background: #fff1d6; }
     .retracted { color: var(--red); background: #fde1df; }
     .pending { color: var(--amber); background: #fff1d6; }
+    .proposed, .checked { color: var(--green); background: #dff3e8; }
+    .review_required { color: var(--amber); background: #fff1d6; }
+    .quarantined { color: var(--red); background: #fde1df; }
     .applied { color: var(--green); background: #dff3e8; }
     .muted { color: var(--muted); }
     @media (max-width: 1120px) {
@@ -921,7 +1050,7 @@ _HTML = """
           <label>Trust <input id="manualTrust" type="number" min="0" max="1" step="0.01" value="0.8"></label>
           <label class="check"><input id="useLlm" type="checkbox" checked> use LLM</label>
           <label class="check"><input id="autoMetadata" type="checkbox" checked> LLM branch/trust</label>
-          <label class="check"><input id="autoApprove" type="checkbox" checked> auto-approve low-risk writes</label>
+          <label class="check"><input id="autoApprove" type="checkbox" checked> auto-apply model commit decisions</label>
         </div>
         <div class="quick">
           <button data-example="Alice lives in Seoul." data-branch="main" data-trust="0.8">initial fact</button>
@@ -1007,8 +1136,11 @@ _HTML = """
       };
       try {
         const data = await postJson("/demo/manual", payload);
-        lastStagedId = data.staged?.status === "pending" ? data.staged.id : null;
+        lastStagedId = isApproveableStaged(data.staged) ? data.staged.id : null;
         lastCommitId = data.commit?.id || lastCommitId;
+        if (data.branch?.name) {
+          document.getElementById("manualBranch").value = data.branch.name;
+        }
         renderSnapshot(data.snapshot);
         appendMessage("system", data.assistant_reply || summarizeManual(data), detailLine(data));
       } catch (error) {
@@ -1018,7 +1150,7 @@ _HTML = """
 
     async function approveStaged() {
       if (!lastStagedId) {
-        appendMessage("system", "No pending staged commit to approve.");
+        appendMessage("system", "No reviewable staged commit to approve.");
         return;
       }
       const approvedId = lastStagedId;
@@ -1091,7 +1223,8 @@ _HTML = """
       return {
         counts: {
           ...(data.counts || {}),
-          staged: staged.filter(row => row.status === "pending").length
+          staged: staged.filter(row => !["applied", "rejected"].includes(row.status)).length,
+          quarantined: staged.filter(row => row.status === "quarantined").length
         },
         branches: data.branches,
         commits: data.commits,
@@ -1166,14 +1299,14 @@ _HTML = """
       const container = document.getElementById("lineageStrip");
       const versions = [...rows].sort((left, right) => Number(left.id) - Number(right.id));
       if (!versions.length) {
-        const pending = stagedRows.filter(row => row.status === "pending");
+        const pending = stagedRows.filter(row => !["applied", "rejected"].includes(row.status));
         if (pending.length) {
           container.innerHTML = pending.map(row => `
             <div class="lineage-card hypothetical">
               <b>staged write</b>
-              <small>${escapeHtml(row.source_ref || "pending source")}</small>
-              <strong>review required</strong>
-              <small>${escapeHtml((row.risk_reasons || []).join(", ") || "manual approval needed")}</small>
+              <small>${escapeHtml(row.source_ref || "staged source")}</small>
+              <strong>${escapeHtml(row.status || "staged")}</strong>
+              <small>${escapeHtml(row.quarantine_reason_summary || (row.risk_reasons || []).join(", ") || "manual action needed")}</small>
               <small>${escapeHtml(row.id)}</small>
             </div>
           `).join("");
@@ -1199,7 +1332,8 @@ _HTML = """
         ["branches", "Branches"],
         ["commits", "Commits"],
         ["versions", "Versions"],
-        ["staged", "Pending"],
+        ["staged", "Staged"],
+        ["quarantined", "Quarantine"],
         ["audit_events", "Audit"]
       ];
       document.getElementById("stats").innerHTML = entries.map(([key, label]) => `
@@ -1211,7 +1345,7 @@ _HTML = """
       const svg = document.getElementById("gitGraph");
       const commits = [...(snapshot.commits || [])].sort((left, right) => Number(left.id) - Number(right.id));
       const versions = [...(snapshot.versions || [])].sort((left, right) => Number(left.id) - Number(right.id));
-      const pendingStaged = [...(snapshot.staged_commits || [])].filter(row => row.status === "pending");
+      const pendingStaged = [...(snapshot.staged_commits || [])].filter(row => !["applied", "rejected"].includes(row.status));
       const branches = snapshot.branches || [];
       const branchById = new Map(branches.map(branch => [branch.id, branch]));
       const commitX = new Map(commits.map((commit, index) => [commit.id, 118 + index * 230]));
@@ -1223,12 +1357,12 @@ _HTML = """
       if (!commits.length && !versions.length) {
         if (pendingStaged.length) {
           svg.innerHTML = `
-            <text x="40" y="56" fill="#475467" font-size="15" font-weight="700">Pending staged write awaiting approval</text>
+            <text x="40" y="56" fill="#475467" font-size="15" font-weight="700">Memory CI staged write awaiting action</text>
             <rect x="40" y="82" width="390" height="94" rx="10" fill="#f4f0ff" stroke="#6d3fc4" stroke-width="1.5"></rect>
-            <text x="62" y="113" fill="#1f2933" font-size="14" font-weight="800">review required</text>
+            <text x="62" y="113" fill="#1f2933" font-size="14" font-weight="800">${escapeSvg(pendingStaged[0].status || "staged")}</text>
             <text x="62" y="137" fill="#667085" font-size="12">${escapeSvg(shorten(pendingStaged[0].source_ref || "staged memory write", 46))}</text>
             <text x="62" y="159" fill="#667085" font-size="12">${escapeSvg(shorten((pendingStaged[0].risk_reasons || []).join(", ") || "manual approval needed", 48))}</text>
-            <text x="452" y="137" fill="#667085" font-size="14">Click Approve Staged to create the first commit.</text>
+            <text x="452" y="137" fill="#667085" font-size="14">${pendingStaged[0].status === "quarantined" ? "Quarantined writes need release or override." : "Click Approve Staged to create the first commit."}</text>
           `;
           return;
         }
@@ -1332,9 +1466,15 @@ _HTML = """
     }
 
     function stagedDetail(row) {
-      if (row.status === "pending") return row.review_required ? "review required" : "review clear";
+      const check = row.checks?.run ? `CI ${row.checks.run.overall_status} / ${row.checks.run.decision}` : "CI not run";
+      if (row.status === "quarantined") return `${check}<br>${escapeHtml(row.quarantine_reason_summary || "blocked")}`;
+      if (["pending", "proposed", "checked", "review_required"].includes(row.status)) return row.review_required ? `${check}<br>review required` : `${check}<br>review clear`;
       if (row.applied_commit_id) return `commit #${row.applied_commit_id}`;
       return "reviewed";
+    }
+
+    function isApproveableStaged(row) {
+      return row && ["pending", "proposed", "checked", "review_required"].includes(row.status);
     }
 
     function shorten(value, maxLength) {

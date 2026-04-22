@@ -40,7 +40,19 @@ def post_rollback_commit(
 
 
 @router.get("/audit", response_model=list[AuditEventRead])
-def get_audit(limit: int = 100, db: Session = Depends(get_db)) -> list[object]:
+def get_audit(
+    limit: int = 100,
+    entity_type: str | None = None,
+    entity_id: int | None = None,
+    entity_key: str | None = None,
+    db: Session = Depends(get_db),
+) -> list[object]:
     """Return recent audit events."""
 
-    return crud.list_audit_events(db, limit=limit)
+    return crud.list_audit_events(
+        db,
+        limit=limit,
+        entity_type=entity_type,
+        entity_id=entity_id,
+        entity_key=entity_key,
+    )

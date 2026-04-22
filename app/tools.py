@@ -9,20 +9,10 @@ from sqlalchemy.orm import Session
 
 from app import crud, models
 from app.commit_engine import apply_claims
+from app.memory_ci import run_memory_ci
 from app.normalization import normalize_extracted_claim
 from app.schemas import ExtractedClaim, SourceCreate
-
-
-LOW_TRUST_THRESHOLD = 0.4
-IMPORTANT_PREDICATES = {
-    "lives_in",
-    "works_at",
-    "medical_condition",
-    "legal_status",
-    "financial_status",
-    "identity",
-    "has_access_to",
-}
+from app.write_policy import review_requirements_for_claims
 
 
 TOOL_DEFINITIONS: list[dict[str, Any]] = [
@@ -70,10 +60,16 @@ TOOL_DEFINITIONS: list[dict[str, Any]] = [
     {
         "type": "function",
         "name": "stage_belief_changes",
-        "description": "Stage validated belief changes without writing durable versions.",
+        "description": "Stage model-approved belief changes without writing durable versions.",
         "parameters": {
             "type": "object",
-            "properties": {"claims": {"type": "array", "items": {"type": "object"}}},
+            "properties": {
+                "claims": {"type": "array", "items": {"type": "object"}},
+                "review_required": {"type": "boolean"},
+                "risk_reasons": {"type": "array", "items": {"type": "string"}},
+                "warnings": {"type": "array", "items": {"type": "string"}},
+                "commit_message": {"type": "string"},
+            },
             "required": ["claims"],
         },
     },
@@ -97,7 +93,7 @@ def serialize_version(db: Session, version: Any) -> dict[str, Any]:
     """Serialize a belief version with its belief identity."""
 
     belief = crud.get_belief(db, version.belief_id)
-    return {
+    payload = {
         "id": version.id,
         "belief_id": version.belief_id,
         "subject": belief.subject if belief else None,
@@ -112,6 +108,8 @@ def serialize_version(db: Session, version: Any) -> dict[str, Any]:
         "valid_from": version.valid_from,
         "valid_to": version.valid_to,
     }
+    payload.update(crud.support_graph_payload(db, version))
+    return payload
 
 
 def search_beliefs(
@@ -235,21 +233,35 @@ def stage_belief_changes(
     proposed_commit_message: str = "Update belief memory",
     created_by: str = "agent",
     model_name: str | None = None,
+    review_required: bool = False,
+    risk_reasons: list[str] | None = None,
+    warnings: list[str] | None = None,
 ) -> models.StagedCommit:
     """Tool: persist proposed belief changes for review or auto-approval."""
 
     staged_id = str(uuid4())
-    normalized = [normalize_extracted_claim(claim) for claim in claims]
-    review_required, risk_reasons, warnings = classify_staging_risk(
+    risk_reason_values = list(risk_reasons or [])
+    warning_values = list(warnings or [])
+    branch = crud.get_branch(db, branch_id)
+    if branch is None:
+        raise ValueError(f"Branch does not exist: {branch_id}")
+    policy = review_requirements_for_claims(
+        db,
         claims=claims,
-        source=source,
+        branch_id=branch_id,
+        branch_name=branch.name,
+        source_trust=source.trust_score,
+        source_excerpt=source.excerpt,
     )
-    if not normalized:
-        warnings.append("No explicit atomic claims were staged.")
+    review_required = review_required or policy.review_required
+    risk_reason_values.extend(policy.risk_reasons)
+    warning_values.extend(policy.warnings)
+    if not claims:
+        warning_values.append("No explicit atomic claims were staged.")
     staged = models.StagedCommit(
         id=staged_id,
         branch_id=branch_id,
-        status="pending",
+        status="proposed",
         claims_json=[claim.model_dump(mode="json", by_alias=False) for claim in claims],
         source_type=source.source_type,
         source_ref=source.source_ref,
@@ -259,8 +271,8 @@ def stage_belief_changes(
         created_by=created_by,
         model_name=model_name,
         review_required=review_required,
-        risk_reasons=risk_reasons,
-        warnings_json=warnings,
+        risk_reasons=risk_reason_values,
+        warnings_json=warning_values,
     )
     db.add(staged)
     db.flush()
@@ -274,35 +286,11 @@ def stage_belief_changes(
             "staged_commit_id": staged.id,
             "branch_id": branch_id,
             "review_required": review_required,
-            "risk_reasons": risk_reasons,
+            "risk_reasons": risk_reason_values,
         },
     )
+    run_memory_ci(db, staged.id)
     return staged
-
-
-def classify_staging_risk(
-    *,
-    claims: list[ExtractedClaim],
-    source: SourceCreate,
-) -> tuple[bool, list[str], list[str]]:
-    """Return review gate decision, risk reasons, and user-facing warnings."""
-
-    risk_reasons: list[str] = []
-    warnings: list[str] = []
-    if source.trust_score < LOW_TRUST_THRESHOLD:
-        risk_reasons.append(f"low_trust_source:{source.trust_score:.2f}")
-        warnings.append("Low-trust source was staged for review.")
-    for claim in claims:
-        normalized = normalize_extracted_claim(claim)
-        if normalized.predicate in IMPORTANT_PREDICATES:
-            reason = f"important_predicate:{normalized.predicate}"
-            if reason not in risk_reasons:
-                risk_reasons.append(reason)
-                warnings.append(f"Important predicate '{normalized.predicate}' requires review.")
-        if normalized.confidence < 0.5:
-            risk_reasons.append(f"low_confidence_claim:{normalized.confidence:.2f}")
-            warnings.append("Low-confidence claim requires review.")
-    return bool(risk_reasons), risk_reasons, warnings
 
 
 def apply_staged_commit(
@@ -313,18 +301,25 @@ def apply_staged_commit(
     created_by: str = "agent",
     model_name: str | None = None,
 ) -> Any:
-    """Tool: apply a staged commit only when deterministic policy allows it."""
+    """Tool: apply a staged commit when the stored model decision allows it."""
 
     staged = db.get(models.StagedCommit, staged_commit_id)
     if staged is None:
         raise ValueError(f"Unknown staged commit: {staged_commit_id}")
+    if staged.latest_check_run_id is None:
+        run_memory_ci(db, staged.id)
+        db.flush()
+    if staged.status == "quarantined":
+        raise ValueError(f"Staged commit {staged_commit_id} is quarantined and cannot auto-apply")
+    if staged.status == "rejected":
+        raise ValueError(f"Staged commit {staged_commit_id} was rejected")
     if staged.review_required:
         raise ValueError(f"Staged commit {staged_commit_id} requires human review")
     return approve_staged_commit(
         db,
         staged_commit_id=staged_commit_id,
         reviewer=created_by,
-        notes="Auto-approved by deterministic review gate.",
+        notes="Auto-approved by model write decision.",
         commit_message=commit_message,
         model_name=model_name,
     )
@@ -338,14 +333,45 @@ def approve_staged_commit(
     notes: str | None = None,
     commit_message: str | None = None,
     model_name: str | None = None,
+    override_quarantine: bool = False,
 ) -> Any:
     """Approve and apply a pending staged commit."""
 
     staged = db.get(models.StagedCommit, staged_commit_id)
     if staged is None:
         raise ValueError(f"Unknown staged commit: {staged_commit_id}")
-    if staged.status != "pending":
-        raise ValueError(f"Staged commit {staged_commit_id} is {staged.status}, not pending")
+    if staged.latest_check_run_id is None and staged.status not in {"rejected", "applied"}:
+        run_memory_ci(db, staged.id)
+        db.flush()
+    if staged.status == "quarantined" and not override_quarantine:
+        raise ValueError(f"Staged commit {staged_commit_id} is quarantined and must be released or overridden")
+    if staged.status in {"applied", "rejected"}:
+        raise ValueError(f"Staged commit {staged_commit_id} is {staged.status}, not reviewable")
+    if staged.status not in {"pending", "proposed", "checked", "review_required", "approved", "quarantined"}:
+        raise ValueError(f"Staged commit {staged_commit_id} is {staged.status}, not reviewable")
+    if staged.status == "quarantined" and override_quarantine:
+        if not notes or not notes.strip():
+            raise ValueError("Overriding quarantine requires reviewer notes")
+        staged.quarantine_release_status = "approved_override"
+        staged.quarantine_reviewer = reviewer
+        staged.quarantine_notes = notes
+        crud.add_audit_event(
+            db,
+            event_type="staged_commit.quarantine_override_approved",
+            entity_type="staged_commit",
+            entity_id=0,
+            entity_key=staged.id,
+            payload={"staged_commit_id": staged.id, "reviewer": reviewer, "notes": notes},
+        )
+    staged.status = "approved"
+    crud.add_audit_event(
+        db,
+        event_type="staged_commit.approval_recorded",
+        entity_type="staged_commit",
+        entity_id=0,
+        entity_key=staged.id,
+        payload={"staged_commit_id": staged.id, "reviewer": reviewer, "notes": notes},
+    )
     source = crud.create_source(
         db,
         source_type=staged.source_type,
@@ -364,6 +390,7 @@ def approve_staged_commit(
         model_name=model_name or staged.model_name,
     )
     staged.status = "applied"
+    staged.review_required = False
     staged.reviewer = reviewer
     staged.review_notes = notes
     staged.reviewed_at = models.utc_now()
@@ -396,12 +423,16 @@ def reject_staged_commit(
     staged = db.get(models.StagedCommit, staged_commit_id)
     if staged is None:
         raise ValueError(f"Unknown staged commit: {staged_commit_id}")
-    if staged.status != "pending":
-        raise ValueError(f"Staged commit {staged_commit_id} is {staged.status}, not pending")
+    if staged.status in {"applied", "rejected"}:
+        raise ValueError(f"Staged commit {staged_commit_id} is {staged.status}, not reviewable")
     staged.status = "rejected"
     staged.reviewer = reviewer
     staged.review_notes = notes
     staged.reviewed_at = models.utc_now()
+    if staged.quarantined_at is not None:
+        staged.quarantine_release_status = "rejected"
+        staged.quarantine_reviewer = reviewer
+        staged.quarantine_notes = notes
     crud.add_audit_event(
         db,
         event_type="staged_commit.rejected",
@@ -446,6 +477,9 @@ class ToolExecutor:
                 branch_id=self.branch_id,
                 source=self.source,
                 proposed_commit_message=arguments.get("commit_message", "Update belief memory"),
+                review_required=bool(arguments.get("review_required", False)),
+                risk_reasons=list(arguments.get("risk_reasons", []) or []),
+                warnings=list(arguments.get("warnings", []) or []),
             )
             return {
                 "staged_commit_id": staged.id,

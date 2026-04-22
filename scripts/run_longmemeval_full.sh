@@ -14,6 +14,7 @@ HISTORY_FORMAT="${LONGMEMEVAL_HISTORY_FORMAT:-json}"
 READER_MODE="${LONGMEMEVAL_READER_MODE:-con}"
 MAX_OUTPUT_TOKENS="${LONGMEMEVAL_MAX_OUTPUT_TOKENS:-256}"
 SKIP_EVALUATION="${LONGMEMEVAL_SKIP_EVALUATION:-0}"
+NO_RESUME="${LONGMEMEVAL_NO_RESUME:-0}"
 
 if command -v py >/dev/null 2>&1; then
   PYTHON_CMD=(py -3)
@@ -64,6 +65,10 @@ PROMPTS="${OUTPUT_DIR}/${BASE_NAME}.prompts.jsonl"
 HYPOTHESES="${OUTPUT_DIR}/${BASE_NAME}.hypotheses.jsonl"
 EVAL_LOG="${OUTPUT_DIR}/${BASE_NAME}.eval-results-${JUDGE_MODEL}.jsonl"
 SUMMARY="${OUTPUT_DIR}/${BASE_NAME}.summary.json"
+RESUME_ARGS=()
+if [[ "$NO_RESUME" == "1" ]]; then
+  RESUME_ARGS=(--no-resume)
+fi
 
 "${PYTHON_CMD[@]}" -m experiments.public_benchmarks.longmemeval inspect \
   --data "$DATA_FILE" \
@@ -85,6 +90,7 @@ SUMMARY="${OUTPUT_DIR}/${BASE_NAME}.summary.json"
   --history-format "$HISTORY_FORMAT" \
   --reader-mode "$READER_MODE" \
   --max-output-tokens "$MAX_OUTPUT_TOKENS" \
+  "${RESUME_ARGS[@]}" \
   "${LIMIT_ARGS[@]}"
 
 if [[ "$SKIP_EVALUATION" != "1" ]]; then

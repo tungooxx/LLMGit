@@ -27,7 +27,7 @@ def belief_score(confidence: float, trust_score: float) -> float:
 
 
 def _version_score(db: Session, version: models.BeliefVersion) -> float:
-    return belief_score(version.confidence, crud.source_trust(db, version.source_id))
+    return crud.belief_version_support_score(db, version)
 
 
 def _newer_temporal_claim(

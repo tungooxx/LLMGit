@@ -2,7 +2,7 @@ param(
     [string]$DataFile = "data\longmemeval_s_cleaned.json",
     [string]$OutputDir = "experiments\public_results\longmemeval",
     [string]$SplitLabel = "longmemeval_s_cleaned",
-    [string]$SystemLabel = "truthgit_gpt-4o-mini_record_batch",
+    [string]$SystemLabel = "truthgit_gpt-4o-mini_record_batch_ms12_beliefs_and_excerpts",
     [string]$JudgeModel = "gpt-4o",
     [switch]$AllowIncomplete
 )

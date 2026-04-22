@@ -62,6 +62,30 @@ def test_branch_isolation_and_merge(db_session) -> None:
     assert crud.get_branch(db_session, branch.id).status == "merged"
 
 
+def test_branch_hypothetical_opposition_does_not_weaken_main_support(db_session) -> None:
+    main = crud.get_branch_by_name(db_session, "main")
+    main_result = apply_claims(
+        db_session,
+        claims=[_claim("lives_in", "Seoul")],
+        branch_id=main.id,
+        source=_source(db_session, "Alice lives in Seoul.", trust=0.9),
+        message="main seed",
+    )
+    branch = create_branch(db_session, name="scenario", description="Hypothetical relocation")
+    apply_claims(
+        db_session,
+        claims=[_claim("lives_in", "Atlantis")],
+        branch_id=branch.id,
+        source=_source(db_session, "Hypothetically Alice lives in Atlantis.", trust=0.2),
+        message="branch scenario",
+    )
+
+    graph = crud.support_graph_payload(db_session, main_result.introduced_versions[0])
+
+    assert graph["active_support_count"] == 1
+    assert graph["active_opposition_count"] == 0
+
+
 def test_rollback_restores_superseded_version(db_session) -> None:
     main = crud.get_branch_by_name(db_session, "main")
     first = apply_claims(

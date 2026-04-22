@@ -1,9 +1,9 @@
 {
-  "benchmark_version": "truthgit-benchmark-v3-phase2-final",
+  "benchmark_version": "truthgit-benchmark-v4-support-ci-final",
   "backbone": "gpt-4o-mini",
-  "benchmark_logic_commit_sha": "6b5e6d5478baa67eb0c767fcfad162d3a2b4919f",
-  "reproduced_from_commit_sha": "6b5e6d5478baa67eb0c767fcfad162d3a2b4919f",
-  "created_at_utc": "2026-04-20T09:13:41.155232+00:00",
+  "benchmark_logic_commit_sha": "pending-next-commit",
+  "reproduced_from_commit_sha": "032eb23b53dd807ad72f0579350641dfd2c8cb80",
+  "created_at_utc": "2026-04-21T17:55:17.506247+00:00",
   "prompt_template": {
     "path": "experiments/prompt_templates/final_answer_prompt.txt",
     "sha256": "11b504dd42bb621f614d3c25c0b94c74db30e323fffc62c7bce4a6b9a9399853",
@@ -17,34 +17,66 @@
   "exported_result_files": [
     {
       "path": "experiments/results/benchmark_results.json",
-      "sha256": "a3357f557aa36f7e2717d13187bc1c51326dc21e31cce1ad4a3ab9a4bceec055",
-      "bytes": 1286866
+      "sha256": "7c454ab08f13bfaf31d4a596b1f908f4337fd0467bf35030101a8e57ffe94fdc",
+      "bytes": 1489518
     },
     {
       "path": "experiments/results/metric_summary.csv",
-      "sha256": "32426c44a52ae80d1a1ccb238c5ade7baeab391b35c5d8825aa5393918219d4f",
-      "bytes": 3135
+      "sha256": "05b62eec086c79878d7b85bfd03357bf7749977e821e00913cb0d5757e0b4a51",
+      "bytes": 3528
     },
     {
       "path": "experiments/results/question_scores.csv",
-      "sha256": "6b522d58cfeeb7d7e7548356f4f775dbc1156660127d5d4f1e1087c77041c5e5",
-      "bytes": 150465
+      "sha256": "e49565a7c018ef5d43079ca30f4c3e19ab512dc13d449664b1300bf79c2288a8",
+      "bytes": 164283
     },
     {
       "path": "experiments/results/predictions.csv",
-      "sha256": "982c30e7e691d385154f3d67c82843541a7713c43a3562f95c1a3c2d36e9bc5e",
-      "bytes": 189589
+      "sha256": "b3725866226345b04d926bcd5d8f1838e7f3d87ec521553e7bda68bbb5fb7a57",
+      "bytes": 240611
+    },
+    {
+      "path": "experiments/results/governance_benchmark_results.json",
+      "sha256": "45db212fdcca0e033de5243b0dace2487de82cbfab1757fb242bbd9dbb8bd3db",
+      "bytes": 4628
+    },
+    {
+      "path": "experiments/results/governance_metric_summary.csv",
+      "sha256": "2d7a9420e9a2203e35e2c337c95cea9c4eec09f600f179149b749dbad6cb07f0",
+      "bytes": 173
+    },
+    {
+      "path": "experiments/results/governance_case_results.csv",
+      "sha256": "bed32aa9b143071a1dbafe81a37c200e9d0e241bbad5cdedbb03ff65bb0a6d2f",
+      "bytes": 686
+    },
+    {
+      "path": "experiments/results/governance_routing_counts.csv",
+      "sha256": "1267506881e0e963bcd23982c34ed2f1bcd03ccc7b01ad1e8d21a9d4d2e201f9",
+      "bytes": 129
+    },
+    {
+      "path": "experiments/results/governance_quarantine_metrics.png",
+      "sha256": "aefb68d4539fd81c73bbc673964bf778676f421098deaad8b15a3b437c674257",
+      "bytes": 93536
+    },
+    {
+      "path": "experiments/results/memory_ci_case_study.json",
+      "sha256": "e9610391ab09be8db5b487cc4e446133562919ae481646be295e4692f8fb148e",
+      "bytes": 33284
     },
     {
       "path": "experiments/results/metric_summary.png",
-      "sha256": "2e4132de55f9066d8b5bd04fe7bea7f4299144879f93c03e50485eeb6b4ebca3",
-      "bytes": 160204
+      "sha256": "019dfe18996616d80e989c23b73bba3d7239492eb160f385d36db5655f7c6066",
+      "bytes": 164695
     }
   ],
   "commands": [
     "python -m pytest -q",
     "python -m compileall app experiments tests",
     "python -m experiments.run_benchmark --output-dir experiments/results --backbone gpt-4o-mini --include-ablations",
+    "python -m experiments.governance_benchmark --output-dir experiments/results",
+    "python -m experiments.memory_ci_case_study --output experiments/results/memory_ci_case_study.json",
     "python -m experiments.plot_results --summary-csv experiments/results/metric_summary.csv --output-png experiments/results/metric_summary.png",
     "python scripts/write_final_manifest.py"
   ]
